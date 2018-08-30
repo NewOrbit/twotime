@@ -1,0 +1,14 @@
+{
+  "name": "twotime",
+  "version": "1.0.0",
+  "description": "Harvest/TargetProcess",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "James Monger <jameskmonger@hotmail.co.uk> (http://jamesmonger.com)",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.0.3"
+  }
+}
