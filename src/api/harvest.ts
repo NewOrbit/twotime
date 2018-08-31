@@ -20,6 +20,14 @@ interface ProjectAssignmentsResponse {
     }[];
 }
 
+interface TimeEntriesResponse {
+    time_entries: {
+        id: number;
+        notes: string;
+        created_at: string;
+    }[];
+}
+
 interface Project {
     id: number;
     name: string;
@@ -30,6 +38,11 @@ interface Project {
 interface Task {
     id: number;
     name: string;
+}
+
+interface TimeEntry {
+    id: number;
+    notes: string;
 }
 
 export class HarvestApi {
@@ -73,5 +86,18 @@ export class HarvestApi {
         });
 
         console.log(res);
+    }
+
+    public async getTimeEntries(date: string) {
+        const res: TimeEntriesResponse = await this.api.timeEntries.list({
+            from: date,
+            to: date
+        });
+
+        return res.time_entries
+            .map(t => ({
+                id: t.id,
+                notes: t.notes,
+            })) as TimeEntry[];
     }
 }
