@@ -4,11 +4,15 @@
   "description": "Harvest/TargetProcess",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "author": "James Monger <jameskmonger@hotmail.co.uk> (http://jamesmonger.com)",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^10.9.3",
     "typescript": "^3.0.3"
+  },
+  "dependencies": {
+    "harvest": "^2.2.0"
   }
 }
