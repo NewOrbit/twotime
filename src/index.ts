@@ -1,4 +1,4 @@
-import { HarvestApi } from "./api/harvest";
+import { HarvestApi } from "./harvest/api";
 
 import { accessToken, accountId } from "./config";
 
