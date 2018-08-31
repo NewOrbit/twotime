@@ -4,12 +4,15 @@
   "description": "Harvest/TargetProcess",
   "main": "index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "build-test": "tsc -p ./tsconfig.test.json",
+    "test": "npm run build-test && alsatian \"bin-test/**/*.test.js\""
   },
   "author": "James Monger <jameskmonger@hotmail.co.uk> (http://jamesmonger.com)",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^10.9.3",
+    "alsatian": "^2.3.0",
     "typescript": "^3.0.3"
   },
   "dependencies": {

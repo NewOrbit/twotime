@@ -1,0 +1,10 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "bin-test",
+        "experimentalDecorators": true
+    },
+    "include": [
+        "test/**/*"
+    ]
+  }
