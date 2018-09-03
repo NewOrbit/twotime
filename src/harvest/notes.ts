@@ -1,3 +1,5 @@
+const decodeHTML = require("entities").decodeHTML;
+
 interface Entity {
     id: number;
     name: string;
@@ -21,11 +23,13 @@ const entityPrefixes = [
     { text: "> bug #", setValue: (info, value) => info.bug = value }
 ] as Prefix[];
 
+const finishedPrefix = "> finished";
+
 const splitLines = (str: string) => str.match(/[^\r\n]+/g);
 
 const parseEntity = (prefix: Prefix, line: string, information: NoteInformation) => {
     if (line.indexOf(prefix.text) !== 0) {
-        prefix.setValue(information, null);
+        return;
     }
 
     const withoutPrefix = line.substring(prefix.text.length);
@@ -38,16 +42,21 @@ const parseEntity = (prefix: Prefix, line: string, information: NoteInformation)
 };
 
 const parseNotes = (notes: string) => {
-    const lines = splitLines(notes);
+    const decoded = decodeHTML(notes);
+    const lines = splitLines(decoded);
     const information = {
         userStory: null,
         task: null,
         bug: null,
-        finished: null
+        finished: false
     } as NoteInformation;
 
     lines.forEach(line => {
         entityPrefixes.forEach(prefix => parseEntity(prefix, line, information));
+
+        if (line.indexOf(finishedPrefix) === 0 && line.length === finishedPrefix.length) {
+            information.finished = true;
+        }
     });
 
     return information;
