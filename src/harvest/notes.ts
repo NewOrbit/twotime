@@ -12,38 +12,47 @@ interface NoteInformation {
     finished: boolean;
 }
 
-interface Prefix {
-    text: string;
-    setValue: (info: NoteInformation, value: Entity | null) => void;
+const prefixes = {
+    userStory: "> user_story #",
+    task: "> task #",
+    bug: "> bug #",
+    finished: "> finished"
 }
-
-const entityPrefixes = [
-    { text: "> user_story #", setValue: (info, value) => info.userStory = value },
-    { text: "> task #", setValue: (info, value) => info.task = value },
-    { text: "> bug #", setValue: (info, value) => info.bug = value }
-] as Prefix[];
-
-const finishedPrefix = "> finished";
 
 const splitLines = (str: string) => str.match(/[^\r\n]+/g);
 
-const parseEntity = (prefix: Prefix, line: string, information: NoteInformation) => {
-    if (line.indexOf(prefix.text) !== 0) {
-        return;
+const parsePrefix = (line: string, prefix: string) => {
+    if (line.indexOf(prefix) !== 0) {
+        return null;
     }
 
-    const withoutPrefix = line.substring(prefix.text.length);
-    const parts = withoutPrefix.split(" ");
+    const withoutPrefix = line.substring(prefix.length);
 
-    prefix.setValue(information, {
+    return withoutPrefix;
+};
+
+const findPrefixInLines = (lines: string[], prefix: string) => {
+    const matching = lines
+        .map(l => parsePrefix(l, prefix))
+        .filter(x => x !== null);
+
+    if (matching.length === 0) {
+        return null;
+    }
+
+    return matching[0];
+};
+
+const splitIdAndName = (line: string) => {
+    const parts = line.split(" ");
+
+    return {
         id: parseInt(parts[0]),
         name: parts.slice(1).join(" ")
-    });
+    };
 };
 
 const parseNotes = (notes: string) => {
-    const decoded = decodeHTML(notes);
-    const lines = splitLines(decoded);
     const information = {
         userStory: null,
         task: null,
@@ -51,13 +60,29 @@ const parseNotes = (notes: string) => {
         finished: false
     } as NoteInformation;
 
-    lines.forEach(line => {
-        entityPrefixes.forEach(prefix => parseEntity(prefix, line, information));
+    const decoded = decodeHTML(notes);
+    const lines = splitLines(decoded);
+    
+    const userStory = findPrefixInLines(lines, prefixes.userStory);
+    if (userStory !== null) {
+        information.userStory = splitIdAndName(userStory);
+    }
 
-        if (line.indexOf(finishedPrefix) === 0 && line.length === finishedPrefix.length) {
-            information.finished = true;
-        }
-    });
+    const task = findPrefixInLines(lines, prefixes.task);
+    if (task !== null) {
+        information.task = splitIdAndName(task);
+    }
+
+    const bug = findPrefixInLines(lines, prefixes.bug);
+    if (bug !== null) {
+        information.bug = splitIdAndName(bug);
+    }
+
+    // finished doesn't have anything after the prefix so compare with ''
+    const finished = findPrefixInLines(lines, prefixes.finished);
+    if (finished === '') {
+        information.finished = true;
+    }
 
     return information;
 };
