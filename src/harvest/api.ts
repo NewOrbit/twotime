@@ -45,7 +45,7 @@ export class HarvestApi {
             }));
     }
 
-    public async startTimer(projectId: number, taskId: number, date: string, notes: string) {
+    public async startTimeEntry(projectId: number, taskId: number, date: string, notes: string) {
         // cast to any required until https://github.com/simplyspoke/node-harvest/pull/116
         const data: any = {
             project_id: projectId,
