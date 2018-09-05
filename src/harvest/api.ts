@@ -1,4 +1,4 @@
-import Harvest, { ProjectAssignment, TimeEntry, Project } from "harvest";
+import Harvest, { ProjectAssignment, TimeEntry, Project, TaskAssignment, Task } from "harvest";
 
 interface ProjectAssignmentsResponse {
     project_assignments: ProjectAssignment[];
@@ -21,22 +21,27 @@ export class HarvestApi {
         });
     }
 
+    private getActiveTasksFromAssignments(assignments: TaskAssignment[]) {
+        const activeAssignments = assignments.filter(t => t.is_active);
+
+        return activeAssignments.map(t => ({
+            id: (t.task as Task).id,
+            name: (t.task as Task).name
+        }));
+    }
+
     public async getProjects() {
         const res: ProjectAssignmentsResponse = await this.api.projectAssignments.me({});
 
-        return res.project_assignments
-            .filter(p => p.is_active)
+        const activeAssignments = res.project_assignments.filter(p => p.is_active);
+
+        return activeAssignments
             .map(p => ({
                 // casts here required until https://github.com/simplyspoke/node-harvest/pull/118
                 id: (p.project as Project).id,
                 name: (p.project as Project).name,
                 
-                tasks: p.task_assignments
-                    .filter(t => t.is_active)
-                    .map(t => ({
-                        id: t.task.id,
-                        name: t.task.name
-                    }))
+                tasks: this.getActiveTasksFromAssignments(p.task_assignments)
             }));
     }
 
@@ -55,10 +60,12 @@ export class HarvestApi {
     }
 
     public async getTimeEntries(date: string) {
-        const res: TimeEntriesResponse = await this.api.timeEntries.list({
+        const query = {
             from: date,
             to: date
-        });
+        };
+
+        const res: TimeEntriesResponse = await this.api.timeEntries.list(query);
 
         return res.time_entries
             .map(t => ({
