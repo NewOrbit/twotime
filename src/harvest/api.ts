@@ -54,9 +54,7 @@ export class HarvestApi {
             notes: notes
         };
 
-        const res = await this.api.timeEntries.create(data);
-
-        console.log(res);
+        return await this.api.timeEntries.create(data) as TimeEntry;
     }
 
     public async getTimeEntries(date: string) {
@@ -72,5 +70,11 @@ export class HarvestApi {
                 id: t.id,
                 notes: t.notes,
             }));
+    }
+
+    public async updateNotes(timeEntryId: number, notes: string) {
+        const res = await this.api.timeEntries.update(timeEntryId, { notes });
+
+        console.log(res);
     }
 }

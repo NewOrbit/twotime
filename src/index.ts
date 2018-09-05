@@ -4,9 +4,14 @@ import { accessToken, accountId } from "./config";
 
 const api = new HarvestApi(accessToken, accountId);
 api.getProjects().then(p => {
-	//api.startTimer(p[0].id, p[0].tasks[0].id, "2018-08-31", "testing twotime");
+	api.startTimeEntry(p[0].id, p[0].tasks[0].id, "2018-09-05", "testing twotime")
+		.then(entry => {
+			const id = entry.id;
 
-	api.getTimeEntries("2018-08-31").then(e => {
+			api.updateNotes(id, "foo! FOO FOO! FOOOOO!");
+		});
+
+	/*api.getTimeEntries("2018-08-31").then(e => {
 		console.log(e);
-	})
+	})*/
 });
