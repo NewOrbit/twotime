@@ -54,6 +54,7 @@ export class HarvestApi {
             notes: notes
         };
 
+        // cast to TimeEntry required until https://github.com/simplyspoke/node-harvest/issues/119
         return await this.api.timeEntries.create(data) as TimeEntry;
     }
 
@@ -73,8 +74,12 @@ export class HarvestApi {
     }
 
     public async updateNotes(timeEntryId: number, notes: string) {
-        const res = await this.api.timeEntries.update(timeEntryId, { notes });
+        // cast to TimeEntry required until https://github.com/simplyspoke/node-harvest/issues/119
+        return await this.api.timeEntries.update(timeEntryId, { notes }) as TimeEntry;
+    }
 
-        console.log(res);
+    public async stopTimeEntry(id: number) {
+        // cast to TimeEntry required until https://github.com/simplyspoke/node-harvest/issues/119
+        return await this.api.timeEntries.stop(id) as TimeEntry;
     }
 }
