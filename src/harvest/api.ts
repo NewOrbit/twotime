@@ -1,54 +1,16 @@
-// required until https://github.com/simplyspoke/node-harvest/pull/112
-const Harvest = require("harvest");
+import Harvest, { ProjectAssignment, TimeEntry, Project } from "harvest";
 
 interface ProjectAssignmentsResponse {
-    project_assignments: {
-        id: number,
-        is_active: boolean,
-        project: {
-            id: number,
-            name: string
-        },
-        client: any,
-        task_assignments: {
-            is_active: boolean,
-            task: {
-                id: number,
-                name: string
-            }
-        }[]
-    }[];
+    project_assignments: ProjectAssignment[];
 }
 
 interface TimeEntriesResponse {
-    time_entries: {
-        id: number;
-        notes: string;
-        created_at: string;
-    }[];
-}
-
-interface Project {
-    id: number;
-    name: string;
-
-    tasks: Task[];
-}
-
-interface Task {
-    id: number;
-    name: string;
-}
-
-interface TimeEntry {
-    id: number;
-    notes: string;
+    time_entries: TimeEntry[];
 }
 
 export class HarvestApi {
 
-    // required until https://github.com/simplyspoke/node-harvest/pull/112
-    private api: any;
+    private api: Harvest;
 
     constructor(accessToken: string, accountId: number) {
         this.api = new Harvest({
@@ -60,13 +22,14 @@ export class HarvestApi {
     }
 
     public async getProjects() {
-        const res: ProjectAssignmentsResponse = await this.api.projectAssignments.me();
+        const res: ProjectAssignmentsResponse = await this.api.projectAssignments.me({});
 
         return res.project_assignments
             .filter(p => p.is_active)
             .map(p => ({
-                id: p.project.id,
-                name: p.project.name,
+                // casts here required until https://github.com/simplyspoke/node-harvest/pull/118
+                id: (p.project as Project).id,
+                name: (p.project as Project).name,
                 
                 tasks: p.task_assignments
                     .filter(t => t.is_active)
@@ -74,16 +37,19 @@ export class HarvestApi {
                         id: t.task.id,
                         name: t.task.name
                     }))
-            })) as Project[];
+            }));
     }
 
     public async startTimer(projectId: number, taskId: number, date: string, notes: string) {
-        const res = await this.api.timeEntries.create({
+        // cast to any required until https://github.com/simplyspoke/node-harvest/pull/116
+        const data: any = {
             project_id: projectId,
             task_id: taskId,
             spent_date: date,
             notes: notes
-        });
+        };
+
+        const res = await this.api.timeEntries.create(data);
 
         console.log(res);
     }
@@ -98,6 +64,6 @@ export class HarvestApi {
             .map(t => ({
                 id: t.id,
                 notes: t.notes,
-            })) as TimeEntry[];
+            }));
     }
 }
