@@ -17,7 +17,7 @@ export class HarvestApi {
             subdomain: 'neworbit',
             userAgent: 'twotime',
             concurrency: 1,
-            auth: { accessToken, accountId }
+            auth: { accessToken, accountId: (accountId as any) }
         });
     }
 
