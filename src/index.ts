@@ -1,10 +1,10 @@
+import { Targetprocess } from "targetprocess-rest-api";
 import { HarvestApi } from "./harvest/api";
-import { TargetProcessApi } from "./tp/api";
 
 import * as config from "./config";
 
 const harvestApi = new HarvestApi(config.harvest.accessToken, config.harvest.accountId);
-const tpApi = new TargetProcessApi(config.targetProcess.username, config.targetProcess.password);
+const tpApi = new Targetprocess("neworbit", config.targetProcess.username, config.targetProcess.password);
 
 /*
 harvestApi.getProjects().then(p => {

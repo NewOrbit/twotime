@@ -1,6 +1,6 @@
+import { Targetprocess } from "targetprocess-rest-api";
 import { HarvestApi } from "../harvest/api";
-import { TargetProcessApi } from "../tp/api";
 
-export const auth = (harvest: HarvestApi, tp: TargetProcessApi) => {
+export const auth = (harvest: HarvestApi, tp: Targetprocess) => {
     console.log("authing!");
 };

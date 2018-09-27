@@ -1,7 +1,7 @@
 import * as inquirer from "inquirer";
+import { Targetprocess } from "targetprocess-rest-api";
 
 import { HarvestApi } from "../harvest/api";
-import { TargetProcessApi } from "../tp/api";
 
 // TODO: move this into the API
 interface HarvestProject {
@@ -19,7 +19,13 @@ const askTargetProcessId = async () => {
         message: "Is there a TargetProcess ID?"
     });
 
-    return response.tp;
+    const parsed = parseInt(response.tp);
+
+    if (isNaN(parsed)) {
+        return undefined;
+    }
+
+    return parsed;
 };
 
 const askHarvestProjectAndTask = async (projects: HarvestProject[]) => {
@@ -80,9 +86,25 @@ const askConfirm = async () => {
     return response.confirm;
 }
 
-export const start = async (harvest: HarvestApi, tp: TargetProcessApi) => {
+export const start = async (harvest: HarvestApi, tp: Targetprocess) => {
     const targetProcessId = await askTargetProcessId();
 
+    try {
+        const task = await tp.getTask(targetProcessId);
+        console.log("task found");
+        console.log(task);
+    } catch (e) {
+        try {
+            const bug = await tp.getBug(targetProcessId);
+            console.log("bug found");
+            console.log(bug);
+        } catch (e) {
+            const story = await tp.getStory(targetProcessId);
+            console.log("story found");
+            console.log(story);
+        }
+    }
+    
     const projects = await harvest.getProjects();
 
     const { project, taskId } = await askHarvestProjectAndTask(projects);
