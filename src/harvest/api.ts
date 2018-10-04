@@ -8,6 +8,16 @@ interface TimeEntriesResponse {
     time_entries: TimeEntry[];
 }
 
+// TODO: move this into the API
+export interface HarvestProject {
+    id: number;
+    name: string;
+    tasks: {
+        id: number;
+        name: string;
+    }[];
+}
+
 export class HarvestApi {
 
     private api: Harvest;
@@ -42,20 +52,27 @@ export class HarvestApi {
                 name: (p.project as Project).name,
                 
                 tasks: this.getActiveTasksFromAssignments(p.task_assignments)
-            }));
+            }) as HarvestProject);
     }
 
-    public async startTimeEntry(projectId: number, taskId: number, date: string, notes: string) {
+    public async startTimeEntry(projectId: number, taskId: number, date: string, notes: string, hours: number, running: boolean) {
         // cast to any required until https://github.com/simplyspoke/node-harvest/pull/116
         const data: any = {
             project_id: projectId,
             task_id: taskId,
             spent_date: date,
-            notes: notes
+            notes: notes,
+            hours: hours
         };
 
-        // cast to TimeEntry required until https://github.com/simplyspoke/node-harvest/issues/119
-        return await this.api.timeEntries.create(data) as TimeEntry;
+        const entry = await this.api.timeEntries.create(data);
+
+        // if it doesn't need to be started manually, we can return here
+        if (running === false || hours === 0) {
+            return entry;
+        }
+
+        return await this.api.timeEntries.restart(entry.id);
     }
 
     public async getTimeEntries(date: string) {

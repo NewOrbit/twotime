@@ -19,11 +19,12 @@
     "@types/btoa": "^1.2.0",
     "@types/inquirer": "0.0.43",
     "btoa": "^1.2.1",
+    "chalk": "^2.4.1",
     "commander": "^2.18.0",
     "entities": "^1.1.1",
     "harvest": "^2.2.5",
     "inquirer": "^6.2.0",
     "request-promise-json": "^1.0.4",
-    "targetprocess-rest-api": "^0.2.0"
+    "targetprocess-rest-api": "^0.2.1"
   }
 }

@@ -87,4 +87,50 @@ const parseNotes = (notes: string) => {
     return information;
 };
 
-export { parseNotes };
+const getPrefix = (entity: any) => {
+    if (entity.ResourceType === "UserStory") {
+        return prefixes.userStory;
+    }
+
+    if (entity.ResourceType === "Bug") {
+        return prefixes.bug;
+    }
+
+    if (entity.ResourceType === "Task") {
+        return prefixes.task;
+    }
+
+    return `[UNRECOGNISED RESOURCE TYPE ${entity.ResourceType}`;
+};
+
+const createLine = (entity: any) => {
+    const prefix = getPrefix(entity);
+    
+    return `${prefix}${entity.Id} ${entity.Name}`;
+};
+
+const createNotes = (entity: any, additionalNotes?: string) => {
+    if (entity === null) {
+        return "";
+    }
+
+    const lines = [];
+
+    if (entity.UserStory) {
+        const line = createLine(entity.UserStory);
+
+        lines.push(line);
+    }
+
+    const line = createLine(entity);
+
+    lines.push(line);
+
+    if (additionalNotes) {
+        lines.push(additionalNotes);
+    }
+
+    return lines.join("\n");
+};
+
+export { createNotes, parseNotes };
