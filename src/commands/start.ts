@@ -1,11 +1,8 @@
-import * as inquirer from "inquirer";
 import { Targetprocess } from "targetprocess-rest-api";
 import { HarvestApi } from "../harvest/api";
 import { askStartDetails } from "./prompts/start";
 import { createNotes } from "../harvest/notes";
-
-// YYYY-MM-DD
-const getTodayDate = () => (new Date()).toISOString().slice(0,10);
+import { getTodayDate } from "../utils/get-today-date";
 
 export const start = async (harvest: HarvestApi, tp: Targetprocess) => {
     const details = await askStartDetails(harvest, tp);
