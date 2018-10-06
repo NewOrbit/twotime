@@ -18,6 +18,12 @@ export interface HarvestProject {
     }[];
 }
 
+export interface HarvestTimeEntry {
+    id: number;
+    notes: string;
+    hours: number;
+}
+
 export class HarvestApi {
 
     private api: Harvest;
@@ -87,7 +93,8 @@ export class HarvestApi {
             .map(t => ({
                 id: t.id,
                 notes: t.notes,
-            }));
+                hours: t.hours
+            }) as HarvestTimeEntry);
     }
 
     public async updateNotes(timeEntryId: number, notes: string) {
