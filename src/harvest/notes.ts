@@ -133,4 +133,4 @@ const createNotes = (entity: any, additionalNotes?: string) => {
     return lines.join("\n");
 };
 
-export { createNotes, parseNotes };
+export { NoteInformation, createNotes, parseNotes };
