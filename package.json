@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "build-test": "tsc -p ./tsconfig.test.json",
-    "test": "npm run build-test && alsatian \"bin-test/**/*.test.js\""
+    "test": "npm run build-test && alsatian \"bin-test/**/*.test.js\" --tap"
   },
   "author": "James Monger <jameskmonger@hotmail.co.uk> (http://jamesmonger.com)",
   "license": "MIT",
