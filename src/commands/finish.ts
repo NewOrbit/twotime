@@ -3,55 +3,75 @@ import * as inquirer from "inquirer";
 import { Targetprocess } from "targetprocess-rest-api";
 import { HarvestApi, HarvestTimeEntry } from "../harvest/api";
 import { getTodayDate } from "../utils/get-today-date";
-import { parseNotes, NoteInformation } from "../harvest/notes";
+import { NoteInformation, EntityType } from "../harvest/notes/note-information";
+import { getTargetprocessEntity } from "../utils/get-tp-entity";
+import { createNotes } from "../harvest/notes/create-notes";
+import { log } from "../utils/log";
 
-const isLinkedNote = (note: NoteInformation) => note.userStory !== null || note.bug !== null || note.task !== null;
-
-const getUnfinishedTimers = (entries: HarvestTimeEntry[]) => {
-    return entries
-        .map(e => ({
-            entry: e,
-            notes: parseNotes(e.notes)
-        }))
-        .filter(e => isLinkedNote(e.notes) && !e.notes.finished);
+const getEntityTypeText = (type: EntityType) => type == EntityType.BUG ? "bug" : "task";
+const getTimeEntryPromptText = (entry: HarvestTimeEntry) => {
+    const entity = entry.notes.entity;
+    const entityType = getEntityTypeText(entity.type);
+    
+    return `${entityType} #${entity.id} (${entry.hours} hours) ${entity.name}`;
 };
 
-const getTimedEntity = (notes: NoteInformation) => {
-    if (notes.bug) {
-        return { type: "bug", id: notes.bug.id, name: notes.bug.name };
-    }
+const getTimeEntryPrompt = (entry: HarvestTimeEntry) => {
+    const text = getTimeEntryPromptText(entry);
 
-    if (notes.task) {
-        return { type: "task", id: notes.task.id, name: notes.task.name };
-    }
-
-    return { type: "user story", id: notes.userStory.id, name: notes.userStory.name };
+    return {
+        value: entry,
+        name: text
+    };
 };
 
-const getPromptText = ({ entry, notes }) => {
-    const entity = getTimedEntity(notes);
+const isLinkedNote = (note: NoteInformation) => note.userStory !== null || note.entity !== null;
 
-    return `${entity.type} #${entity.id}: (${entry.hours} hours) ${entity.name}`;
-};
-
-const getTimerPrompts = (timers: { entry: HarvestTimeEntry, notes: NoteInformation }[]) => {
-    return timers.map(t => {
-        const entity = getTimedEntity(t.notes);
-    });
-}
+const getUnfinishedTimeEntries = (entries: HarvestTimeEntry[]) => entries.filter(e => e.notes.finished === false && isLinkedNote(e.notes));
 
 export const finish = async (harvest: HarvestApi, tp: Targetprocess) => {
-    const date = getTodayDate();
-    const entries = await harvest.getTimeEntries("2018-10-03");
+    const date = "2018-10-16";//getTodayDate();
+    const entries = await harvest.getTimeEntries(date);
+    const unfinished = getUnfinishedTimeEntries(entries);
 
-    const timers = getUnfinishedTimers(entries);
+    if (unfinished.length === 0) {
+        log.info("There are no unfinished time entries today.");
+        return;
+    }
 
-    const response = await inquirer.prompt<{ timer: any }>({
-        name: "timer",
+    const prompts = unfinished.map(getTimeEntryPrompt);
+
+    const { timeEntry } = await inquirer.prompt<{ timeEntry: HarvestTimeEntry }>({
+        name: "timeEntry",
         message: "Which timer would you like to finish?",
         type: "list",
-        choices: getTimerPrompts(timers)
+        choices: prompts
     });
 
-    console.log(response.timer);
+    const entity = await getTargetprocessEntity(tp, timeEntry.notes.entity.id);
+
+    const projectedTimeRemaining = 
+        entity.TimeRemain > timeEntry.hours
+        ? entity.TimeRemain - timeEntry.hours
+        : 0;
+
+    const { timeRemaining } = await inquirer.prompt<{ timeRemaining: number }>({
+        name: "timeRemaining",
+        message: "How much time remaining? Projected: " + projectedTimeRemaining.toFixed(2),
+        validate: input => isNaN(input) ? "Enter a numeric value" : true,
+        filter: input => parseFloat(input)
+    });
+
+    const stopTimeEntry = harvest.stopTimeEntry(timeEntry.id);
+    const logTime = tp.addTime(entity.Id, timeEntry.hours, timeRemaining, new Date(date), "-");
+
+    timeEntry.notes.finished = true;
+    const notes = createNotes(timeEntry.notes);
+    const updateNotes = harvest.updateNotes(timeEntry.id, notes);
+
+    await stopTimeEntry;
+    await logTime;
+    await updateNotes;
+
+    console.log("done!");
 };

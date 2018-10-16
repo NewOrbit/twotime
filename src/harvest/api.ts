@@ -1,5 +1,7 @@
 import Harvest, { ProjectAssignment, TimeEntry, Project, TaskAssignment, Task } from "harvest";
-import { parseNotes, NoteInformation } from "./notes";
+
+import { parseNotes } from "./notes/parse-notes";
+import { NoteInformation } from "./notes/note-information";
 
 // TODO: move this into the API
 export interface HarvestProject {
