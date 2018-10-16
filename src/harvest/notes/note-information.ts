@@ -16,4 +16,5 @@ export interface NoteInformation {
     userStory: TargetProcessItem;
     entity: Entity;
     finished: boolean;
+    additionalNotes: string[];
 }

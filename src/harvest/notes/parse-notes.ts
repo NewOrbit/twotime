@@ -1,6 +1,6 @@
 const decodeHTML = require("entities").decodeHTML;
 import { splitLines } from "../../utils/split-lines";
-import { findPrefixInLines } from "./find-prefix-in-lines";
+import { findPrefixInLines, findLinesWithoutPrefix } from "./parse-prefix";
 import { prefixes } from "./prefixes";
 import { splitIdAndName } from "./split-id-and-name";
 import { NoteInformation, EntityType } from "./note-information";
@@ -51,6 +51,10 @@ const getFinished = (lines: string[]) => {
     return finished === '';
 };
 
+const getAdditionalNotes = (lines: string[]) => {
+    return findLinesWithoutPrefix(lines, [ prefixes.task, prefixes.bug, prefixes.userStory, prefixes.finished ]);
+};
+
 export const parseNotes = (notes: string) => {
     const decoded = decodeHTML(notes);
     const lines = splitLines(decoded);
@@ -58,6 +62,7 @@ export const parseNotes = (notes: string) => {
     return {
         userStory: getUserStory(lines),
         entity: getEntityFromLines(lines),
-        finished: getFinished(lines)
+        finished: getFinished(lines),
+        additionalNotes: getAdditionalNotes(lines)
     } as NoteInformation;
 };

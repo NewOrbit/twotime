@@ -21,7 +21,8 @@ export class ParseNotesTests {
                 id: 40732,
                 name: "v8.13 - FK AdditionalApplicationAnswers"
             },
-            finished: true
+            finished: true,
+            additionalNotes: []
         };
 
         const res = parseNotes(input);
@@ -44,7 +45,8 @@ export class ParseNotesTests {
                 id: 40732,
                 name: "v8.13 - FK AdditionalApplicationAnswers"
             },
-            finished: false
+            finished: false,
+            additionalNotes: []
         };
 
         const res = parseNotes(input);
@@ -68,7 +70,8 @@ export class ParseNotesTests {
                 id: 40732,
                 name: "v8.13 - FK AdditionalApplicationAnswers"
             },
-            finished: false
+            finished: false,
+            additionalNotes: []
         };
 
         const res = parseNotes(input);
@@ -92,7 +95,8 @@ export class ParseNotesTests {
                 id: 12345,
                 name: "Foo! Bar"
             },
-            finished: true
+            finished: true,
+            additionalNotes: []
         };
 
         const res = parseNotes(input);
@@ -115,7 +119,8 @@ export class ParseNotesTests {
                 id: 12345,
                 name: "Foo! Bar"
             },
-            finished: false
+            finished: false,
+            additionalNotes: []
         };
 
         const res = parseNotes(input);
@@ -139,12 +144,40 @@ export class ParseNotesTests {
                 id: 12345,
                 name: "Foo! Bar"
             },
-            finished: false
+            finished: false,
+            additionalNotes: []
         };
 
         const res = parseNotes(input);
 
         Expect(res).toEqual(expected);
+    }
+
+    @TestCase("Some extra notes")
+    @TestCase("bla bla bla")
+    @TestCase("it's true!")
+    public shouldParseAdditionalNotesCorrectly(additionalNotes: string) {
+        const input = "> user_story #12345 Foo\n"
+            + "> task #67890 Bar\n"
+            + "> finished\n"
+            + additionalNotes;
+
+        const res = parseNotes(input);
+
+        Expect(res.additionalNotes).toEqual([ additionalNotes ]);
+    }
+
+    @Test()
+    public shouldParseAdditionalNotesWhenSplit() {
+        const input = "> user_story #12345 Foo\n"
+            + "> task #67890 Bar\n"
+            + "this is the first initial part\n"
+            + "> finished\n"
+            + "second initial parts";
+
+        const res = parseNotes(input);
+
+        Expect(res.additionalNotes).toEqual(["this is the first initial part", "second initial parts"]);
     }
 
 }

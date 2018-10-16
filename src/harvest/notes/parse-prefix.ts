@@ -25,4 +25,10 @@ const findPrefixInLines = (lines: string[], prefix: string) => {
     return matching[0];
 };
 
-export { findPrefixInLines };
+const noPrefixesInLine = (line: string, prefixes: string[]) => prefixes.every(p => parsePrefix(line, p) === null);
+
+const findLinesWithoutPrefix = (lines: string[], prefixes: string[]) => {
+    return lines.filter(line => noPrefixesInLine(line, prefixes));
+};
+
+export { findPrefixInLines, findLinesWithoutPrefix };
