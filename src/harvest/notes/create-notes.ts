@@ -1,30 +1,40 @@
 import { getPrefix } from "./get-prefix";
+import { NoteInformation, TargetProcessItem, EntityType } from "./note-information";
+import { prefixes } from "./prefixes";
 
-const createLine = (entity: any) => {
-    const prefix = getPrefix(entity);
-    
-    return `${prefix}${entity.Id} ${entity.Name}`;
+const createLine = (prefix: string, entity: TargetProcessItem) => {    
+    return `${prefix}${entity.id} ${entity.name}`;
 };
 
-export const createNotes = (entity: any, additionalNotes?: string) => {
-    if (entity === null) {
+export const createNotes = (information: NoteInformation) => {
+    if (information === null || information === undefined) {
         return "";
     }
 
     const lines = [];
 
-    if (entity.UserStory) {
-        const line = createLine(entity.UserStory);
+    if (information.userStory) {
+        const line = createLine(prefixes.userStory, information.userStory);
 
         lines.push(line);
     }
 
-    const line = createLine(entity);
+    if (information.entity) {
+        const prefix = information.entity.type === EntityType.TASK
+            ? prefixes.task
+            : prefixes.bug;
 
-    lines.push(line);
+        const line = createLine(prefix, information.entity);
 
-    if (additionalNotes) {
-        lines.push(additionalNotes);
+        lines.push(line);
+    }
+
+    if (information.finished) {
+        lines.push(prefixes.finished);
+    }
+
+    if (information.additionalNotes) {
+        information.additionalNotes.forEach(line => lines.push(line));
     }
 
     return lines.join("\n");

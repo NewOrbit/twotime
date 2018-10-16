@@ -1,20 +1,24 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
 import { createNotes } from "../../src/harvest/notes/create-notes";
+import { NoteInformation, EntityType } from "../../src/harvest/notes/note-information";
 
 @TestFixture()
 export class CreateNotesTests {
     
     @Test()
     public shouldCreateNotesCorrectlyForTask() {
-        const input = {
-            ResourceType: "Task",
-            Id: 67890,
-            Name: "Some Task Name",
-            UserStory: {
-                ResourceType: "UserStory",
-                Id: 12345,
-                Name: "Foo"
-            }
+        const input: NoteInformation = {
+            userStory: {
+                id: 12345,
+                name: "Foo"
+            },
+            entity: {
+                type: EntityType.TASK,
+                id: 67890,
+                name: "Some Task Name"
+            },
+            finished: false,
+            additionalNotes: []
         };
 
         const expected = "> user_story #12345 Foo\n"
@@ -27,15 +31,18 @@ export class CreateNotesTests {
 
     @Test()
     public shouldCreateNotesCorrectlyForBug() {
-        const input = {
-            ResourceType: "Bug",
-            Id: 94123,
-            Name: "A very very horrible bug",
-            UserStory: {
-                ResourceType: "UserStory",
-                Id: 17441,
-                Name: "User should be able to eat cheese"
-            }
+        const input: NoteInformation = {
+            userStory: {
+                id: 17441,
+                name: "User should be able to eat cheese"
+            },
+            entity: {
+                type: EntityType.BUG,
+                id: 94123,
+                name: "A very very horrible bug"
+            },
+            finished: false,
+            additionalNotes: []
         };
 
         const expected = "> user_story #17441 User should be able to eat cheese\n"
@@ -48,11 +55,15 @@ export class CreateNotesTests {
 
     @Test()
     public shouldCreateNotesCorrectlyWithoutUserStory() {
-        const input = {
-            ResourceType: "Bug",
-            Id: 94123,
-            Name: "A very very horrible bug",
-            UserStory: null
+        const input: NoteInformation = {
+            userStory: null,
+            entity: {
+                type: EntityType.BUG,
+                id: 94123,
+                name: "A very very horrible bug"
+            },
+            finished: false,
+            additionalNotes: []
         };
 
         const expected = "> bug #94123 A very very horrible bug";
@@ -62,47 +73,24 @@ export class CreateNotesTests {
         Expect(res).toEqual(expected);
     }
 
-    @Test()
-    public shouldReturnEmptyStringForNullEntity() {
-        const input = null;
-
-        const expected = "";
-
-        const res = createNotes(input);
-
-        Expect(res).toEqual(expected);
-    }
-
-    @TestCase("bla bla additional")
-    @TestCase("some additional notes")
-    public shouldDisplayAdditionalNotesCorrectly(additional: string) {
-        const entity = {
-            ResourceType: "Bug",
-            Id: 94123,
-            Name: "A very very horrible bug",
-            UserStory: null
+    @TestCase(["bla bla additional"])
+    @TestCase(["some additional notes", "more"])
+    public shouldDisplayAdditionalNotesCorrectly(additional: string[]) {
+        const input: NoteInformation = {
+            userStory: null,
+            entity: {
+                type: EntityType.BUG,
+                id: 94123,
+                name: "A very very horrible bug"
+            },
+            finished: false,
+            additionalNotes: additional
         };
 
         const expected = "> bug #94123 A very very horrible bug\n"
-            + additional;
+            + additional.join("\n");
 
-        const res = createNotes(entity, additional);
-
-        Expect(res).toEqual(expected);
-    }
-
-    @Test()
-    public shouldNotDisplayAdditionalNotesIfEmptyString() {
-        const entity = {
-            ResourceType: "Bug",
-            Id: 94123,
-            Name: "A very very horrible bug",
-            UserStory: null
-        };
-
-        const expected = "> bug #94123 A very very horrible bug";
-
-        const res = createNotes(entity, "");
+        const res = createNotes(input);
 
         Expect(res).toEqual(expected);
     }
