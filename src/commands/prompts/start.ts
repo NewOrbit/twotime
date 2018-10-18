@@ -4,6 +4,7 @@ import { Targetprocess } from "targetprocess-rest-api";
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { askConfirm } from "./confirm";
 import { log } from "../../utils/log";
+import { ApiProvider } from "../../api-provider";
 
 const promptTargetprocessId = async () => {
     const response = await inquirer.prompt<{ tp: string }>({
@@ -107,7 +108,10 @@ const askTimeSpent = async () => {
     };
 };
 
-export const askStartDetails = async (harvest: HarvestApi, tp: Targetprocess) => {
+export const askStartDetails = async (apiProvider: ApiProvider) => {
+    const tp = apiProvider.getTargetprocessApi();
+    const harvest = apiProvider.getHarvestApi();
+
     const entity = await askTargetprocessEntity(tp);    
     const { projectId, taskId } = await askHarvestDetails(harvest);
     const notes = await askNotes();
