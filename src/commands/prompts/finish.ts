@@ -1,10 +1,10 @@
 import * as inquirer from "inquirer";
 import { HarvestApi, HarvestTimeEntry } from "../../harvest/api";
-import { Targetprocess } from "targetprocess-rest-api";
 import { NoteInformation, EntityType } from "../../harvest/notes/note-information";
 import { log } from "../../utils/log";
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { getProjectedTimeRemaining } from "../../utils/get-projected-time-remaining";
+import { ApiProvider } from "../../api-provider";
 
 const getEntityTypeText = (type: EntityType) => type == EntityType.BUG ? "bug" : "task";
 const getTimeEntryPromptText = (entry: HarvestTimeEntry) => {
@@ -61,14 +61,17 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     return timeRemaining;
 };
 
-export const askFinishDetails = async (harvest: HarvestApi, tp: Targetprocess, date: string) => {
-    const timeEntry = await askTimeEntry(harvest, date);
+export const askFinishDetails = async (apiProvider: ApiProvider, date: string) => {
+    const harvestApi = apiProvider.getHarvestApi();
+    
+    const timeEntry = await askTimeEntry(harvestApi, date);
 
     if (timeEntry === null) {
         return null;
     }
 
-    const tpEntity = await getTargetprocessEntity(tp, timeEntry.notes.entity.id);
+    const targetprocessApi = apiProvider.getTargetprocessApi();
+    const tpEntity = await getTargetprocessEntity(targetprocessApi, timeEntry.notes.entity.id);
     
     const timeRemaining = await askTimeRemaining(tpEntity, timeEntry);
 

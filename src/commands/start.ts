@@ -1,12 +1,11 @@
-import { Targetprocess } from "targetprocess-rest-api";
-import { HarvestApi } from "../harvest/api";
 import { askStartDetails } from "./prompts/start";
 import { getTodayDate } from "../utils/get-today-date";
 import { createNotes } from "../harvest/notes/create-notes";
 import { createNoteInformation } from "../harvest/notes/create-note-information";
+import { ApiProvider } from "../api-provider";
 
-export const start = async (harvest: HarvestApi, tp: Targetprocess) => {
-    const details = await askStartDetails(harvest, tp);
+export const start = async (apiProvider: ApiProvider) => {
+    const details = await askStartDetails(apiProvider);
 
     if (details === null) {
         return;
@@ -19,5 +18,7 @@ export const start = async (harvest: HarvestApi, tp: Targetprocess) => {
 
     const date = getTodayDate();
 
-    await harvest.startTimeEntry(details.projectId, details.taskId, date, notes, details.hours, details.running);
+    const harvestApi = apiProvider.getHarvestApi();
+
+    await harvestApi.startTimeEntry(details.projectId, details.taskId, date, notes, details.hours, details.running);
 };
