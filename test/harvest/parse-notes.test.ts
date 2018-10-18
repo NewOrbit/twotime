@@ -1,8 +1,9 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
-import { parseNotes, createNotes } from "../../src/harvest/notes";
+import { parseNotes } from "../../src/harvest/notes/parse-notes";
+import { EntityType } from "../../src/harvest/notes/note-information";
 
 @TestFixture()
-export class NotesTests {
+export class ParseNotesTests {
     
     @Test()
     public shouldParseFinishedBugCorrectly() {
@@ -15,12 +16,13 @@ export class NotesTests {
                 id: 35858,
                 name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
             },
-            bug: {
+            entity: {
+                type: EntityType.BUG,
                 id: 40732,
                 name: "v8.13 - FK AdditionalApplicationAnswers"
             },
-            task: null,
-            finished: true
+            finished: true,
+            additionalNotes: []
         };
 
         const res = parseNotes(input);
@@ -38,12 +40,13 @@ export class NotesTests {
                 id: 35858,
                 name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
             },
-            bug: {
+            entity: {
+                type: EntityType.BUG,
                 id: 40732,
                 name: "v8.13 - FK AdditionalApplicationAnswers"
             },
-            task: null,
-            finished: false
+            finished: false,
+            additionalNotes: []
         };
 
         const res = parseNotes(input);
@@ -62,12 +65,13 @@ export class NotesTests {
                 id: 35858,
                 name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
             },
-            bug: {
+            entity: {
+                type: EntityType.BUG,
                 id: 40732,
                 name: "v8.13 - FK AdditionalApplicationAnswers"
             },
-            task: null,
-            finished: false
+            finished: false,
+            additionalNotes: []
         };
 
         const res = parseNotes(input);
@@ -86,12 +90,13 @@ export class NotesTests {
                 id: 35858,
                 name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
             },
-            bug: null,
-            task: {
+            entity: {
+                type: EntityType.TASK,
                 id: 12345,
                 name: "Foo! Bar"
             },
-            finished: true
+            finished: true,
+            additionalNotes: []
         };
 
         const res = parseNotes(input);
@@ -109,12 +114,13 @@ export class NotesTests {
                 id: 35858,
                 name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
             },
-            bug: null,
-            task: {
+            entity: {
+                type: EntityType.TASK,
                 id: 12345,
                 name: "Foo! Bar"
             },
-            finished: false
+            finished: false,
+            additionalNotes: []
         };
 
         const res = parseNotes(input);
@@ -133,12 +139,13 @@ export class NotesTests {
                 id: 35858,
                 name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
             },
-            bug: null,
-            task: {
+            entity: {
+                type: EntityType.TASK,
                 id: 12345,
                 name: "Foo! Bar"
             },
-            finished: false
+            finished: false,
+            additionalNotes: []
         };
 
         const res = parseNotes(input);
@@ -146,107 +153,31 @@ export class NotesTests {
         Expect(res).toEqual(expected);
     }
 
-    @Test()
-    public shouldCreateNotesCorrectlyForTask() {
-        const input = {
-            ResourceType: "Task",
-            Id: 67890,
-            Name: "Some Task Name",
-            UserStory: {
-                ResourceType: "UserStory",
-                Id: 12345,
-                Name: "Foo"
-            }
-        };
+    @TestCase("Some extra notes")
+    @TestCase("bla bla bla")
+    @TestCase("it's true!")
+    public shouldParseAdditionalNotesCorrectly(additionalNotes: string) {
+        const input = "> user_story #12345 Foo\n"
+            + "> task #67890 Bar\n"
+            + "> finished\n"
+            + additionalNotes;
 
-        const expected = "> user_story #12345 Foo\n"
-            + "> task #67890 Some Task Name";
+        const res = parseNotes(input);
 
-        const res = createNotes(input);
-
-        Expect(res).toEqual(expected);
+        Expect(res.additionalNotes).toEqual([ additionalNotes ]);
     }
 
     @Test()
-    public shouldCreateNotesCorrectlyForBug() {
-        const input = {
-            ResourceType: "Bug",
-            Id: 94123,
-            Name: "A very very horrible bug",
-            UserStory: {
-                ResourceType: "UserStory",
-                Id: 17441,
-                Name: "User should be able to eat cheese"
-            }
-        };
+    public shouldParseAdditionalNotesWhenSplit() {
+        const input = "> user_story #12345 Foo\n"
+            + "> task #67890 Bar\n"
+            + "this is the first initial part\n"
+            + "> finished\n"
+            + "second initial parts";
 
-        const expected = "> user_story #17441 User should be able to eat cheese\n"
-            + "> bug #94123 A very very horrible bug";
+        const res = parseNotes(input);
 
-        const res = createNotes(input);
-
-        Expect(res).toEqual(expected);
-    }
-
-    @Test()
-    public shouldCreateNotesCorrectlyWithoutUserStory() {
-        const input = {
-            ResourceType: "Bug",
-            Id: 94123,
-            Name: "A very very horrible bug",
-            UserStory: null
-        };
-
-        const expected = "> bug #94123 A very very horrible bug";
-
-        const res = createNotes(input);
-
-        Expect(res).toEqual(expected);
-    }
-
-    @Test()
-    public shouldReturnEmptyStringForNullEntity() {
-        const input = null;
-
-        const expected = "";
-
-        const res = createNotes(input);
-
-        Expect(res).toEqual(expected);
-    }
-
-    @TestCase("bla bla additional")
-    @TestCase("some additional notes")
-    public shouldDisplayAdditionalNotesCorrectly(additional: string) {
-        const entity = {
-            ResourceType: "Bug",
-            Id: 94123,
-            Name: "A very very horrible bug",
-            UserStory: null
-        };
-
-        const expected = "> bug #94123 A very very horrible bug\n"
-            + additional;
-
-        const res = createNotes(entity, additional);
-
-        Expect(res).toEqual(expected);
-    }
-
-    @Test()
-    public shouldNotDisplayAdditionalNotesIfEmptyString() {
-        const entity = {
-            ResourceType: "Bug",
-            Id: 94123,
-            Name: "A very very horrible bug",
-            UserStory: null
-        };
-
-        const expected = "> bug #94123 A very very horrible bug";
-
-        const res = createNotes(entity, "");
-
-        Expect(res).toEqual(expected);
+        Expect(res.additionalNotes).toEqual(["this is the first initial part", "second initial parts"]);
     }
 
 }

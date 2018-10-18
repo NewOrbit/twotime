@@ -1,12 +1,7 @@
 import Harvest, { ProjectAssignment, TimeEntry, Project, TaskAssignment, Task } from "harvest";
 
-interface ProjectAssignmentsResponse {
-    project_assignments: ProjectAssignment[];
-}
-
-interface TimeEntriesResponse {
-    time_entries: TimeEntry[];
-}
+import { parseNotes } from "./notes/parse-notes";
+import { NoteInformation } from "./notes/note-information";
 
 // TODO: move this into the API
 export interface HarvestProject {
@@ -16,6 +11,14 @@ export interface HarvestProject {
         id: number;
         name: string;
     }[];
+}
+
+export interface HarvestTimeEntry {
+    id: number;
+    notes: NoteInformation;
+    hours: number;
+    created: string;
+    running: boolean;
 }
 
 export class HarvestApi {
@@ -41,7 +44,7 @@ export class HarvestApi {
     }
 
     public async getProjects() {
-        const res: ProjectAssignmentsResponse = await this.api.projectAssignments.me({});
+        const res = await this.api.projectAssignments.me({});
 
         const activeAssignments = res.project_assignments.filter(p => p.is_active);
 
@@ -75,19 +78,25 @@ export class HarvestApi {
         return await this.api.timeEntries.restart(entry.id);
     }
 
+    private mapTimeEntry(entry: TimeEntry): HarvestTimeEntry {
+        return {
+            id: entry.id,
+            hours: entry.hours,
+            notes: parseNotes(entry.notes),
+            created: entry.created_at,
+            running: entry.is_running
+        };
+    }
+
     public async getTimeEntries(date: string) {
         const query = {
             from: date,
             to: date
         };
 
-        const res: TimeEntriesResponse = await this.api.timeEntries.list(query);
+        const res = await this.api.timeEntries.list(query);
 
-        return res.time_entries
-            .map(t => ({
-                id: t.id,
-                notes: t.notes,
-            }));
+        return res.time_entries.map(this.mapTimeEntry);
     }
 
     public async updateNotes(timeEntryId: number, notes: string) {
