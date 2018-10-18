@@ -7,12 +7,12 @@ import { log } from "../../utils/log";
 import { ApiProvider } from "../../api-provider";
 
 const promptTargetprocessId = async () => {
-    const response = await inquirer.prompt<{ tp: string }>({
-        name: "tp",
+    const { tpEntityId } = await inquirer.prompt<{ tpEntityId: string }>({
+        name: "tpEntityId",
         message: "Enter a Targetprocess task or bug ID"
     });
 
-    const parsed = parseInt(response.tp);
+    const parsed = parseInt(tpEntityId);
 
     if (isNaN(parsed)) {
         return null;
@@ -63,7 +63,7 @@ const askHarvestDetails = async (harvest: HarvestApi) => {
         name: p.name
     }));
     
-    const response = await inquirer.prompt<{ project: HarvestProject, taskId: number }>([{
+    const { project, taskId } = await inquirer.prompt<{ project: HarvestProject, taskId: number }>([{
         name: "project",
         message: "Which project?",
         type: "list",
@@ -76,22 +76,22 @@ const askHarvestDetails = async (harvest: HarvestApi) => {
     }]);
 
     return {
-        projectId: response.project.id,
-        taskId: response.taskId
+        projectId: project.id,
+        taskId: taskId
     };
 };
 
 const askNotes = async () => {
-    const response = await inquirer.prompt<{ notes: string }>({
+    const { notes } = await inquirer.prompt<{ notes: string }>({
         name: "notes",
         message: "Notes:"
     });
 
-    return response.notes;
+    return notes;
 };
 
 const askTimeSpent = async () => {
-    const response = await inquirer.prompt<{ hours: number, running: boolean }>([{
+    const { hours, running } = await inquirer.prompt<{ hours: number, running: boolean }>([{
         name: "hours",
         default: 0,
         message: "How many hours have you already spent on it?"
@@ -103,8 +103,8 @@ const askTimeSpent = async () => {
     }]);
 
     return {
-        hours: response.hours,
-        running: response.hours === 0 || response.running
+        hours: hours,
+        running: hours === 0 || running
     };
 };
 

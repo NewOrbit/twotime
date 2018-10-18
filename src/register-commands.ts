@@ -19,7 +19,7 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
     commander
         .command("auth")
         .description("authenticate to harvest and targetprocess")
-        .action(auth);
+        .action(() => auth(apiProvider));
 
     commander
         .on('command:*', () => {

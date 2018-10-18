@@ -1,6 +1,17 @@
-import { Targetprocess } from "targetprocess-rest-api";
-import { HarvestApi } from "../harvest/api";
+import { ApiProvider } from "../api-provider";
+import { log } from "../utils/log";
+import { askAuthDetails } from "./prompts/auth";
 
-export const auth = (harvest: HarvestApi, tp: Targetprocess) => {
-    console.log("authing!");
+export const auth = async (apiProvider: ApiProvider) => {
+    const {
+        harvestAccessToken,
+        harvestAccountId,
+        targetprocessUsername,
+        targetprocessPassword
+    } = await askAuthDetails();
+
+    apiProvider.setHarvestConfig(harvestAccessToken, harvestAccountId);
+    apiProvider.setTargetprocessConfig(targetprocessUsername, targetprocessPassword);
+
+    log.info("Authentication complete.");
 };

@@ -13,13 +13,19 @@ interface TargetprocessConfig {
     password: string;
 }
 
+const CONFIG_KEYS = {
+    TWOTIME: "twotime",
+    HARVEST: "harvest",
+    TARGETPROCESS: "targetprocess"
+};
+
 export class ApiProvider {
     private store: Configstore;
     private harvestApi: HarvestApi;
     private targetprocessApi: Targetprocess;
 
     constructor() {
-        this.store = new Configstore("twotime");
+        this.store = new Configstore(CONFIG_KEYS.TWOTIME);
 
         this.harvestApi = null;
         this.targetprocessApi = null;
@@ -65,8 +71,24 @@ export class ApiProvider {
         return this.targetprocessApi;
     }
 
+    public setHarvestConfig(accessToken: string, accountId: number) {
+        const config: HarvestConfig = {
+            accessToken, accountId
+        };
+
+        this.store.set(CONFIG_KEYS.HARVEST, config);
+    }
+
+    public setTargetprocessConfig(username: string, password: string) {
+        const config: TargetprocessConfig = {
+            username, password
+        };
+
+        this.store.set(CONFIG_KEYS.TARGETPROCESS, config);
+    }
+
     private getHarvestConfig() {
-        const config = this.store.get("harvest");
+        const config = this.store.get(CONFIG_KEYS.HARVEST);
 
         if (!config) {
             return null;
@@ -76,7 +98,7 @@ export class ApiProvider {
     }
 
     private getTargetprocessConfig() {
-        const config = this.store.get("targetprocess");
+        const config = this.store.get(CONFIG_KEYS.TARGETPROCESS);
 
         if (!config) {
             return null;
