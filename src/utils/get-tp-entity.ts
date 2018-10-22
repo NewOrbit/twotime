@@ -5,7 +5,7 @@ export const getTargetprocessEntity = async (api: Targetprocess, id: number) => 
 
     try {
         const task = await api.getTask(id);
-        
+
         return task;
     } catch (e) {
         if (e.statusCode !== 404) {
@@ -23,7 +23,7 @@ export const getTargetprocessEntity = async (api: Targetprocess, id: number) => 
 
             try {
                 const story = await api.getStory(id);
-                
+
                 return story;
             } catch (e) {
                 if (e.statusCode !== 404) {

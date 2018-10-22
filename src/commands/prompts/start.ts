@@ -12,7 +12,7 @@ const promptTargetprocessId = async () => {
         message: "Enter a Targetprocess task or bug ID"
     });
 
-    const parsed = parseInt(tpEntityId);
+    const parsed = parseInt(tpEntityId, 10);
 
     if (isNaN(parsed)) {
         return null;
@@ -43,9 +43,9 @@ const askTargetprocessEntity = async (tp: Targetprocess) => {
         } else {
             log.info("> user story: none");
         }
-    
+
         log.info(`> ${entity.ResourceType.toLowerCase()}: #${entity.Id} ${entity.Name}`);
-    }    
+    }
 
     return entity;
 };
@@ -62,12 +62,12 @@ const askHarvestDetails = async (harvest: HarvestApi) => {
         value: p,
         name: p.name
     }));
-    
+
     const { project, taskId } = await inquirer.prompt<{ project: HarvestProject, taskId: number }>([{
         name: "project",
         message: "Which project?",
         type: "list",
-        choices: choices
+        choices
     }, {
         name: "taskId",
         message: "What kind of task?",
@@ -77,7 +77,7 @@ const askHarvestDetails = async (harvest: HarvestApi) => {
 
     return {
         projectId: project.id,
-        taskId: taskId
+        taskId
     };
 };
 
@@ -103,7 +103,7 @@ const askTimeSpent = async () => {
     }]);
 
     return {
-        hours: hours,
+        hours,
         running: hours === 0 || running
     };
 };
@@ -112,7 +112,7 @@ export const askStartDetails = async (apiProvider: ApiProvider) => {
     const tp = apiProvider.getTargetprocessApi();
     const harvest = apiProvider.getHarvestApi();
 
-    const entity = await askTargetprocessEntity(tp);    
+    const entity = await askTargetprocessEntity(tp);
     const { projectId, taskId } = await askHarvestDetails(harvest);
     const notes = await askNotes();
     const { hours, running } = await askTimeSpent();
@@ -121,7 +121,7 @@ export const askStartDetails = async (apiProvider: ApiProvider) => {
     if (confirm === null) {
         return null;
     }
-    
+
     return {
         entity,
         projectId,
@@ -129,5 +129,5 @@ export const askStartDetails = async (apiProvider: ApiProvider) => {
         notes,
         hours,
         running
-    }
+    };
 };

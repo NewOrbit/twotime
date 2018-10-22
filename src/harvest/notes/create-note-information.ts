@@ -4,10 +4,10 @@ import { NoteInformation, EntityType } from "./note-information";
 
 const getEntityTypeFromResourceType = (resourceType: "Bug" | "Task") => resourceType === "Bug" ? EntityType.BUG : EntityType.TASK;
 
-const getEntityInformationFromTpEntity = (tpEntity: { 
-    ResourceType: "Bug" | "Task", 
-    Id: number, 
-    Name: string 
+const getEntityInformationFromTpEntity = (tpEntity: {
+    ResourceType: "Bug" | "Task",
+    Id: number,
+    Name: string
 }) => {
     return {
         type: getEntityTypeFromResourceType(tpEntity.ResourceType),
@@ -16,11 +16,11 @@ const getEntityInformationFromTpEntity = (tpEntity: {
     };
 };
 
-const getUserStoryInformationFromTpEntity = (tpEntity: { 
-    UserStory: { 
-        Id: number, 
-        Name: string 
-    } 
+const getUserStoryInformationFromTpEntity = (tpEntity: {
+    UserStory: {
+        Id: number,
+        Name: string
+    }
 }) => {
     if (!tpEntity.UserStory) {
         return null;
@@ -39,10 +39,10 @@ export const createNoteInformation = (tpEntity: any) => {
 
     const entity = getEntityInformationFromTpEntity(tpEntity);
     const userStory = getUserStoryInformationFromTpEntity(tpEntity);
-    
+
     return {
-        userStory: userStory,
-        entity: entity,
+        userStory,
+        entity,
         finished: false,
         additionalNotes: []
     } as NoteInformation;

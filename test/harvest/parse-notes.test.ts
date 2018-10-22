@@ -4,7 +4,7 @@ import { EntityType } from "../../src/harvest/notes/note-information";
 
 @TestFixture()
 export class ParseNotesTests {
-    
+
     @Test()
     public shouldParseFinishedBugCorrectly() {
         const input = "> user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"

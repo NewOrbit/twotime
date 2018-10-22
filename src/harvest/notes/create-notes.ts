@@ -2,7 +2,7 @@ import { getPrefix } from "./get-prefix";
 import { NoteInformation, TargetProcessItem, EntityType } from "./note-information";
 import { prefixes } from "./prefixes";
 
-const createLine = (prefix: string, entity: TargetProcessItem) => {    
+const createLine = (prefix: string, entity: TargetProcessItem) => {
     return `${prefix}${entity.id} ${entity.name}`;
 };
 

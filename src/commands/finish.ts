@@ -39,7 +39,7 @@ const getTargetprocessTimeEntity = async (targetprocessApi: Targetprocess, tpEnt
         log.info(`Project ${tpEntity.Project.Name} (${tpEntity.Project.Id}) is configured to log issue time to the user story`);
         return tpEntity.UserStory;
     }
-    
+
     return tpEntity;
 };
 
@@ -69,6 +69,6 @@ export const finish = async (apiProvider: ApiProvider) => {
 
     log.info("Updating harvest...");
     await stopHarvestTimer(harvestApi, details.timeEntry);
-    
+
     log.info("Timer finished!");
 };

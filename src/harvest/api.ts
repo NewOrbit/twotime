@@ -27,20 +27,11 @@ export class HarvestApi {
 
     constructor(accessToken: string, accountId: number) {
         this.api = new Harvest({
-            subdomain: 'neworbit',
-            userAgent: 'twotime',
+            subdomain: "neworbit",
+            userAgent: "twotime",
             concurrency: 1,
             auth: { accessToken, accountId: (accountId as any) }
         });
-    }
-
-    private getActiveTasksFromAssignments(assignments: TaskAssignment[]) {
-        const activeAssignments = assignments.filter(t => t.is_active);
-
-        return activeAssignments.map(t => ({
-            id: (t.task as Task).id,
-            name: (t.task as Task).name
-        }));
     }
 
     public async getProjects() {
@@ -53,7 +44,7 @@ export class HarvestApi {
                 // casts here required until https://github.com/simplyspoke/node-harvest/pull/118
                 id: (p.project as Project).id,
                 name: (p.project as Project).name,
-                
+
                 tasks: this.getActiveTasksFromAssignments(p.task_assignments)
             }) as HarvestProject);
     }
@@ -64,8 +55,8 @@ export class HarvestApi {
             project_id: projectId,
             task_id: taskId,
             spent_date: date,
-            notes: notes,
-            hours: hours
+            notes,
+            hours
         };
 
         const entry = await this.api.timeEntries.create(data);
@@ -76,16 +67,6 @@ export class HarvestApi {
         }
 
         return await this.api.timeEntries.restart(entry.id);
-    }
-
-    private mapTimeEntry(entry: TimeEntry): HarvestTimeEntry {
-        return {
-            id: entry.id,
-            hours: entry.hours,
-            notes: parseNotes(entry.notes),
-            created: entry.created_at,
-            running: entry.is_running
-        };
     }
 
     public async getTimeEntries(date: string) {
@@ -107,5 +88,24 @@ export class HarvestApi {
     public async stopTimeEntry(id: number) {
         // cast to TimeEntry required until https://github.com/simplyspoke/node-harvest/issues/119
         return await this.api.timeEntries.stop(id) as TimeEntry;
+    }
+
+    private getActiveTasksFromAssignments(assignments: TaskAssignment[]) {
+        const activeAssignments = assignments.filter(t => t.is_active);
+
+        return activeAssignments.map(t => ({
+            id: (t.task as Task).id,
+            name: (t.task as Task).name
+        }));
+    }
+
+    private mapTimeEntry(entry: TimeEntry): HarvestTimeEntry {
+        return {
+            id: entry.id,
+            hours: entry.hours,
+            notes: parseNotes(entry.notes),
+            created: entry.created_at,
+            running: entry.is_running
+        };
     }
 }
