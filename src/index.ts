@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import * as commander from "commander";
 import { ApiProvider } from "./api-provider";
 import { registerCommands } from "./register-commands";
