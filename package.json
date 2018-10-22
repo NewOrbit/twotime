@@ -14,8 +14,16 @@
   "files": [
     "bin"
   ],
-  "author": "James Monger <jameskmonger@hotmail.co.uk> (http://jamesmonger.com)",
+  "author": "NewOrbit Ltd",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NewOrbit/twotime.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NewOrbit/twotime/issues"
+  },
+  "homepage": "https://github.com/NewOrbit/twotime#readme",
   "devDependencies": {
     "@types/node": "^10.9.3",
     "alsatian": "^2.3.0",
