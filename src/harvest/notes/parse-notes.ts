@@ -1,4 +1,7 @@
+/* tslint:disable:no-var-requires */
 const decodeHTML = require("entities").decodeHTML;
+/* tslint:enable */
+
 import { splitLines } from "../../utils/split-lines";
 import { findPrefixInLines, findLinesWithoutPrefix } from "./parse-prefix";
 import { prefixes } from "./prefixes";
@@ -14,11 +17,11 @@ const getEntity = (lines: string[], prefix: string, type: EntityType) => {
 
     return {
         ...splitIdAndName(entity),
-        type: type
-    }
+        type
+    };
 };
 
-const getEntityFromLines = (lines: string[]) => {   
+const getEntityFromLines = (lines: string[]) => {
     const task = getEntity(lines, prefixes.task, EntityType.TASK);
 
     if (task !== null) {
@@ -48,7 +51,7 @@ const getFinished = (lines: string[]) => {
     const finished = findPrefixInLines(lines, prefixes.finished);
 
     // finished doesn't have anything after the prefix so compare with ''
-    return finished === '';
+    return finished === "";
 };
 
 const getAdditionalNotes = (lines: string[]) => {
@@ -58,7 +61,7 @@ const getAdditionalNotes = (lines: string[]) => {
 export const parseNotes = (notes: string) => {
     const decoded = decodeHTML(notes);
     const lines = splitLines(decoded);
-    
+
     return {
         userStory: getUserStory(lines),
         entity: getEntityFromLines(lines),

@@ -4,7 +4,7 @@ import { NoteInformation, EntityType } from "../../src/harvest/notes/note-inform
 
 @TestFixture()
 export class CreateNoteInformationTests {
-    
+
     @Test()
     public shouldCreateNoteInformationCorrectlyForTask() {
         const input = {

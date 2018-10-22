@@ -3,7 +3,7 @@ import { getPrefix } from "../../src/harvest/notes/get-prefix";
 
 @TestFixture()
 export class GetPrefixTests {
-    
+
     @TestCase("UserStory", "> user_story #")
     @TestCase("Bug", "> bug #")
     @TestCase("Task", "> task #")

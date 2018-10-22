@@ -4,7 +4,7 @@ const notEmpty = (input: string) => input.length > 0 ? true : "Please enter a va
 const isNumeric = (input: any) => isNaN(input) === false ? true : "Please enter a number";
 
 export const askAuthDetails = async () => {
-    return await inquirer.prompt<{ 
+    return await inquirer.prompt<{
         harvestAccessToken: string,
         harvestAccountId: number,
         targetprocessUsername: string,
@@ -17,7 +17,7 @@ export const askAuthDetails = async () => {
         name: "harvestAccountId",
         message: "What is your Harvest account id?",
         validate: isNumeric,
-        filter: input => parseInt(input)
+        filter: input => parseInt(input, 10)
     }, {
         name: "targetprocessUsername",
         message: "What is your Targetprocess username?",

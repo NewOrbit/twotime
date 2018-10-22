@@ -3,7 +3,7 @@ import { findPrefixInLines } from "../../src/harvest/notes/parse-prefix";
 
 @TestFixture()
 export class FindPrefixInLinesTests {
-    
+
     @TestCase([
         "> a somevalue",
         "anothervalue",

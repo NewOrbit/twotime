@@ -6,11 +6,11 @@ import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { getProjectedTimeRemaining } from "../../utils/get-projected-time-remaining";
 import { ApiProvider } from "../../api-provider";
 
-const getEntityTypeText = (type: EntityType) => type == EntityType.BUG ? "bug" : "task";
+const getEntityTypeText = (type: EntityType) => type === EntityType.BUG ? "bug" : "task";
 const getTimeEntryPromptText = (entry: HarvestTimeEntry) => {
     const entity = entry.notes.entity;
     const entityType = getEntityTypeText(entity.type);
-    
+
     return `${entityType} #${entity.id} (${entry.hours} hours) ${entity.name}`;
 };
 
@@ -63,7 +63,7 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
 
 export const askFinishDetails = async (apiProvider: ApiProvider, date: string) => {
     const harvestApi = apiProvider.getHarvestApi();
-    
+
     const timeEntry = await askTimeEntry(harvestApi, date);
 
     if (timeEntry === null) {
@@ -72,7 +72,7 @@ export const askFinishDetails = async (apiProvider: ApiProvider, date: string) =
 
     const targetprocessApi = apiProvider.getTargetprocessApi();
     const tpEntity = await getTargetprocessEntity(targetprocessApi, timeEntry.notes.entity.id);
-    
+
     const timeRemaining = await askTimeRemaining(tpEntity, timeEntry);
 
     return {

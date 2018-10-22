@@ -3,7 +3,7 @@ import { findLinesWithoutPrefix } from "../../src/harvest/notes/parse-prefix";
 
 @TestFixture()
 export class FindLinesWithoutPrefixTests {
-    
+
     @Test()
     public shouldParseLinesWithoutPrefix() {
         const input = "> user_story #12345 foo\n"

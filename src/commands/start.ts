@@ -13,7 +13,7 @@ export const start = async (apiProvider: ApiProvider) => {
 
     const noteInformation = createNoteInformation(details.entity);
     noteInformation.additionalNotes = [ details.notes ];
-    
+
     const notes = createNotes(noteInformation);
 
     const date = getTodayDate();
