@@ -27,6 +27,6 @@
     "harvest": "^2.2.5",
     "inquirer": "^6.2.0",
     "request-promise-json": "^1.0.4",
-    "targetprocess-rest-api": "^0.2.1"
+    "targetprocess-rest-api": "^0.3.0"
   }
 }
