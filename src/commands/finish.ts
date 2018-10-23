@@ -53,8 +53,7 @@ const updateTargetprocess = (targetprocessApi: Targetprocess, tpEntity: any, tim
     return targetprocessApi.addTime(tpEntity.Id, timeEntry.hours, timeRemaining, new Date(timeEntry.created), "-");
 };
 
-export const finish = async (apiProvider: ApiProvider) => {
-    const date = getTodayDate();
+export const finish = async (apiProvider: ApiProvider, date: string) => {
     const details = await askFinishDetails(apiProvider, date);
 
     if (details === null) {

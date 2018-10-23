@@ -32,7 +32,7 @@ const askTimeEntry = async (harvest: HarvestApi, date: string) => {
     const unfinished = getUnfinishedTimeEntries(entries);
 
     if (unfinished.length === 0) {
-        log.info("There are no unfinished time entries today.");
+        log.info(`There are no unfinished time entries on ${date}.`);
         return null;
     }
 

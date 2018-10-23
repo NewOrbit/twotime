@@ -4,7 +4,7 @@ import { createNotes } from "../harvest/notes/create-notes";
 import { createNoteInformation } from "../harvest/notes/create-note-information";
 import { ApiProvider } from "../api-provider";
 
-export const start = async (apiProvider: ApiProvider) => {
+export const start = async (apiProvider: ApiProvider, date: string) => {
     const details = await askStartDetails(apiProvider);
 
     if (details === null) {
@@ -15,8 +15,6 @@ export const start = async (apiProvider: ApiProvider) => {
     noteInformation.additionalNotes = [ details.notes ];
 
     const notes = createNotes(noteInformation);
-
-    const date = getTodayDate();
 
     const harvestApi = apiProvider.getHarvestApi();
 
