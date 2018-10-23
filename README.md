@@ -25,6 +25,12 @@ You will need:
 - Use `twotime start` to start a timer
 - Use `twotime finish` to finish a timer
 
+#### Past timers
+
+You can start and finish a timer in the past by providing a `--date` option (or `-d` for short):
+
+    twotime start --date 2018-10-20
+
 ## License
 
 Made with :sparkling_heart: by [NewOrbit](https://www.neworbit.co.uk/) in Oxfordshire, and licensed under the [MIT Licence](LICENCE)
