@@ -1,4 +1,8 @@
-import Harvest, { ProjectAssignment, TimeEntry, Project, TaskAssignment, Task } from "harvest";
+import Harvest from "harvest";
+import { TimeEntry } from "harvest/dist/models/timeEntries.models";
+import { Project } from "harvest/dist/models/projects.models";
+import { TaskAssignment } from "harvest/dist/models/taskAssignments.models";
+import { Task } from "harvest/dist/models/tasks.models";
 
 import { parseNotes } from "./notes/parse-notes";
 import { NoteInformation } from "./notes/note-information";

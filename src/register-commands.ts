@@ -7,10 +7,17 @@ import { auth } from "./commands/auth";
 import { isValidDate } from "./utils/is-valid-date";
 import { getTodayDate } from "./utils/get-today-date";
 import { log } from "./utils/log";
+import { getPastDate } from "./utils/get-past-date";
 
 const getDateForCommand = (command) => {
-    if (command.date === undefined || command.date === null) {
+    if (command.date == null && command.offset == null) {
         return getTodayDate();
+    }
+
+    const offset = parseInt(command.offset, 10);
+
+    if (isFinite(offset) && offset > 0) {
+        return getPastDate(offset);
     }
 
     if (isValidDate(command.date)) {
@@ -20,11 +27,22 @@ const getDateForCommand = (command) => {
     return null;
 };
 
+const dateFlagConfig = {
+    flags: "-d, --date <date>",
+    description: "specify a date in YYYY-MM-DD format"
+};
+
+const offsetFlagConfig = {
+    flags: "-o, --offset <offset>",
+    description: "specify a positive number of days in the past"
+};
+
 export const registerCommands = (commander: CommanderStatic, apiProvider: ApiProvider) => {
     commander
         .command("start")
         .description("start a timer")
-        .option("-d, --date <date>", "specify a date in YYYY-MM-DD format")
+        .option(dateFlagConfig.flags, dateFlagConfig.description)
+        .option(offsetFlagConfig.flags, offsetFlagConfig.description)
         .action((cmd) => {
             const date = getDateForCommand(cmd);
 
@@ -39,7 +57,8 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
     commander
         .command("finish")
         .description("finish a timer")
-        .option("-d, --date <date>", "specify a date in YYYY-MM-DD format")
+        .option(dateFlagConfig.flags, dateFlagConfig.description)
+        .option(offsetFlagConfig.flags, offsetFlagConfig.description)
         .action((cmd) => {
             const date = getDateForCommand(cmd);
 
