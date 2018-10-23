@@ -95,14 +95,18 @@ export class CreateNoteInformationTests {
     }
 
     @Test()
-    public shouldReturnNullForNullEntity() {
+    public shouldCreateNoteInformationCorrectlyForNullEntity() {
         const input = null;
 
-        const expected = null;
+        const expected: NoteInformation = {
+            userStory: null,
+            entity: null,
+            finished: false,
+            additionalNotes: []
+        };
 
         const res = createNoteInformation(input);
 
         Expect(res).toEqual(expected);
     }
-
 }

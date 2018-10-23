@@ -9,6 +9,10 @@ const getEntityInformationFromTpEntity = (tpEntity: {
     Id: number,
     Name: string
 }) => {
+    if (tpEntity === null || tpEntity === undefined) {
+        return null;
+    }
+
     return {
         type: getEntityTypeFromResourceType(tpEntity.ResourceType),
         id: tpEntity.Id,
@@ -22,7 +26,7 @@ const getUserStoryInformationFromTpEntity = (tpEntity: {
         Name: string
     }
 }) => {
-    if (!tpEntity.UserStory) {
+    if (tpEntity === null || tpEntity === undefined || !tpEntity.UserStory) {
         return null;
     }
 
@@ -33,10 +37,6 @@ const getUserStoryInformationFromTpEntity = (tpEntity: {
 };
 
 export const createNoteInformation = (tpEntity: any) => {
-    if (tpEntity === null || tpEntity === undefined) {
-        return null;
-    }
-
     const entity = getEntityInformationFromTpEntity(tpEntity);
     const userStory = getUserStoryInformationFromTpEntity(tpEntity);
 
