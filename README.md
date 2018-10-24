@@ -31,6 +31,10 @@ You can start and finish a timer in the past by providing a `--date` option (or 
 
     twotime start --date 2018-10-20
 
+Or by providing an offset with `--offset`, or `-o` for short (the number of days in the past e.g. offset of 1 is yesterday)
+
+    twotime start -o 1
+
 ## License
 
 Made with :sparkling_heart: by [NewOrbit](https://www.neworbit.co.uk/) in Oxfordshire, and licensed under the [MIT Licence](LICENCE)
