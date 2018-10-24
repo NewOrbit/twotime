@@ -10,7 +10,7 @@ const packageInfo = require("../package.json");
 
 commander
     .name("twotime")
-    .version(packageInfo.version);
+    .version(packageInfo.version, '-v, --version');
 
 registerCommands(commander, new ApiProvider());
 
