@@ -4,7 +4,9 @@ import * as commander from "commander";
 import { ApiProvider } from "./api-provider";
 import { registerCommands } from "./register-commands";
 
+/* tslint:disable:no-var-requires */
 const packageInfo = require("../package.json");
+/* tslint:enable:no-var-requires */
 
 commander
     .name("twotime")
