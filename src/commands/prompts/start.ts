@@ -50,29 +50,38 @@ const askTargetprocessEntity = async (tp: Targetprocess) => {
     return entity;
 };
 
-const getAnswerChoices = (project: HarvestProject) => project.tasks.map(t => ({
-    value: t.id,
-    name: t.name
-}));
+const filterChoices = (choices: { name: string }[], input: string) => {
+    return new Promise(resolve => {
+        if (!input) {
+            return resolve(choices);
+        }
+
+        const uppercaseInput = input.toUpperCase();
+        const matching = choices.filter(p => p.name.toUpperCase().indexOf(uppercaseInput) !== -1);
+    
+        return resolve(matching);
+    });
+};
 
 const askHarvestDetails = async (harvest: HarvestApi) => {
     const projects = await harvest.getProjects();
 
-    const choices = projects.map(p => ({
-        value: p,
-        name: p.name
-    }));
+    const projectChoices = projects.map(p => ({ value: p, name: p.name }));
 
     const { project, taskId } = await inquirer.prompt<{ project: HarvestProject, taskId: number }>([{
         name: "project",
         message: "Which project?",
-        type: "list",
-        choices
-    }, {
+        type: "autocomplete",
+        source: (answers: any, input: string) => filterChoices(projectChoices, input)
+    } as any, {
         name: "taskId",
         message: "What kind of task?",
-        type: "list",
-        choices: answers => getAnswerChoices(answers.project)
+        type: "autocomplete",
+        source: (answers: { project: HarvestProject }, input: string) => {
+            const taskChoices = answers.project.tasks.map(t => ({ value: t.id, name: t.name }));
+
+            return filterChoices(taskChoices, input);
+        }
     }]);
 
     return {
