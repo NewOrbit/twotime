@@ -51,14 +51,23 @@ const askTimeEntry = async (harvest: HarvestApi, date: string) => {
 const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     const projectedTimeRemaining = getProjectedTimeRemaining(tpEntity.TimeRemain, timeEntry.hours);
 
-    const { timeRemaining } = await inquirer.prompt<{ timeRemaining: number }>({
+    const { timeRemaining } = await inquirer.prompt<{ timeRemaining: string }>({
         name: "timeRemaining",
-        message: "How much time remaining? Projected: " + projectedTimeRemaining.toFixed(2),
-        validate: input => isNaN(input) ? "Enter a numeric value" : true,
-        filter: input => parseFloat(input)
+        message: "How many hours remaining? Projected: " + projectedTimeRemaining.toFixed(2),
+        validate: input => {
+            if (input === null || input.length === 0) {
+                return "You must enter a value.";
+            }
+
+            if (isNaN(input)) {
+                return "Please enter a numeric value.";
+            }
+
+            return true;
+        }
     });
 
-    return timeRemaining;
+    return parseFloat(timeRemaining);
 };
 
 export const askFinishDetails = async (apiProvider: ApiProvider, date: string) => {
