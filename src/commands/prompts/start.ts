@@ -58,7 +58,7 @@ const filterChoices = (choices: { name: string }[], input: string) => {
 
         const uppercaseInput = input.toUpperCase();
         const matching = choices.filter(p => p.name.toUpperCase().indexOf(uppercaseInput) !== -1);
-    
+
         return resolve(matching);
     });
 };
