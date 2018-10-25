@@ -5,7 +5,7 @@
   "main": "index.js",
   "bin": "bin/index.js",
   "scripts": {
-    "prepublishOnly": "npm run build && npm run lint",
+    "prepublishOnly": "npm run build && npm run test && npm run lint",
     "build": "tsc",
     "build-test": "tsc -p ./tsconfig.test.json",
     "test": "npm run build-test && alsatian \"bin-test/**/*.test.js\"",
