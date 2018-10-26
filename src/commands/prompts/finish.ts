@@ -1,28 +1,12 @@
 import * as inquirer from "inquirer";
 import { HarvestApi, HarvestTimeEntry } from "../../harvest/api";
-import { NoteInformation, EntityType } from "../../harvest/notes/note-information";
+import { EntityType } from "../../harvest/notes/note-information";
 import { log } from "../../utils/log";
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { getProjectedTimeRemaining } from "../../utils/get-projected-time-remaining";
 import { ApiProvider } from "../../api-provider";
 import { getUnfinishedTimeEntries } from "../../utils/get-unfinished-time-entries";
-
-const getEntityTypeText = (type: EntityType) => type === EntityType.BUG ? "bug" : "task";
-const getTimeEntryPromptText = (entry: HarvestTimeEntry) => {
-    const entity = entry.notes.entity;
-    const entityType = getEntityTypeText(entity.type);
-
-    return `${entityType} #${entity.id} (${entry.hours} hours) ${entity.name}`;
-};
-
-const getTimeEntryPrompt = (entry: HarvestTimeEntry) => {
-    const text = getTimeEntryPromptText(entry);
-
-    return {
-        value: entry,
-        name: text
-    };
-};
+import { getTimeEntryPrompt } from "../../utils/get-time-entry-prompt";
 
 const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     const projectedTimeRemaining = getProjectedTimeRemaining(tpEntity.TimeRemain, timeEntry.hours);
