@@ -142,7 +142,7 @@ export const askStartDetails = async (apiProvider: ApiProvider) => {
     const { hours, running } = await askTimeSpent();
     const confirm = await askConfirm();
 
-    if (confirm === null) {
+    if (!confirm) {
         return null;
     }
 
