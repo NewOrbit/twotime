@@ -41,7 +41,7 @@ const offsetFlagConfig = {
 
 const allFlagConfig = {
     flags: "--all",
-    description: "finish all of a days timers"
+    description: "finish all of a day's timers"
 };
 
 export const registerCommands = (commander: CommanderStatic, apiProvider: ApiProvider) => {
