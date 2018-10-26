@@ -27,6 +27,8 @@ const getDateForCommand = (command) => {
     return null;
 };
 
+const getAllForCommand = (command) => command.all !== null && command.all !== undefined;
+
 const dateFlagConfig = {
     flags: "-d, --date <date>",
     description: "specify a date in YYYY-MM-DD format"
@@ -35,6 +37,11 @@ const dateFlagConfig = {
 const offsetFlagConfig = {
     flags: "-o, --offset <offset>",
     description: "specify a positive number of days in the past"
+};
+
+const allFlagConfig = {
+    flags: "--all",
+    description: "finish all of a days timers"
 };
 
 export const registerCommands = (commander: CommanderStatic, apiProvider: ApiProvider) => {
@@ -59,6 +66,7 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
         .description("finish a timer")
         .option(dateFlagConfig.flags, dateFlagConfig.description)
         .option(offsetFlagConfig.flags, offsetFlagConfig.description)
+        .option(allFlagConfig.flags, allFlagConfig.description)
         .action((cmd) => {
             const date = getDateForCommand(cmd);
 
@@ -67,7 +75,9 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
                 process.exit(1);
             }
 
-            return finish(apiProvider, date);
+            const all = getAllForCommand(cmd);
+
+            return finish(apiProvider, date, all);
         });
 
     commander

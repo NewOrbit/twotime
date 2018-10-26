@@ -2,7 +2,7 @@ import { Targetprocess } from "targetprocess-rest-api";
 import { HarvestApi, HarvestTimeEntry } from "../harvest/api";
 import { createNotes } from "../harvest/notes/create-notes";
 import { log } from "../utils/log";
-import { askFinishDetails } from "./prompts/finish";
+import { askFinishDetails, askFinishAllDetails } from "./prompts/finish";
 import { getTodayDate } from "../utils/get-today-date";
 import { ApiProvider } from "../api-provider";
 
@@ -53,7 +53,16 @@ const updateTargetprocess = (targetprocessApi: Targetprocess, tpEntity: any, tim
     return targetprocessApi.addTime(tpEntity.Id, timeEntry.hours, timeRemaining, new Date(timeEntry.created), "-");
 };
 
-export const finish = async (apiProvider: ApiProvider, date: string) => {
+export const finish = async (apiProvider: ApiProvider, date: string, all: boolean) => {
+    if (all) {
+        const details = await askFinishAllDetails(apiProvider, date);
+
+        console.log(details);
+
+        return;
+    }
+
+
     const details = await askFinishDetails(apiProvider, date);
 
     if (details === null) {
