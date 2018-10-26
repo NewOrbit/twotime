@@ -9,7 +9,8 @@ const timeEntryFromNotes = (notes: NoteInformation) => {
         notes,
         hours: 0,
         created: "2017-06-26T22:32:52Z",
-        running: false
+        running: false,
+        text: ""
     } as HarvestTimeEntry;
 };
 

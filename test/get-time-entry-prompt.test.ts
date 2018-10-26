@@ -23,6 +23,7 @@ export class GetTimeEntryPromptTests {
                 additionalNotes: []
             },
             hours,
+            text: "",
             created: "2017-06-26T22:32:52Z",
             running: false
         };
