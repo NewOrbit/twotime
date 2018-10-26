@@ -145,7 +145,7 @@ export const askStartDetails = async (apiProvider: ApiProvider) => {
     if (!confirm) {
         return null;
     }
-    
+
     return {
         entity,
         projectId,
