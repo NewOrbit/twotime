@@ -23,6 +23,7 @@ export interface HarvestTimeEntry {
     hours: number;
     created: string;
     running: boolean;
+    text: string;
 }
 
 export class HarvestApi {
@@ -113,6 +114,7 @@ export class HarvestApi {
             id: entry.id,
             hours: entry.hours,
             notes: parseNotes(entry.notes),
+            text: entry.notes,
             created: entry.created_at,
             running: entry.is_running
         };
