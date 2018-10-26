@@ -15,7 +15,7 @@ const promptTargetprocessId = async () => {
     if (tpEntityId === null || tpEntityId.length === 0 || isNaN(tpEntityId)) {
         return null;
     }
-    
+
     return parseInt(tpEntityId, 10);
 };
 
