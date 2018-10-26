@@ -3,7 +3,6 @@ import { HarvestApi, HarvestTimeEntry } from "../harvest/api";
 import { createNotes } from "../harvest/notes/create-notes";
 import { log } from "../utils/log";
 import { askFinishDetails } from "./prompts/finish";
-import { getTodayDate } from "../utils/get-today-date";
 import { ApiProvider } from "../api-provider";
 
 const stopHarvestTimer = (harvestApi: HarvestApi, timeEntry: HarvestTimeEntry) => {
@@ -53,21 +52,23 @@ const updateTargetprocess = (targetprocessApi: Targetprocess, tpEntity: any, tim
     return targetprocessApi.addTime(tpEntity.Id, timeEntry.hours, timeRemaining, new Date(timeEntry.created), "-");
 };
 
-export const finish = async (apiProvider: ApiProvider, date: string) => {
-    const details = await askFinishDetails(apiProvider, date);
-
-    if (details === null) {
-        return;
-    }
+export const finish = async (apiProvider: ApiProvider, date: string, all: boolean) => {
+    const timers = await askFinishDetails(apiProvider, date, all);
 
     const harvestApi = apiProvider.getHarvestApi();
     const targetprocessApi = apiProvider.getTargetprocessApi();
 
-    log.info("Updating Targetprocess...");
-    await updateTargetprocess(targetprocessApi, details.tpEntity, details.timeEntry, details.timeRemaining);
+    for (const timer of timers) {
+        log.info(`Finishing timer for #${ timer.timeEntry.notes.entity.id }`);
 
-    log.info("Updating harvest...");
-    await stopHarvestTimer(harvestApi, details.timeEntry);
+        log.info(`> Updating Targetprocess`);
+        await updateTargetprocess(targetprocessApi, timer.tpEntity, timer.timeEntry, timer.timeRemaining);
 
-    log.info("Timer finished!");
+        log.info(`> Updating Harvest`);
+        await stopHarvestTimer(harvestApi, timer.timeEntry);
+
+        log.info(`> Timer finished\n`);
+    }
+
+    log.info(`Finished ${ timers.length } timers`);
 };

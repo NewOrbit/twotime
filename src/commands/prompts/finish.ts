@@ -26,34 +26,15 @@ const getTimeEntryPrompt = (entry: HarvestTimeEntry) => {
 const isLinkedNote = (note: NoteInformation) => note.userStory !== null || note.entity !== null;
 const getUnfinishedTimeEntries = (entries: HarvestTimeEntry[]) => entries.filter(e => e.notes.finished === false && isLinkedNote(e.notes));
 
-const askTimeEntry = async (harvest: HarvestApi, date: string) => {
-    const entries = await harvest.getTimeEntries(date);
-
-    const unfinished = getUnfinishedTimeEntries(entries);
-
-    if (unfinished.length === 0) {
-        log.info(`There are no unfinished time entries on ${date}.`);
-        return null;
-    }
-
-    const prompts = unfinished.map(getTimeEntryPrompt);
-
-    const { timeEntry } = await inquirer.prompt<{ timeEntry: HarvestTimeEntry }>({
-        name: "timeEntry",
-        message: "Which timer would you like to finish?",
-        type: "list",
-        choices: prompts
-    });
-
-    return timeEntry;
-};
-
 const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     const projectedTimeRemaining = getProjectedTimeRemaining(tpEntity.TimeRemain, timeEntry.hours);
 
+    log.info(`${ timeEntry.notes.entity.name } (#${ timeEntry.notes.entity.id })`);
+    log.info(`> Projected hours remaining: ${ projectedTimeRemaining.toFixed(2) }`);
+
     const { timeRemaining } = await inquirer.prompt<{ timeRemaining: string }>({
         name: "timeRemaining",
-        message: "How many hours remaining? Projected: " + projectedTimeRemaining.toFixed(2),
+        message: "How many hours remaining?",
         validate: input => {
             if (input === null || input.length === 0) {
                 return "You must enter a value.";
@@ -70,23 +51,52 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     return parseFloat(timeRemaining);
 };
 
-export const askFinishDetails = async (apiProvider: ApiProvider, date: string) => {
-    const harvestApi = apiProvider.getHarvestApi();
+const getTimeEntries = async (harvestApi: HarvestApi, date: string, all: boolean) => {
+    const entries = await harvestApi.getTimeEntries(date);
 
-    const timeEntry = await askTimeEntry(harvestApi, date);
+    const unfinished = getUnfinishedTimeEntries(entries);
 
-    if (timeEntry === null) {
-        return null;
+    if (unfinished.length === 0) {
+        log.info(`There are no unfinished time entries on ${date}.`);
+        return [];
     }
 
+    if (all) {
+        return unfinished;
+    }
+
+    const prompts = unfinished.map(getTimeEntryPrompt);
+
+    const { timeEntry } = await inquirer.prompt<{ timeEntry: HarvestTimeEntry }>({
+        name: "timeEntry",
+        message: "Which timer would you like to finish?",
+        type: "list",
+        choices: prompts
+    });
+
+    return [ timeEntry ];
+};
+
+export const askFinishDetails = async (apiProvider: ApiProvider, date: string, all: boolean) => {
+    const harvestApi = apiProvider.getHarvestApi();
+
+    const timeEntries = await getTimeEntries(harvestApi, date, all);
+
     const targetprocessApi = apiProvider.getTargetprocessApi();
-    const tpEntity = await getTargetprocessEntity(targetprocessApi, timeEntry.notes.entity.id);
 
-    const timeRemaining = await askTimeRemaining(tpEntity, timeEntry);
+    const finishDetails = [];
 
-    return {
-        tpEntity,
-        timeEntry,
-        timeRemaining
-    };
+    for (const timeEntry of timeEntries) {
+        const tpEntity = await getTargetprocessEntity(targetprocessApi, timeEntry.notes.entity.id);
+
+        const timeRemaining = await askTimeRemaining(tpEntity, timeEntry);
+
+        finishDetails.push({
+            tpEntity,
+            timeEntry,
+            timeRemaining
+        });
+    }
+
+    return finishDetails;
 };
