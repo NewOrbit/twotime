@@ -1,7 +1,6 @@
 import { ApiProvider } from "../api-provider";
 import { getTodayDate } from "../utils/get-today-date";
 import { log } from "../utils/log";
-import { askConfirm } from "./prompts/confirm";
 
 export const pause = async (apiProvider: ApiProvider) => {
     const date = getTodayDate();
@@ -20,12 +19,6 @@ export const pause = async (apiProvider: ApiProvider) => {
 
     const textLines = runningTimeEntry.text.match(/[^\r\n]+/g);
     textLines.forEach(log.info);
-
-    const confirm = await askConfirm();
-
-    if (!confirm) {
-        return;
-    }
 
     log.info("Pausing Harvest timer");
     await harvestApi.stopTimeEntry(runningTimeEntry.id);
