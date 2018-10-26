@@ -5,6 +5,7 @@ import { log } from "../../utils/log";
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { getProjectedTimeRemaining } from "../../utils/get-projected-time-remaining";
 import { ApiProvider } from "../../api-provider";
+import { getUnfinishedTimeEntries } from "../../utils/get-unfinished-time-entries";
 
 const getEntityTypeText = (type: EntityType) => type === EntityType.BUG ? "bug" : "task";
 const getTimeEntryPromptText = (entry: HarvestTimeEntry) => {
@@ -22,9 +23,6 @@ const getTimeEntryPrompt = (entry: HarvestTimeEntry) => {
         name: text
     };
 };
-
-const isLinkedNote = (note: NoteInformation) => note.userStory !== null || note.entity !== null;
-const getUnfinishedTimeEntries = (entries: HarvestTimeEntry[]) => entries.filter(e => e.notes.finished === false && isLinkedNote(e.notes));
 
 const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     const projectedTimeRemaining = getProjectedTimeRemaining(tpEntity.TimeRemain, timeEntry.hours);
