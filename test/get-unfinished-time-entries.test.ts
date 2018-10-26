@@ -17,7 +17,7 @@ const timeEntryFromNotes = (notes: NoteInformation) => {
 export class GetUnfinishedTimeEntriesTests {
 
     @Test()
-    public shouldNotReturnUnlinkedNotes() {
+    public shouldReturnUnlinkedNotes() {
         const unlinkedNote = timeEntryFromNotes({
             userStory: null,
             entity: null,
@@ -35,33 +35,9 @@ export class GetUnfinishedTimeEntriesTests {
             additionalNotes: []
         });
 
-        const linkedNoteTask = timeEntryFromNotes({
-            userStory: null,
-            entity: {
-                type: EntityType.TASK,
-                id: 123,
-                name: "Foo"
-            },
-            finished: false,
-            additionalNotes: []
-        });
+        const unfinished = getUnfinishedTimeEntries([ unlinkedNote, linkedNoteUserStory ]);
 
-        const linkedNoteBug = timeEntryFromNotes({
-            userStory: null,
-            entity: {
-                type: EntityType.BUG,
-                id: 123,
-                name: "Foo"
-            },
-            finished: false,
-            additionalNotes: []
-        });
-
-        const unfinished = getUnfinishedTimeEntries([ unlinkedNote, linkedNoteUserStory, linkedNoteTask, linkedNoteBug ]);
-
-        Expect(unfinished).not.toContain(unlinkedNote);
-        Expect(unfinished).toContain(linkedNoteTask);
-        Expect(unfinished).toContain(linkedNoteBug);
+        Expect(unfinished).toContain(unlinkedNote);
         Expect(unfinished).toContain(linkedNoteUserStory);
     }
 
