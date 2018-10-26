@@ -63,12 +63,12 @@ export const finish = async (apiProvider: ApiProvider, date: string, all: boolea
 
         log.info(`> Updating Targetprocess`);
         await updateTargetprocess(targetprocessApi, timer.tpEntity, timer.timeEntry, timer.timeRemaining);
-    
+
         log.info(`> Updating Harvest`);
         await stopHarvestTimer(harvestApi, timer.timeEntry);
-    
+
         log.info(`> Timer finished\n`);
     }
 
-    log.info(`Finished ${ timers.length } timers`);    
+    log.info(`Finished ${ timers.length } timers`);
 };
