@@ -1,30 +1,12 @@
 import * as inquirer from "inquirer";
 import { HarvestApi, HarvestTimeEntry } from "../../harvest/api";
-import { NoteInformation, EntityType } from "../../harvest/notes/note-information";
+import { EntityType, NoteInformation } from "../../harvest/notes/note-information";
 import { log } from "../../utils/log";
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { getProjectedTimeRemaining } from "../../utils/get-projected-time-remaining";
 import { ApiProvider } from "../../api-provider";
-
-const getEntityTypeText = (type: EntityType) => type === EntityType.BUG ? "bug" : "task";
-const getTimeEntryPromptText = (entry: HarvestTimeEntry) => {
-    const entity = entry.notes.entity;
-    const entityType = getEntityTypeText(entity.type);
-
-    return `${entityType} #${entity.id} (${entry.hours} hours) ${entity.name}`;
-};
-
-const getTimeEntryPrompt = (entry: HarvestTimeEntry) => {
-    const text = getTimeEntryPromptText(entry);
-
-    return {
-        value: entry,
-        name: text
-    };
-};
-
-const isLinkedNote = (note: NoteInformation) => note.userStory !== null || note.entity !== null;
-const getUnfinishedTimeEntries = (entries: HarvestTimeEntry[]) => entries.filter(e => e.notes.finished === false && isLinkedNote(e.notes));
+import { getUnfinishedTimeEntries } from "../../utils/get-unfinished-time-entries";
+import { getTimeEntryPrompt } from "../../utils/get-time-entry-prompt";
 
 const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     const projectedTimeRemaining = getProjectedTimeRemaining(tpEntity.TimeRemain, timeEntry.hours);
@@ -51,10 +33,12 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     return parseFloat(timeRemaining);
 };
 
+const isLinkedNote = (note: NoteInformation) => note.userStory !== null || note.entity !== null;
+
 const getTimeEntries = async (harvestApi: HarvestApi, date: string, all: boolean) => {
     const entries = await harvestApi.getTimeEntries(date);
 
-    const unfinished = getUnfinishedTimeEntries(entries);
+    const unfinished = getUnfinishedTimeEntries(entries).filter(entry => isLinkedNote(entry.notes));
 
     if (unfinished.length === 0) {
         log.info(`There are no unfinished time entries on ${date}.`);

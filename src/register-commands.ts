@@ -8,6 +8,7 @@ import { isValidDate } from "./utils/is-valid-date";
 import { getTodayDate } from "./utils/get-today-date";
 import { log } from "./utils/log";
 import { getPastDate } from "./utils/get-past-date";
+import { resume } from "./commands/resume";
 
 const getDateForCommand = (command) => {
     if (command.date == null && command.offset == null) {
@@ -79,6 +80,11 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
 
             return finish(apiProvider, date, all);
         });
+
+    commander
+        .command("resume")
+        .description("resume a timer")
+        .action(() => resume(apiProvider));
 
     commander
         .command("auth")

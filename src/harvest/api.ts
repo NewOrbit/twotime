@@ -70,7 +70,7 @@ export class HarvestApi {
             return entry;
         }
 
-        return await this.api.timeEntries.restart(entry.id);
+        return this.resumeTimeEntry(entry.id);
     }
 
     public async getTimeEntries(date: string) {
@@ -87,6 +87,11 @@ export class HarvestApi {
     public async updateNotes(timeEntryId: number, notes: string) {
         // cast to TimeEntry required until https://github.com/simplyspoke/node-harvest/issues/119
         return await this.api.timeEntries.update(timeEntryId, { notes }) as TimeEntry;
+    }
+
+    public async resumeTimeEntry(id: number) {
+        // cast to TimeEntry required until https://github.com/simplyspoke/node-harvest/issues/119
+        return await this.api.timeEntries.restart(id) as TimeEntry;
     }
 
     public async stopTimeEntry(id: number) {
