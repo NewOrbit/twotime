@@ -7,47 +7,60 @@ import { log } from "../../utils/log";
 import { ApiProvider } from "../../api-provider";
 
 const promptTargetprocessId = async () => {
-    const { tpEntityId } = await inquirer.prompt<{ tpEntityId: string }>({
+    const { tpEntityId } = await inquirer.prompt<{ tpEntityId: any }>({
         name: "tpEntityId",
         message: "Enter a Targetprocess task or bug ID"
     });
 
-    const parsed = parseInt(tpEntityId, 10);
-
-    if (isNaN(parsed)) {
+    if (tpEntityId === null || tpEntityId.length === 0 || isNaN(tpEntityId)) {
         return null;
     }
 
-    return parsed;
+    return parseInt(tpEntityId, 10);
 };
 
-const askTargetprocessEntity = async (tp: Targetprocess) => {
-    const id = await promptTargetprocessId();
-
-    if (id === null) {
-        return null;
+const logTpEntity = (entity: any) => {
+    if (entity === null) {
+        return;
     }
 
-    const entity = await getTargetprocessEntity(tp, id);
-
-    if (entity.ResourceType === "UserStory") {
-        log.error("You cannot log time directly to a user story");
-
-        // ask for it again, keep prompting recursively until we get a good answer
-        return await askTargetprocessEntity(tp);
+    if (entity.UserStory) {
+        log.info(`> user story: #${entity.UserStory.Id} ${entity.UserStory.Name}`);
+    } else {
+        log.info("> user story: none");
     }
 
-    if (entity !== null) {
-        if (entity.UserStory) {
-            log.info(`> user story: #${entity.UserStory.Id} ${entity.UserStory.Name}`);
-        } else {
-            log.info("> user story: none");
+    log.info(`> ${entity.ResourceType.toLowerCase()}: #${entity.Id} ${entity.Name}`);
+};
+
+const askTargetprocessEntity = async (targetprocessApi: Targetprocess) => {
+    // keep asking the question until the user gives nothing or a valid TP id
+    while (true) {
+        const tpEntityId = await promptTargetprocessId();
+
+        if (tpEntityId === null) {
+            log.info("Starting timer without linked Targetprocess entity");
+            return null;
         }
 
-        log.info(`> ${entity.ResourceType.toLowerCase()}: #${entity.Id} ${entity.Name}`);
-    }
+        const entity = await getTargetprocessEntity(targetprocessApi, tpEntityId);
 
-    return entity;
+        if (entity === null) {
+            log.error(`Targetprocess entity ${ tpEntityId } could not be found or access is forbidden.`);
+
+            // ask for it again
+            continue;
+        }
+
+        if (entity.ResourceType === "UserStory") {
+            log.error("You cannot log time directly to a user story");
+
+            // ask for it again
+            continue;
+        }
+
+        return entity;
+    }
 };
 
 const filterChoices = (choices: { name: string }[], input: string) => {
@@ -122,6 +135,8 @@ export const askStartDetails = async (apiProvider: ApiProvider) => {
     const harvest = apiProvider.getHarvestApi();
 
     const entity = await askTargetprocessEntity(tp);
+    logTpEntity(entity);
+
     const { projectId, taskId } = await askHarvestDetails(harvest);
     const notes = await askNotes();
     const { hours, running } = await askTimeSpent();
