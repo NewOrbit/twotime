@@ -19,7 +19,6 @@ You will need:
 - Harvest [personal access token](https://id.getharvest.com/developers) and account ID
 - Targetprocess username and password
 
-
 ### Time tracking
 
 - Use `twotime start` to start a timer
@@ -34,6 +33,10 @@ You can start and finish a timer in the past by providing a `--date` option (or 
 Or by providing an offset with `--offset`, or `-o` for short (the number of days in the past e.g. offset of 1 is yesterday)
 
     twotime start -o 1
+
+#### Finish all
+
+Provide the `--all` option to finish all of a day's timers at once.
 
 ## License
 
