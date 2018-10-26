@@ -14,6 +14,11 @@ export const resume = async (apiProvider: ApiProvider) => {
 
     const unfinished = getUnfinishedTimeEntries(entries).filter(e => !e.running);
 
+    if (unfinished.length === 0) {
+        log.info("You have no non-running unfinished timers");
+        return;
+    }
+
     const prompts = unfinished.map(getTimeEntryPrompt);
 
     const { timeEntry } = await inquirer.prompt<{ timeEntry: HarvestTimeEntry }>({
