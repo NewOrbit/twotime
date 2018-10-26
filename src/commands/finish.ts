@@ -53,30 +53,31 @@ const updateTargetprocess = (targetprocessApi: Targetprocess, tpEntity: any, tim
     return targetprocessApi.addTime(tpEntity.Id, timeEntry.hours, timeRemaining, new Date(timeEntry.created), "-");
 };
 
-export const finish = async (apiProvider: ApiProvider, date: string, all: boolean) => {
+const getTimersToFinish = async (apiProvider: ApiProvider, date: string, all: boolean) => {
     if (all) {
-        const details = await askFinishAllDetails(apiProvider, date);
-
-        console.log(details);
-
-        return;
+        return await askFinishAllDetails(apiProvider, date);
     }
 
+    return await askFinishDetails(apiProvider, date);
+};
 
-    const details = await askFinishDetails(apiProvider, date);
-
-    if (details === null) {
-        return;
-    }
+export const finish = async (apiProvider: ApiProvider, date: string, all: boolean) => {
+    const timers = await getTimersToFinish(apiProvider, date, all);
 
     const harvestApi = apiProvider.getHarvestApi();
     const targetprocessApi = apiProvider.getTargetprocessApi();
 
-    log.info("Updating Targetprocess...");
-    await updateTargetprocess(targetprocessApi, details.tpEntity, details.timeEntry, details.timeRemaining);
+    for (const timer of timers) {
+        log.info(`Finishing timer for #${ timer.timeEntry.notes.entity.id }`);
 
-    log.info("Updating harvest...");
-    await stopHarvestTimer(harvestApi, details.timeEntry);
+        log.info(`> Updating Targetprocess`);
+        await updateTargetprocess(targetprocessApi, timer.tpEntity, timer.timeEntry, timer.timeRemaining);
+    
+        log.info(`> Updating Harvest`);
+        await stopHarvestTimer(harvestApi, timer.timeEntry);
+    
+        log.info(`> Timer finished\n`);
+    }
 
-    log.info("Timer finished!");
+    log.info(`Finished ${ timers.length } timers`);    
 };

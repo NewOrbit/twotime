@@ -51,7 +51,7 @@ const askTimeEntry = async (harvest: HarvestApi, date: string) => {
 const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     const projectedTimeRemaining = getProjectedTimeRemaining(tpEntity.TimeRemain, timeEntry.hours);
 
-    log.info(`> ${ timeEntry.notes.entity.name } (#${ timeEntry.notes.entity.id })`);
+    log.info(`${ timeEntry.notes.entity.name } (#${ timeEntry.notes.entity.id })`);
     log.info(`> Projected hours remaining: ${ projectedTimeRemaining.toFixed(2) }`);
 
     const { timeRemaining } = await inquirer.prompt<{ timeRemaining: string }>({
@@ -79,7 +79,7 @@ export const askFinishDetails = async (apiProvider: ApiProvider, date: string) =
     const timeEntry = await askTimeEntry(harvestApi, date);
 
     if (timeEntry === null) {
-        return null;
+        return [];
     }
 
     const targetprocessApi = apiProvider.getTargetprocessApi();
@@ -87,11 +87,11 @@ export const askFinishDetails = async (apiProvider: ApiProvider, date: string) =
 
     const timeRemaining = await askTimeRemaining(tpEntity, timeEntry);
 
-    return {
+    return [{
         tpEntity,
         timeEntry,
         timeRemaining
-    };
+    }];
 };
 
 export const askFinishAllDetails = async (apiProvider: ApiProvider, date: string) => {
@@ -103,7 +103,7 @@ export const askFinishAllDetails = async (apiProvider: ApiProvider, date: string
 
     if (unfinished.length === 0) {
         log.info(`There are no unfinished time entries on ${date}.`);
-        return null;
+        return [];
     }
 
     const targetprocessApi = apiProvider.getTargetprocessApi();
