@@ -35,6 +35,8 @@
     "@types/btoa": "^1.2.0",
     "@types/configstore": "^2.1.1",
     "@types/inquirer": "0.0.43",
+    "@types/lodash.mapvalues": "^4.6.4",
+    "@types/table": "^4.0.5",
     "btoa": "^1.2.1",
     "chalk": "^2.4.1",
     "commander": "^2.18.0",
@@ -43,8 +45,10 @@
     "harvest": "^2.2.5",
     "inquirer": "^6.2.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
+    "lodash.mapvalues": "^4.6.0",
     "moment": "^2.22.2",
     "request-promise-json": "^1.0.4",
+    "table": "^5.1.0",
     "targetprocess-rest-api": "^0.3.0"
   }
 }
