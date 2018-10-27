@@ -96,7 +96,18 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
     commander
         .command("list")
         .description("list a day's timesheet")
-        .action(() => list(apiProvider));
+        .option(dateFlagConfig.flags, dateFlagConfig.description)
+        .option(offsetFlagConfig.flags, offsetFlagConfig.description)
+        .action((cmd) => {
+            const date = getDateForCommand(cmd);
+
+            if (date === null) {
+                log.error("Invalid date provided. Use YYYY-MM-DD");
+                process.exit(1);
+            }
+
+            return list(apiProvider, date);
+        });
 
     commander
         .command("auth")

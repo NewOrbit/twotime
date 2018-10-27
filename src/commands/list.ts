@@ -30,8 +30,7 @@ const getTableRowForEntry = (entry: HarvestTimeEntry) => {
     ];
 };
 
-export const list = async (apiProvider: ApiProvider) => {
-    const date = getTodayDate();
+export const list = async (apiProvider: ApiProvider, date: string) => {
     const harvestApi = apiProvider.getHarvestApi();
 
     const entries = await harvestApi.getTimeEntries(date);
