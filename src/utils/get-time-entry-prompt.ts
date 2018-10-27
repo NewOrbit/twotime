@@ -1,7 +1,6 @@
-import { EntityType } from "../harvest/notes/note-information";
 import { HarvestTimeEntry } from "../harvest/api";
+import { getEntityTypeText } from "./get-entity-type-text";
 
-const getEntityTypeText = (type: EntityType) => type === EntityType.BUG ? "bug" : "task";
 const getTimeEntryPromptText = (entry: HarvestTimeEntry) => {
     const entity = entry.notes.entity;
     const entityType = getEntityTypeText(entity.type);

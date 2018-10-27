@@ -10,6 +10,7 @@ import { log } from "./utils/log";
 import { getPastDate } from "./utils/get-past-date";
 import { resume } from "./commands/resume";
 import { pause } from "./commands/pause";
+import { list } from "./commands/list";
 
 const getDateForCommand = (command) => {
     if (command.date == null && command.offset == null) {
@@ -91,6 +92,22 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
         .command("pause")
         .description("pause the currently running timer")
         .action(() => pause(apiProvider));
+
+    commander
+        .command("list")
+        .description("list a day's timesheet")
+        .option(dateFlagConfig.flags, dateFlagConfig.description)
+        .option(offsetFlagConfig.flags, offsetFlagConfig.description)
+        .action((cmd) => {
+            const date = getDateForCommand(cmd);
+
+            if (date === null) {
+                log.error("Invalid date provided. Use YYYY-MM-DD");
+                process.exit(1);
+            }
+
+            return list(apiProvider, date);
+        });
 
     commander
         .command("auth")
