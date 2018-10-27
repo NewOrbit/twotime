@@ -23,18 +23,24 @@ You will need:
 
 - Use `twotime start` to start a timer
 - Use `twotime finish` to finish a timer
+- Use `twotime pause` to pause the currently running timer
+- Use `twotime resume` to resume a paused timer
 
-#### Past timers
+### Listing timesheet
 
-You can start and finish a timer in the past by providing a `--date` option (or `-d` for short):
+Use `twotime list` to see a summary of a days timesheet.
+
+### Past timers
+
+Most commands can be used with past timesheets. You can provide a `--date` option (or `-d` for short):
 
     twotime start --date 2018-10-20
 
-Or by providing an offset with `--offset`, or `-o` for short (the number of days in the past e.g. offset of 1 is yesterday)
+Or an offset with `--offset` (or `-o` for short) - the number of days in the past e.g. offset of 1 is yesterday
 
     twotime start -o 1
 
-#### Finish all
+### Finish all
 
 Provide the `--all` option to finish all of a day's timers at once.
 
