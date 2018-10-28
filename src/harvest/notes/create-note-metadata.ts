@@ -1,4 +1,4 @@
-import { NoteInformation, EntityType } from "./note-information";
+import { NoteMetadata, EntityType } from "./note-metadata";
 
 // create a NoteInformation from a TP entity
 
@@ -36,14 +36,17 @@ const getUserStoryInformationFromTpEntity = (tpEntity: {
     };
 };
 
-export const createNoteInformation = (tpEntity: any) => {
+export const createNoteMetadata = (tpEntity: any) => {
+    if (!tpEntity) {
+        return null;
+    }
+
     const entity = getEntityInformationFromTpEntity(tpEntity);
     const userStory = getUserStoryInformationFromTpEntity(tpEntity);
 
     return {
         userStory,
         entity,
-        finished: false,
-        additionalNotes: []
-    } as NoteInformation;
+        finished: false
+    } as NoteMetadata;
 };

@@ -5,7 +5,7 @@ import { TaskAssignment } from "harvest/dist/models/taskAssignments.models";
 import { Task } from "harvest/dist/models/tasks.models";
 
 import { parseNotes } from "./notes/parse-notes";
-import { NoteInformation } from "./notes/note-information";
+import { NoteMetadata } from "./notes/note-metadata";
 
 // TODO: move this into the API
 export interface HarvestProject {
@@ -19,11 +19,11 @@ export interface HarvestProject {
 
 export interface HarvestTimeEntry {
     id: number;
-    notes: NoteInformation;
+    notes: string[];
+    metadata: NoteMetadata;
     hours: number;
     created: string;
     running: boolean;
-    text: string;
 }
 
 export class HarvestApi {
@@ -110,11 +110,13 @@ export class HarvestApi {
     }
 
     private mapTimeEntry(entry: TimeEntry): HarvestTimeEntry {
+        const parsed = parseNotes(entry.notes);
+
         return {
             id: entry.id,
             hours: entry.hours,
-            notes: parseNotes(entry.notes),
-            text: entry.notes,
+            notes: parsed.additionalNotes,
+            metadata: parsed.metadata,
             created: entry.created_at,
             running: entry.is_running
         };

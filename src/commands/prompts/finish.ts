@@ -1,6 +1,6 @@
 import * as inquirer from "inquirer";
 import { HarvestApi, HarvestTimeEntry } from "../../harvest/api";
-import { EntityType, NoteInformation } from "../../harvest/notes/note-information";
+import { EntityType, NoteInformation } from "../../harvest/notes/note-metadata";
 import { log } from "../../utils/log";
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { getProjectedTimeRemaining } from "../../utils/get-projected-time-remaining";

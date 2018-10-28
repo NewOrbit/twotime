@@ -1,12 +1,12 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
-import { createNoteInformation } from "../../src/harvest/notes/create-note-information";
-import { NoteInformation, EntityType } from "../../src/harvest/notes/note-information";
+import { createNoteMetadata } from "../../src/harvest/notes/create-note-metadata";
+import { NoteMetadata, EntityType } from "../../src/harvest/notes/note-metadata";
 
 @TestFixture()
-export class CreateNoteInformationTests {
+export class CreateNoteMetadataTests {
 
     @Test()
-    public shouldCreateNoteInformationCorrectlyForTask() {
+    public shouldCreateNoteMetadataCorrectlyForTask() {
         const input = {
             ResourceType: "Task",
             Id: 67890,
@@ -18,7 +18,7 @@ export class CreateNoteInformationTests {
             }
         };
 
-        const expected: NoteInformation = {
+        const expected: NoteMetadata = {
             userStory: {
                 id: 12345,
                 name: "Foo"
@@ -28,17 +28,16 @@ export class CreateNoteInformationTests {
                 id: 67890,
                 name: "Some Task Name"
             },
-            finished: false,
-            additionalNotes: []
+            finished: false
         };
 
-        const res = createNoteInformation(input);
+        const res = createNoteMetadata(input);
 
         Expect(res).toEqual(expected);
     }
 
     @Test()
-    public shouldCreateNoteInformationCorrectlyForBug() {
+    public shouldCreateNoteMetadataCorrectlyForBug() {
         const input = {
             ResourceType: "Bug",
             Id: 94123,
@@ -50,7 +49,7 @@ export class CreateNoteInformationTests {
             }
         };
 
-        const expected: NoteInformation = {
+        const expected: NoteMetadata = {
             userStory: {
                 id: 17441,
                 name: "User should be able to eat cheese"
@@ -60,17 +59,16 @@ export class CreateNoteInformationTests {
                 id: 94123,
                 name: "A very very horrible bug"
             },
-            finished: false,
-            additionalNotes: []
+            finished: false
         };
 
-        const res = createNoteInformation(input);
+        const res = createNoteMetadata(input);
 
         Expect(res).toEqual(expected);
     }
 
     @Test()
-    public shouldCreateNoteInformationCorrectlyWithoutUserStory() {
+    public shouldCreateNoteMetadataCorrectlyWithoutUserStory() {
         const input = {
             ResourceType: "Bug",
             Id: 94123,
@@ -78,34 +76,28 @@ export class CreateNoteInformationTests {
             UserStory: null
         };
 
-        const expected: NoteInformation = {
+        const expected: NoteMetadata = {
             userStory: null,
             entity: {
                 type: EntityType.BUG,
                 id: 94123,
                 name: "A very very horrible bug"
             },
-            finished: false,
-            additionalNotes: []
+            finished: false
         };
 
-        const res = createNoteInformation(input);
+        const res = createNoteMetadata(input);
 
         Expect(res).toEqual(expected);
     }
 
     @Test()
-    public shouldCreateNoteInformationCorrectlyForNullEntity() {
+    public shouldCreateNoteMetadataCorrectlyForNullEntity() {
         const input = null;
 
-        const expected: NoteInformation = {
-            userStory: null,
-            entity: null,
-            finished: false,
-            additionalNotes: []
-        };
+        const expected = null;
 
-        const res = createNoteInformation(input);
+        const res = createNoteMetadata(input);
 
         Expect(res).toEqual(expected);
     }

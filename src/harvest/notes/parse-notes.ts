@@ -6,7 +6,7 @@ import { splitLines } from "../../utils/split-lines";
 import { findPrefixInLines, findLinesWithoutPrefix } from "./parse-prefix";
 import { prefixes } from "./prefixes";
 import { splitIdAndName } from "./split-id-and-name";
-import { NoteInformation, EntityType } from "./note-information";
+import { NoteMetadata, EntityType } from "./note-metadata";
 
 const getEntity = (lines: string[], prefix: string, type: EntityType) => {
     const entity = findPrefixInLines(lines, prefix);
@@ -58,14 +58,31 @@ const getAdditionalNotes = (lines: string[]) => {
     return findLinesWithoutPrefix(lines, [ prefixes.task, prefixes.bug, prefixes.userStory, prefixes.finished ]);
 };
 
+const getMetadata = (lines: string[]) => {
+    const userStory = getUserStory(lines);
+    const entity = getEntityFromLines(lines);
+    const finished = getFinished(lines);
+
+    if (userStory === null && entity === null && finished === false) {
+        return null;
+    }
+
+    return {
+        userStory,
+        entity,
+        finished
+    } as NoteMetadata;
+};
+
 export const parseNotes = (notes: string) => {
     const decoded = decodeHTML(notes);
     const lines = splitLines(decoded);
 
+    const metadata = getMetadata(lines);
+    const additionalNotes = getAdditionalNotes(lines);
+
     return {
-        userStory: getUserStory(lines),
-        entity: getEntityFromLines(lines),
-        finished: getFinished(lines),
-        additionalNotes: getAdditionalNotes(lines)
-    } as NoteInformation;
+        metadata,
+        additionalNotes
+    };
 };

@@ -12,9 +12,8 @@ export interface TargetProcessItem {
     name: string;
 }
 
-export interface NoteInformation {
-    userStory: TargetProcessItem;
-    entity: Entity;
-    finished: boolean;
-    additionalNotes: string[];
+export interface NoteMetadata {
+    userStory: any;
+    entity: any;
+    finished: any;
 }
