@@ -6,12 +6,14 @@ import { askFinishDetails } from "./prompts/finish";
 import { ApiProvider } from "../api-provider";
 
 const stopHarvestTimer = (harvestApi: HarvestApi, timeEntry: HarvestTimeEntry) => {
-    timeEntry.notes.finished = true;
-    const notes = createNotes(timeEntry.notes);
+    const actions = [];
 
-    const actions = [
-        harvestApi.updateNotes(timeEntry.id, notes)
-    ];
+    if (timeEntry.metadata !== null) {
+        timeEntry.metadata.finished = true;
+        const notes = createNotes(timeEntry.metadata, timeEntry.notes);
+
+        actions.push(harvestApi.updateNotes(timeEntry.id, notes));
+    }
 
     // if the timer is running, it needs to be stopped
     if (timeEntry.running) {

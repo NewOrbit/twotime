@@ -1,25 +1,23 @@
 import { ApiProvider } from "../api-provider";
-import { getTodayDate } from "../utils/get-today-date";
 import { log } from "../utils/log";
 import { HarvestTimeEntry } from "../harvest/api";
 import { getEntityTypeText } from "../utils/get-entity-type-text";
 import chalk from "chalk";
 
 const getTypeForEntry = (entry: HarvestTimeEntry) => {
-    if (entry.notes.entity) {
-        return getEntityTypeText(entry.notes.entity.type);
+    if (entry.metadata) {
+        return getEntityTypeText(entry.metadata.entity.type);
     }
 
     return chalk.gray("n/a");
 };
 
 const getTextForEntry = (entry: HarvestTimeEntry) => {
-    if (entry.notes.entity) {
-        return `${ entry.notes.entity.name } (#${ entry.notes.entity.id })`;
+    if (entry.metadata) {
+        return `${ entry.metadata.entity.name } (#${ entry.metadata.entity.id })`;
     }
 
-    const lines = entry.text.match(/[^\r\n]+/g);
-    return lines[0];
+    return entry.notes[0];
 };
 
 const getTableRowForEntry = (entry: HarvestTimeEntry) => {

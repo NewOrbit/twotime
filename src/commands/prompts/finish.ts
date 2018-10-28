@@ -1,6 +1,5 @@
 import * as inquirer from "inquirer";
 import { HarvestApi, HarvestTimeEntry } from "../../harvest/api";
-import { EntityType, NoteInformation } from "../../harvest/notes/note-metadata";
 import { log } from "../../utils/log";
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { getProjectedTimeRemaining } from "../../utils/get-projected-time-remaining";
@@ -11,7 +10,7 @@ import { getTimeEntryPrompt } from "../../utils/get-time-entry-prompt";
 const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     const projectedTimeRemaining = getProjectedTimeRemaining(tpEntity.TimeRemain, timeEntry.hours);
 
-    log.info(`${ timeEntry.notes.entity.name } (#${ timeEntry.notes.entity.id })`);
+    log.info(`${ timeEntry.metadata.entity.name } (#${ timeEntry.metadata.entity.id })`);
     log.info(`> Projected hours remaining: ${ projectedTimeRemaining.toFixed(2) }`);
 
     const { timeRemaining } = await inquirer.prompt<{ timeRemaining: string }>({
@@ -33,12 +32,12 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     return parseFloat(timeRemaining);
 };
 
-const isLinkedNote = (note: NoteInformation) => note.userStory !== null || note.entity !== null;
+const isLinkedNote = (entry: HarvestTimeEntry) => entry.metadata !== null;
 
 const getTimeEntries = async (harvestApi: HarvestApi, date: string, all: boolean) => {
     const entries = await harvestApi.getTimeEntries(date);
 
-    const unfinished = getUnfinishedTimeEntries(entries).filter(entry => isLinkedNote(entry.notes));
+    const unfinished = getUnfinishedTimeEntries(entries).filter(isLinkedNote);
 
     if (unfinished.length === 0) {
         log.info(`There are no unfinished time entries on ${date}.`);
@@ -71,7 +70,7 @@ export const askFinishDetails = async (apiProvider: ApiProvider, date: string, a
     const finishDetails = [];
 
     for (const timeEntry of timeEntries) {
-        const tpEntity = await getTargetprocessEntity(targetprocessApi, timeEntry.notes.entity.id);
+        const tpEntity = await getTargetprocessEntity(targetprocessApi, timeEntry.metadata.entity.id);
 
         const timeRemaining = await askTimeRemaining(tpEntity, timeEntry);
 

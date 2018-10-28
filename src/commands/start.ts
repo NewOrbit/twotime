@@ -13,9 +13,7 @@ export const start = async (apiProvider: ApiProvider, date: string) => {
     }
 
     const noteInformation = createNoteMetadata(details.entity);
-    noteInformation.additionalNotes = [ details.notes ];
-
-    const notes = createNotes(noteInformation);
+    const notes = createNotes(noteInformation, [ details.notes ]);
 
     const harvestApi = apiProvider.getHarvestApi();
 
