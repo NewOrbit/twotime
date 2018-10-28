@@ -1,16 +1,16 @@
 import { Test, TestFixture, Expect } from "alsatian";
 import { HarvestTimeEntry } from "../src/harvest/api";
-import { EntityType, NoteInformation } from "../src/harvest/notes/note-information";
+import { EntityType, NoteMetadata } from "../src/harvest/notes/note-metadata";
 import { getUnfinishedTimeEntries } from "../src/utils/get-unfinished-time-entries";
 
-const timeEntryFromNotes = (notes: NoteInformation) => {
+const timeEntryFromMetadata = (metadata: NoteMetadata) => {
     return {
         id: 123,
-        notes,
+        metadata,
         hours: 0,
         created: "2017-06-26T22:32:52Z",
         running: false,
-        text: ""
+        notes: []
     } as HarvestTimeEntry;
 };
 
@@ -19,21 +19,19 @@ export class GetUnfinishedTimeEntriesTests {
 
     @Test()
     public shouldReturnUnlinkedNotes() {
-        const unlinkedNote = timeEntryFromNotes({
+        const unlinkedNote = timeEntryFromMetadata({
             userStory: null,
             entity: null,
-            finished: false,
-            additionalNotes: []
+            finished: false
         });
 
-        const linkedNoteUserStory = timeEntryFromNotes({
+        const linkedNoteUserStory = timeEntryFromMetadata({
             userStory: {
                 id: 123,
                 name: "Foo"
             },
             entity: null,
-            finished: false,
-            additionalNotes: []
+            finished: false
         });
 
         const unfinished = getUnfinishedTimeEntries([ unlinkedNote, linkedNoteUserStory ]);
@@ -44,25 +42,23 @@ export class GetUnfinishedTimeEntriesTests {
 
     @Test()
     public shouldNotReturnFinished() {
-        const unfinishedNotes = timeEntryFromNotes({
+        const unfinishedNotes = timeEntryFromMetadata({
             userStory: {
                 id: 123,
                 name: "Foo"
             },
             entity: null,
-            finished: false,
-            additionalNotes: []
+            finished: false
         });
 
-        const finishedNotes = timeEntryFromNotes({
+        const finishedNotes = timeEntryFromMetadata({
             userStory: null,
             entity: {
                 type: EntityType.TASK,
                 id: 123,
                 name: "Foo"
             },
-            finished: true,
-            additionalNotes: []
+            finished: true
         });
 
         const unfinished = getUnfinishedTimeEntries([ unfinishedNotes, finishedNotes ]);

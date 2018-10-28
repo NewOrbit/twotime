@@ -1,6 +1,6 @@
 import { askStartDetails } from "./prompts/start";
 import { createNotes } from "../harvest/notes/create-notes";
-import { createNoteInformation } from "../harvest/notes/create-note-information";
+import { createNoteMetadata } from "../harvest/notes/create-note-metadata";
 import { ApiProvider } from "../api-provider";
 import { log } from "../utils/log";
 
@@ -12,10 +12,8 @@ export const start = async (apiProvider: ApiProvider, date: string) => {
         return;
     }
 
-    const noteInformation = createNoteInformation(details.entity);
-    noteInformation.additionalNotes = [ details.notes ];
-
-    const notes = createNotes(noteInformation);
+    const noteInformation = createNoteMetadata(details.entity);
+    const notes = createNotes(noteInformation, [ details.notes ]);
 
     const harvestApi = apiProvider.getHarvestApi();
 

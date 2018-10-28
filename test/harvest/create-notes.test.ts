@@ -1,13 +1,13 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
 import { createNotes } from "../../src/harvest/notes/create-notes";
-import { NoteInformation, EntityType } from "../../src/harvest/notes/note-information";
+import { NoteMetadata, EntityType } from "../../src/harvest/notes/note-metadata";
 
 @TestFixture()
 export class CreateNotesTests {
 
     @Test()
     public shouldCreateNotesCorrectlyForTask() {
-        const input: NoteInformation = {
+        const input: NoteMetadata = {
             userStory: {
                 id: 12345,
                 name: "Foo"
@@ -17,8 +17,7 @@ export class CreateNotesTests {
                 id: 67890,
                 name: "Some Task Name"
             },
-            finished: false,
-            additionalNotes: []
+            finished: false
         };
 
         const expected = "> user_story #12345 Foo\n"
@@ -31,7 +30,7 @@ export class CreateNotesTests {
 
     @Test()
     public shouldCreateNotesCorrectlyForBug() {
-        const input: NoteInformation = {
+        const input: NoteMetadata = {
             userStory: {
                 id: 17441,
                 name: "User should be able to eat cheese"
@@ -41,8 +40,7 @@ export class CreateNotesTests {
                 id: 94123,
                 name: "A very very horrible bug"
             },
-            finished: false,
-            additionalNotes: []
+            finished: false
         };
 
         const expected = "> user_story #17441 User should be able to eat cheese\n"
@@ -55,15 +53,14 @@ export class CreateNotesTests {
 
     @Test()
     public shouldCreateNotesCorrectlyWithoutUserStory() {
-        const input: NoteInformation = {
+        const input: NoteMetadata = {
             userStory: null,
             entity: {
                 type: EntityType.BUG,
                 id: 94123,
                 name: "A very very horrible bug"
             },
-            finished: false,
-            additionalNotes: []
+            finished: false
         };
 
         const expected = "> bug #94123 A very very horrible bug";
@@ -76,21 +73,20 @@ export class CreateNotesTests {
     @TestCase(["bla bla additional"])
     @TestCase(["some additional notes", "more"])
     public shouldDisplayAdditionalNotesCorrectly(additional: string[]) {
-        const input: NoteInformation = {
+        const input: NoteMetadata = {
             userStory: null,
             entity: {
                 type: EntityType.BUG,
                 id: 94123,
                 name: "A very very horrible bug"
             },
-            finished: false,
-            additionalNotes: additional
+            finished: false
         };
 
         const expected = "> bug #94123 A very very horrible bug\n"
             + additional.join("\n");
 
-        const res = createNotes(input);
+        const res = createNotes(input, additional);
 
         Expect(res).toEqual(expected);
     }

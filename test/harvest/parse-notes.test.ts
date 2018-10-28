@@ -1,6 +1,6 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
 import { parseNotes } from "../../src/harvest/notes/parse-notes";
-import { EntityType } from "../../src/harvest/notes/note-information";
+import { EntityType } from "../../src/harvest/notes/note-metadata";
 
 @TestFixture()
 export class ParseNotesTests {
@@ -12,16 +12,18 @@ export class ParseNotesTests {
             + "> finished";
 
         const expected = {
-            userStory: {
-                id: 35858,
-                name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
+            metadata: {
+                userStory: {
+                    id: 35858,
+                    name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
+                },
+                entity: {
+                    type: EntityType.BUG,
+                    id: 40732,
+                    name: "v8.13 - FK AdditionalApplicationAnswers"
+                },
+                finished: true
             },
-            entity: {
-                type: EntityType.BUG,
-                id: 40732,
-                name: "v8.13 - FK AdditionalApplicationAnswers"
-            },
-            finished: true,
             additionalNotes: []
         };
 
@@ -36,16 +38,18 @@ export class ParseNotesTests {
             + "> bug #40732 v8.13 - FK AdditionalApplicationAnswers\n";
 
         const expected = {
-            userStory: {
-                id: 35858,
-                name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
+            metadata: {
+                userStory: {
+                    id: 35858,
+                    name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
+                },
+                entity: {
+                    type: EntityType.BUG,
+                    id: 40732,
+                    name: "v8.13 - FK AdditionalApplicationAnswers"
+                },
+                finished: false
             },
-            entity: {
-                type: EntityType.BUG,
-                id: 40732,
-                name: "v8.13 - FK AdditionalApplicationAnswers"
-            },
-            finished: false,
             additionalNotes: []
         };
 
@@ -61,16 +65,18 @@ export class ParseNotesTests {
             + "> finished but it's not the correct format!";
 
         const expected = {
-            userStory: {
-                id: 35858,
-                name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
+            metadata: {
+                userStory: {
+                    id: 35858,
+                    name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
+                },
+                entity: {
+                    type: EntityType.BUG,
+                    id: 40732,
+                    name: "v8.13 - FK AdditionalApplicationAnswers"
+                },
+                finished: false
             },
-            entity: {
-                type: EntityType.BUG,
-                id: 40732,
-                name: "v8.13 - FK AdditionalApplicationAnswers"
-            },
-            finished: false,
             additionalNotes: []
         };
 
@@ -86,40 +92,18 @@ export class ParseNotesTests {
             + "> finished";
 
         const expected = {
-            userStory: {
-                id: 35858,
-                name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
+            metadata: {
+                userStory: {
+                    id: 35858,
+                    name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
+                },
+                entity: {
+                    type: EntityType.TASK,
+                    id: 12345,
+                    name: "Foo! Bar"
+                },
+                finished: true
             },
-            entity: {
-                type: EntityType.TASK,
-                id: 12345,
-                name: "Foo! Bar"
-            },
-            finished: true,
-            additionalNotes: []
-        };
-
-        const res = parseNotes(input);
-
-        Expect(res).toEqual(expected);
-    }
-
-    @Test()
-    public shouldParseUnfinishedTaskCorrectly() {
-        const input = "> user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
-            + "> task #12345 Foo! Bar\n";
-
-        const expected = {
-            userStory: {
-                id: 35858,
-                name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
-            },
-            entity: {
-                type: EntityType.TASK,
-                id: 12345,
-                name: "Foo! Bar"
-            },
-            finished: false,
             additionalNotes: []
         };
 
@@ -135,16 +119,18 @@ export class ParseNotesTests {
             + "> finished but it's not the correct format!";
 
         const expected = {
-            userStory: {
-                id: 35858,
-                name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
+            metadata: {
+                userStory: {
+                    id: 35858,
+                    name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
+                },
+                entity: {
+                    type: EntityType.TASK,
+                    id: 12345,
+                    name: "Foo! Bar"
+                },
+                finished: false
             },
-            entity: {
-                type: EntityType.TASK,
-                id: 12345,
-                name: "Foo! Bar"
-            },
-            finished: false,
             additionalNotes: []
         };
 
@@ -164,7 +150,7 @@ export class ParseNotesTests {
 
         const res = parseNotes(input);
 
-        Expect(res.additionalNotes).toEqual([ additionalNotes ]);
+        Expect(res.additionalNotes).toEqual([additionalNotes]);
     }
 
     @Test()

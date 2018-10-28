@@ -1,6 +1,6 @@
 import { TestCase, TestFixture, Expect } from "alsatian";
 import { HarvestTimeEntry } from "../src/harvest/api";
-import { EntityType, NoteInformation } from "../src/harvest/notes/note-information";
+import { EntityType, NoteMetadata } from "../src/harvest/notes/note-metadata";
 import { getTimeEntryPrompt } from "../src/utils/get-time-entry-prompt";
 
 @TestFixture()
@@ -12,18 +12,17 @@ export class GetTimeEntryPromptTests {
     public shouldReturnCorrectPrompt(entityId: number, entityName: string, hours: number, entityType: EntityType, expectedPrompt: string) {
         const entry: HarvestTimeEntry = {
             id: 123,
-            notes: {
+            metadata: {
                 userStory: null,
                 entity: {
                     id: entityId,
                     name: entityName,
                     type: entityType
                 },
-                finished: false,
-                additionalNotes: []
+                finished: false
             },
             hours,
-            text: "",
+            notes: [],
             created: "2017-06-26T22:32:52Z",
             running: false
         };

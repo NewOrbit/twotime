@@ -6,12 +6,14 @@ import { askFinishDetails } from "./prompts/finish";
 import { ApiProvider } from "../api-provider";
 
 const stopHarvestTimer = (harvestApi: HarvestApi, timeEntry: HarvestTimeEntry) => {
-    timeEntry.notes.finished = true;
-    const notes = createNotes(timeEntry.notes);
+    const actions = [];
 
-    const actions = [
-        harvestApi.updateNotes(timeEntry.id, notes)
-    ];
+    if (timeEntry.metadata !== null) {
+        timeEntry.metadata.finished = true;
+        const notes = createNotes(timeEntry.metadata, timeEntry.notes);
+
+        actions.push(harvestApi.updateNotes(timeEntry.id, notes));
+    }
 
     // if the timer is running, it needs to be stopped
     if (timeEntry.running) {
@@ -59,7 +61,7 @@ export const finish = async (apiProvider: ApiProvider, date: string, all: boolea
     const targetprocessApi = apiProvider.getTargetprocessApi();
 
     for (const timer of timers) {
-        log.info(`Finishing timer for #${ timer.timeEntry.notes.entity.id }`);
+        log.info(`Finishing timer for #${ timer.timeEntry.metadata.entity.id }`);
 
         log.info(`> Updating Targetprocess`);
         await updateTargetprocess(targetprocessApi, timer.tpEntity, timer.timeEntry, timer.timeRemaining);

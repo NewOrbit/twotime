@@ -17,8 +17,7 @@ export const pause = async (apiProvider: ApiProvider) => {
 
     log.info("About to pause timer:");
 
-    const textLines = runningTimeEntry.text.match(/[^\r\n]+/g);
-    textLines.forEach(log.info);
+    runningTimeEntry.notes.forEach(log.info);
 
     log.info("Pausing Harvest timer");
     await harvestApi.stopTimeEntry(runningTimeEntry.id);

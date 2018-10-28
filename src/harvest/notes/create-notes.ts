@@ -1,40 +1,40 @@
 import { getPrefix } from "./get-prefix";
-import { NoteInformation, TargetProcessItem, EntityType } from "./note-information";
+import { NoteMetadata, TargetProcessItem, EntityType } from "./note-metadata";
 import { prefixes } from "./prefixes";
 
 const createLine = (prefix: string, entity: TargetProcessItem) => {
     return `${prefix}${entity.id} ${entity.name}`;
 };
 
-export const createNotes = (information: NoteInformation) => {
-    if (information === null || information === undefined) {
+export const createNotes = (metadata: NoteMetadata, additionalNotes?: string[]) => {
+    if (metadata === null || metadata === undefined) {
         return "";
     }
 
     const lines = [];
 
-    if (information.userStory) {
-        const line = createLine(prefixes.userStory, information.userStory);
+    if (metadata.userStory) {
+        const line = createLine(prefixes.userStory, metadata.userStory);
 
         lines.push(line);
     }
 
-    if (information.entity) {
-        const prefix = information.entity.type === EntityType.TASK
+    if (metadata.entity) {
+        const prefix = metadata.entity.type === EntityType.TASK
             ? prefixes.task
             : prefixes.bug;
 
-        const line = createLine(prefix, information.entity);
+        const line = createLine(prefix, metadata.entity);
 
         lines.push(line);
     }
 
-    if (information.finished) {
+    if (metadata.finished) {
         lines.push(prefixes.finished);
     }
 
-    if (information.additionalNotes) {
-        information.additionalNotes.forEach(line => lines.push(line));
+    if (additionalNotes) {
+        additionalNotes.forEach(line => lines.push(line));
     }
 
     return lines.join("\n");
