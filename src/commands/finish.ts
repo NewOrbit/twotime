@@ -61,7 +61,7 @@ export const finish = async (apiProvider: ApiProvider, date: string, all: boolea
     const targetprocessApi = apiProvider.getTargetprocessApi();
 
     for (const timer of timers) {
-        log.info(`Finishing timer for #${ timer.timeEntry.notes.entity.id }`);
+        log.info(`Finishing timer for #${ timer.timeEntry.metadata.entity.id }`);
 
         log.info(`> Updating Targetprocess`);
         await updateTargetprocess(targetprocessApi, timer.tpEntity, timer.timeEntry, timer.timeRemaining);
