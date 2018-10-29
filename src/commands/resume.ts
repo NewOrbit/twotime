@@ -1,10 +1,11 @@
 import * as inquirer from "inquirer";
 import { ApiProvider } from "../api-provider";
 import { getTodayDate } from "../utils/get-today-date";
-import { getUnfinishedTimeEntries } from "../utils/get-unfinished-time-entries";
 import { HarvestTimeEntry } from "../harvest/api";
 import { getTimeEntryPrompt } from "../utils/get-time-entry-prompt";
 import { log } from "../utils/log";
+
+const entryIsNotFinished = (entry: HarvestTimeEntry) => entry.metadata === null || entry.metadata.finished === false;
 
 export const resume = async (apiProvider: ApiProvider) => {
     const date = getTodayDate();
@@ -12,10 +13,10 @@ export const resume = async (apiProvider: ApiProvider) => {
 
     const entries = await harvestApi.getTimeEntries(date);
 
-    const nonRunning = entries.filter(e => !e.running);
+    const nonRunning = entries.filter(e => !e.running && entryIsNotFinished(e));
 
     if (nonRunning.length === 0) {
-        log.info("You have no non-running timers");
+        log.info("You have no non-running unfinished timers");
         return;
     }
 

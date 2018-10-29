@@ -4,7 +4,6 @@ import { log } from "../../utils/log";
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { getProjectedTimeRemaining } from "../../utils/get-projected-time-remaining";
 import { ApiProvider } from "../../api-provider";
-import { getUnfinishedTimeEntries } from "../../utils/get-unfinished-time-entries";
 import { getTimeEntryPrompt } from "../../utils/get-time-entry-prompt";
 
 const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
@@ -32,12 +31,10 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     return parseFloat(timeRemaining);
 };
 
-const isLinkedNote = (entry: HarvestTimeEntry) => entry.metadata !== null;
-
 const getTimeEntries = async (harvestApi: HarvestApi, date: string, all: boolean) => {
     const entries = await harvestApi.getTimeEntries(date);
 
-    const unfinished = getUnfinishedTimeEntries(entries).filter(isLinkedNote);
+    const unfinished = entries.filter(e => e.metadata !== null && e.metadata.finished === false);
 
     if (unfinished.length === 0) {
         log.info(`There are no unfinished time entries on ${date}.`);
