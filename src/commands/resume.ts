@@ -12,14 +12,14 @@ export const resume = async (apiProvider: ApiProvider) => {
 
     const entries = await harvestApi.getTimeEntries(date);
 
-    const unfinished = getUnfinishedTimeEntries(entries).filter(e => !e.running);
+    const nonRunning = entries.filter(e => !e.running);
 
-    if (unfinished.length === 0) {
-        log.info("You have no non-running unfinished timers");
+    if (nonRunning.length === 0) {
+        log.info("You have no non-running timers");
         return;
     }
 
-    const prompts = unfinished.map(getTimeEntryPrompt);
+    const prompts = nonRunning.map(getTimeEntryPrompt);
 
     const { timeEntry } = await inquirer.prompt<{ timeEntry: HarvestTimeEntry }>({
         name: "timeEntry",
