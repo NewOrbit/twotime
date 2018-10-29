@@ -1,6 +1,6 @@
 {
   "name": "twotime",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "Harvest/TargetProcess",
   "main": "index.js",
   "bin": "bin/index.js",
