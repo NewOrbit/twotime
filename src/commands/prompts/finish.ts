@@ -6,8 +6,19 @@ import { getProjectedTimeRemaining } from "../../utils/get-projected-time-remain
 import { ApiProvider } from "../../api-provider";
 import { getTimeEntryPrompt } from "../../utils/get-time-entry-prompt";
 import { isRunningOrUnfinished } from "../../utils/is-running-or-unfinished";
+import { Targetprocess } from "targetprocess-rest-api";
+
+export interface FinishTimerRequest {
+    timeEntry: HarvestTimeEntry;
+    tpEntity: any;
+    timeRemaining: number | null;
+}
 
 const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
+    if (timeEntry.metadata === null) {
+        return null;
+    }
+
     const projectedTimeRemaining = getProjectedTimeRemaining(tpEntity.TimeRemain, timeEntry.hours);
 
     log.info(`${ timeEntry.metadata.entity.name } (#${ timeEntry.metadata.entity.id })`);
@@ -58,6 +69,14 @@ const getTimeEntries = async (harvestApi: HarvestApi, date: string, all: boolean
     return [ timeEntry ];
 };
 
+const getTargetprocessEntityForEntry = async (targetprocessApi: Targetprocess, timeEntry: HarvestTimeEntry) => {
+    if (timeEntry.metadata === null) {
+        return null;
+    }
+
+    return getTargetprocessEntity(targetprocessApi, timeEntry.metadata.entity.id);
+};
+
 export const askFinishDetails = async (apiProvider: ApiProvider, date: string, all: boolean) => {
     const harvestApi = apiProvider.getHarvestApi();
 
@@ -65,10 +84,10 @@ export const askFinishDetails = async (apiProvider: ApiProvider, date: string, a
 
     const targetprocessApi = apiProvider.getTargetprocessApi();
 
-    const finishDetails = [];
+    const finishDetails: FinishTimerRequest[] = [];
 
     for (const timeEntry of timeEntries) {
-        const tpEntity = await getTargetprocessEntity(targetprocessApi, timeEntry.metadata.entity.id);
+        const tpEntity = await getTargetprocessEntityForEntry(targetprocessApi, timeEntry);
 
         const timeRemaining = await askTimeRemaining(tpEntity, timeEntry);
 
