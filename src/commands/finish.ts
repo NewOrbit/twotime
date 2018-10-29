@@ -1,26 +1,27 @@
 import { Targetprocess } from "targetprocess-rest-api";
-import { HarvestApi, HarvestTimeEntry } from "../harvest/api";
+import { HarvestApi } from "../harvest/api";
 import { createNotes } from "../harvest/notes/create-notes";
 import { log } from "../utils/log";
-import { askFinishDetails } from "./prompts/finish";
+import { askFinishDetails, FinishTimerRequest } from "./prompts/finish";
 import { ApiProvider } from "../api-provider";
 
-const stopHarvestTimer = (harvestApi: HarvestApi, timeEntry: HarvestTimeEntry) => {
-    const actions = [];
+const stopHarvestTimer = async(harvestApi: HarvestApi, request: FinishTimerRequest) => {
+    log.info(`> Updating Harvest`);
+
+    const { timeEntry, tpEntity, timeRemaining } = request;
 
     if (timeEntry.metadata !== null) {
         timeEntry.metadata.finished = true;
+
         const notes = createNotes(timeEntry.metadata, timeEntry.notes);
 
-        actions.push(harvestApi.updateNotes(timeEntry.id, notes));
+        await harvestApi.updateNotes(timeEntry.id, notes);
     }
 
     // if the timer is running, it needs to be stopped
     if (timeEntry.running) {
-        actions.push(harvestApi.stopTimeEntry(timeEntry.id));
+        await harvestApi.stopTimeEntry(timeEntry.id);
     }
-
-    return Promise.all(actions);
 };
 
 const getTargetprocessTimeEntity = async (targetprocessApi: Targetprocess, tpEntity: any) => {
@@ -44,33 +45,45 @@ const getTargetprocessTimeEntity = async (targetprocessApi: Targetprocess, tpEnt
     return tpEntity;
 };
 
-const updateTargetprocess = (targetprocessApi: Targetprocess, tpEntity: any, timeEntry: HarvestTimeEntry, timeRemaining: number) => {
-    const timeEntity = getTargetprocessTimeEntity(targetprocessApi, tpEntity);
+const updateTargetprocess = (targetprocessApi: Targetprocess, request: FinishTimerRequest) => {
+    if (request.tpEntity === null) {
+        return;
+    }
+
+    log.info(`> Updating Targetprocess`);
+
+    const timeEntity = getTargetprocessTimeEntity(targetprocessApi, request.tpEntity);
 
     if (timeEntity === null) {
         return;
     }
 
-    return targetprocessApi.addTime(tpEntity.Id, timeEntry.hours, timeRemaining, new Date(timeEntry.created), "-");
+    return targetprocessApi.addTime(request.tpEntity.Id, request.timeEntry.hours, request.timeRemaining, new Date(request.timeEntry.created), "-");
+};
+
+const getTimerDisplayName = (request: FinishTimerRequest) => {
+    if (request.tpEntity === null) {
+        return `"${request.timeEntry.notes[0] || "no description"}"`;
+    }
+
+    return `#${request.tpEntity.Id}`;
 };
 
 export const finish = async (apiProvider: ApiProvider, date: string, all: boolean) => {
-    const timers = await askFinishDetails(apiProvider, date, all);
+    const finishTimerRequests = await askFinishDetails(apiProvider, date, all);
 
     const harvestApi = apiProvider.getHarvestApi();
     const targetprocessApi = apiProvider.getTargetprocessApi();
 
-    for (const timer of timers) {
-        log.info(`Finishing timer for #${ timer.timeEntry.metadata.entity.id }`);
+    for (const request of finishTimerRequests) {
+        log.info(`Finishing timer for #${ getTimerDisplayName(request) }`);
 
-        log.info(`> Updating Targetprocess`);
-        await updateTargetprocess(targetprocessApi, timer.tpEntity, timer.timeEntry, timer.timeRemaining);
+        await updateTargetprocess(targetprocessApi, request);
 
-        log.info(`> Updating Harvest`);
-        await stopHarvestTimer(harvestApi, timer.timeEntry);
+        await stopHarvestTimer(harvestApi, request);
 
         log.info(`> Timer finished\n`);
     }
 
-    log.info(`Finished ${ timers.length } timers`);
+    log.info(`Finished ${ finishTimerRequests.length } timers`);
 };
