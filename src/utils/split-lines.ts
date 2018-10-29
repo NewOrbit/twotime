@@ -1,1 +1,1 @@
-export const splitLines = (str: string) => str.match(/[^\r\n]+/g);
+export const splitLines = (str: string) => str.match(/[^\r\n]+/g) || [];
