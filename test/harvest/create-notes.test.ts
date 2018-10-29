@@ -91,4 +91,14 @@ export class CreateNotesTests {
         Expect(res).toEqual(expected);
     }
 
+    @TestCase(["Some note here"])
+    @TestCase(["this is", "a note", "i like it"])
+    public shouldDisplayNotesCorrectlyIfNoMetadata(notes: string[]) {
+        const expected = notes.join("\n");
+
+        const res = createNotes(null, notes);
+
+        Expect(res).toEqual(expected);
+    }
+
 }

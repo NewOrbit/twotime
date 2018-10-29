@@ -6,20 +6,14 @@ const createLine = (prefix: string, entity: TargetProcessItem) => {
     return `${prefix}${entity.id} ${entity.name}`;
 };
 
-export const createNotes = (metadata: NoteMetadata, additionalNotes?: string[]) => {
-    if (metadata === null || metadata === undefined) {
-        return "";
-    }
-
-    const lines = [];
-
-    if (metadata.userStory) {
+const addLinesForMetadata = (lines: string[], metadata: NoteMetadata) => {
+    if (metadata && metadata.userStory) {
         const line = createLine(prefixes.userStory, metadata.userStory);
 
         lines.push(line);
     }
 
-    if (metadata.entity) {
+    if (metadata && metadata.entity) {
         const prefix = metadata.entity.type === EntityType.TASK
             ? prefixes.task
             : prefixes.bug;
@@ -29,9 +23,15 @@ export const createNotes = (metadata: NoteMetadata, additionalNotes?: string[]) 
         lines.push(line);
     }
 
-    if (metadata.finished) {
+    if (metadata && metadata.finished) {
         lines.push(prefixes.finished);
     }
+};
+
+export const createNotes = (metadata: NoteMetadata, additionalNotes?: string[]) => {
+    const lines = [];
+
+    addLinesForMetadata(lines, metadata);
 
     if (additionalNotes) {
         additionalNotes.forEach(line => lines.push(line));
