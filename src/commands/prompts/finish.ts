@@ -5,6 +5,7 @@ import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { getProjectedTimeRemaining } from "../../utils/get-projected-time-remaining";
 import { ApiProvider } from "../../api-provider";
 import { getTimeEntryPrompt } from "../../utils/get-time-entry-prompt";
+import { isRunningOrUnfinished } from "../../utils/is-running-or-unfinished";
 
 const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     const projectedTimeRemaining = getProjectedTimeRemaining(tpEntity.TimeRemain, timeEntry.hours);
@@ -34,10 +35,10 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
 const getTimeEntries = async (harvestApi: HarvestApi, date: string, all: boolean) => {
     const entries = await harvestApi.getTimeEntries(date);
 
-    const unfinished = entries.filter(e => e.metadata !== null && e.metadata.finished === false);
+    const unfinished = entries.filter(isRunningOrUnfinished);
 
     if (unfinished.length === 0) {
-        log.info(`There are no unfinished time entries on ${date}.`);
+        log.info(`There are no non-running unfinished time entries on ${date}.`);
         return [];
     }
 
