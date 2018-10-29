@@ -5,7 +5,7 @@ import { log } from "../utils/log";
 import { askFinishDetails, FinishTimerRequest } from "./prompts/finish";
 import { ApiProvider } from "../api-provider";
 
-const stopHarvestTimer = async(harvestApi: HarvestApi, request: FinishTimerRequest) => {
+const stopHarvestTimer = async (harvestApi: HarvestApi, request: FinishTimerRequest) => {
     log.info(`> Updating Harvest`);
 
     const { timeEntry, tpEntity, timeRemaining } = request;
