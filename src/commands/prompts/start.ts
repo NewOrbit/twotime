@@ -103,7 +103,7 @@ const reorderChoices = (choices: { value: any, name: string }[], name: string) =
     return startArrayAt(choices, index);
 };
 
-const askHarvestDetails = async (harvest: HarvestApi) => {
+const askHarvestDetails = async (harvest: HarvestApi, tpEntity: any) => {
     const projects = await harvest.getProjects();
 
     const projectChoices = projects.map(p => ({ value: p, name: p.name }));
@@ -117,11 +117,14 @@ const askHarvestDetails = async (harvest: HarvestApi) => {
 
     const taskChoices = project.tasks.map(t => ({ value: t.id, name: t.name }));
 
+    const targetTaskName = tpEntity === null ? "Dev Management Time" : "Development";
+    const orderedChoices = reorderChoices(taskChoices, targetTaskName);
+
     const { taskId } = await inquirer.prompt<{ taskId: number }>([{
         name: "taskId",
         message: "What kind of task?",
         type: "autocomplete",
-        source: (answers: any, input: string) => filterChoices(taskChoices, input)
+        source: (answers: any, input: string) => filterChoices(orderedChoices, input)
     } as any ]);
 
     return {
@@ -164,7 +167,7 @@ export const askStartDetails = async (apiProvider: ApiProvider) => {
     const entity = await askTargetprocessEntity(tp);
     logTpEntity(entity);
 
-    const { projectId, taskId } = await askHarvestDetails(harvest);
+    const { projectId, taskId } = await askHarvestDetails(harvest, entity);
     const notes = await askNotes();
     const { hours, running } = await askTimeSpent();
     const confirm = await askConfirm();
