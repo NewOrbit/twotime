@@ -76,7 +76,7 @@ export const finish = async (apiProvider: ApiProvider, date: string, all: boolea
     const targetprocessApi = apiProvider.getTargetprocessApi();
 
     for (const request of finishTimerRequests) {
-        log.info(`Finishing timer for #${ getTimerDisplayName(request) }`);
+        log.info(`Finishing timer for ${ getTimerDisplayName(request) }`);
 
         await updateTargetprocess(targetprocessApi, request);
 
