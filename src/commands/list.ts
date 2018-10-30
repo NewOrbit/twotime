@@ -20,11 +20,16 @@ const getTextForEntry = (entry: HarvestTimeEntry) => {
     return entry.notes[0];
 };
 
+const getStatusForEntry = (entry: HarvestTimeEntry) => {
+    return entry.running ? "running" : chalk.gray("paused");
+};
+
 const getTableRowForEntry = (entry: HarvestTimeEntry) => {
     return [
         getTypeForEntry(entry),
         getTextForEntry(entry),
-        entry.hours.toFixed(2)
+        entry.hours.toFixed(2),
+        getStatusForEntry(entry)
     ];
 };
 
@@ -39,6 +44,6 @@ export const list = async (apiProvider: ApiProvider, date: string) => {
     const rows = entries.map(getTableRowForEntry);
     const total = entries.reduce((accumulator, entry) => accumulator + entry.hours, 0);
 
-    log.table([ "Entity Type", "Title", "Hours" ], rows);
+    log.table([ "Entity Type", "Title", "Hours", "Status" ], rows);
     log.info(`Total: ${ total.toFixed(2) }`);
 };
