@@ -5,6 +5,7 @@ import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { askConfirm } from "./confirm";
 import { log } from "../../utils/log";
 import { ApiProvider } from "../../api-provider";
+import { startArrayAt } from "../../utils/start-array-at";
 
 const promptTargetprocessId = async () => {
     const { tpEntityId } = await inquirer.prompt<{ tpEntityId: any }>({
@@ -76,26 +77,52 @@ const filterChoices = (choices: { name: string }[], input: string) => {
     });
 };
 
+const getChoiceIndexForName = (choices: { value: any, name: string }[], name: string) => {
+    const totalMatch = choices.findIndex(c => c.name.toUpperCase() === name.toUpperCase());
+
+    if (totalMatch !== -1) {
+        return totalMatch;
+    }
+
+    const startsWithMatch = choices.findIndex(c => c.name.toUpperCase().startsWith(name.toUpperCase()));
+
+    if (startsWithMatch !== -1) {
+        return startsWithMatch;
+    }
+
+    return -1;
+};
+
+const reorderChoices = (choices: { value: any, name: string }[], name: string) => {
+    const index = getChoiceIndexForName(choices, name);
+
+    if (index === -1) {
+        return choices;
+    }
+
+    return startArrayAt(choices, index);
+};
+
 const askHarvestDetails = async (harvest: HarvestApi) => {
     const projects = await harvest.getProjects();
 
     const projectChoices = projects.map(p => ({ value: p, name: p.name }));
 
-    const { project, taskId } = await inquirer.prompt<{ project: HarvestProject, taskId: number }>([{
+    const { project } = await inquirer.prompt<{ project: HarvestProject, taskId: number }>([{
         name: "project",
         message: "Which project?",
         type: "autocomplete",
         source: (answers: any, input: string) => filterChoices(projectChoices, input)
-    } as any, {
+    } as any ]);
+
+    const taskChoices = project.tasks.map(t => ({ value: t.id, name: t.name }));
+
+    const { taskId } = await inquirer.prompt<{ taskId: number }>([{
         name: "taskId",
         message: "What kind of task?",
         type: "autocomplete",
-        source: (answers: { project: HarvestProject }, input: string) => {
-            const taskChoices = answers.project.tasks.map(t => ({ value: t.id, name: t.name }));
-
-            return filterChoices(taskChoices, input);
-        }
-    }]);
+        source: (answers: any, input: string) => filterChoices(taskChoices, input)
+    } as any ]);
 
     return {
         projectId: project.id,
