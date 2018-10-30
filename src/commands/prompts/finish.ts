@@ -27,11 +27,8 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     const { timeRemaining } = await inquirer.prompt<{ timeRemaining: string }>({
         name: "timeRemaining",
         message: "How many hours remaining?",
+        default: projectedTimeRemaining,
         validate: input => {
-            if (input === null || input.length === 0) {
-                return "You must enter a value.";
-            }
-
             if (isNaN(input)) {
                 return "Please enter a numeric value.";
             }
