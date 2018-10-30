@@ -7,6 +7,7 @@ import { ApiProvider } from "../../api-provider";
 import { getTimeEntryPrompt } from "../../utils/get-time-entry-prompt";
 import { isRunningOrUnfinished } from "../../utils/is-running-or-unfinished";
 import { Targetprocess } from "targetprocess-rest-api";
+import { askHours } from "./hours";
 
 export interface FinishTimerRequest {
     timeEntry: HarvestTimeEntry;
@@ -24,23 +25,7 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     log.info(`${ timeEntry.metadata.entity.name } (#${ timeEntry.metadata.entity.id })`);
     log.info(`> Projected hours remaining: ${ projectedTimeRemaining.toFixed(2) }`);
 
-    const { timeRemaining } = await inquirer.prompt<{ timeRemaining: string }>({
-        name: "timeRemaining",
-        message: "How many hours remaining?",
-        validate: input => {
-            if (input === null || input.length === 0) {
-                return "You must enter a value.";
-            }
-
-            if (isNaN(input)) {
-                return "Please enter a numeric value.";
-            }
-
-            return true;
-        }
-    });
-
-    return parseFloat(timeRemaining);
+    return askHours("How much time remaining?", projectedTimeRemaining);
 };
 
 const getTimeEntries = async (harvestApi: HarvestApi, date: string, all: boolean) => {
