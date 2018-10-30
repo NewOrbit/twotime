@@ -6,6 +6,8 @@ import { askConfirm } from "./confirm";
 import { log } from "../../utils/log";
 import { ApiProvider } from "../../api-provider";
 import { startArrayAt } from "../../utils/start-array-at";
+import { parseDuration } from "../../utils/parse-duration";
+import { askHours } from "./hours";
 
 const promptTargetprocessId = async () => {
     const { tpEntityId } = await inquirer.prompt<{ tpEntityId: any }>({
@@ -143,20 +145,24 @@ const askNotes = async () => {
 };
 
 const askTimeSpent = async () => {
-    const { hours, running } = await inquirer.prompt<{ hours: number, running: boolean }>([{
-        name: "hours",
-        default: 0,
-        message: "How many hours have you already spent on it?"
-    }, {
+    const hours = await askHours("How many hours have you already spent on it?");
+
+    if (hours === 0) {
+        return {
+            hours,
+            running: true
+        };
+    }
+
+    const { running } = await inquirer.prompt<{ running: boolean }>([{
         name: "running",
         type: "confirm",
-        message: "Are you still doing this?",
-        when: answers => answers.hours !== 0
+        message: "Are you still doing this?"
     }]);
 
     return {
         hours,
-        running: hours === 0 || running
+        running
     };
 };
 
