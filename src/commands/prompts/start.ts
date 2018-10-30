@@ -6,7 +6,6 @@ import { askConfirm } from "./confirm";
 import { log } from "../../utils/log";
 import { ApiProvider } from "../../api-provider";
 import { startArrayAt } from "../../utils/start-array-at";
-import { parseDuration } from "../../utils/parse-duration";
 import { askHours } from "./hours";
 
 const promptTargetprocessId = async () => {
@@ -145,7 +144,7 @@ const askNotes = async () => {
 };
 
 const askTimeSpent = async () => {
-    const hours = await askHours("How many hours have you already spent on it?");
+    const hours = await askHours("How many hours have you already spent on it?", 0);
 
     if (hours === 0) {
         return {
