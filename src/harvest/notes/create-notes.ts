@@ -5,8 +5,6 @@ const createLine = (prefix: string, entity: TargetProcessItem) => {
     return `${prefix}${entity.id} ${entity.name}`;
 };
 
-const createVersionLine = (version: string) => `${prefixes.twotime} ${version}`;
-
 const addLinesForMetadata = (lines: string[], metadata: NoteMetadata) => {
     if (metadata && metadata.userStory) {
         const line = createLine(prefixes.userStory, metadata.userStory);
@@ -29,7 +27,7 @@ const addLinesForMetadata = (lines: string[], metadata: NoteMetadata) => {
     }
 
     if (metadata) {
-        lines.push(createVersionLine(metadata.version));
+        lines.push(`${prefixes.twotime}${metadata.version}`);
     }
 };
 

@@ -55,7 +55,7 @@ const getFinished = (lines: string[]) => {
 };
 
 const getAdditionalNotes = (lines: string[]) => {
-    return findLinesWithoutPrefix(lines, [ prefixes.task, prefixes.bug, prefixes.userStory, prefixes.finished ]);
+    return findLinesWithoutPrefix(lines, [ prefixes.task, prefixes.bug, prefixes.userStory, prefixes.finished, prefixes.twotime ]);
 };
 
 const getMetadata = (lines: string[]) => {
@@ -67,10 +67,13 @@ const getMetadata = (lines: string[]) => {
         return null;
     }
 
+    const version = findPrefixInLines(lines, prefixes.twotime);
+
     return {
         userStory,
         entity,
-        finished
+        finished,
+        version
     } as NoteMetadata;
 };
 

@@ -3,5 +3,5 @@ export const prefixes = {
     task: "> task #",
     bug: "> bug #",
     finished: "> finished",
-    twotime: "> twotime"
+    twotime: "> twotime "
 };
