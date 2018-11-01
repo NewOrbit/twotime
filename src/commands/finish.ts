@@ -42,23 +42,25 @@ const getTargetprocessTimeEntity = async (targetprocessApi: Targetprocess, tpEnt
         return tpEntity.UserStory;
     }
 
+    log.info(`Project ${tpEntity.Project.Name} (${tpEntity.Project.Id}) is configured to log issue time to the issue`);
+
     return tpEntity;
 };
 
-const updateTargetprocess = (targetprocessApi: Targetprocess, request: FinishTimerRequest) => {
+const updateTargetprocess = async (targetprocessApi: Targetprocess, request: FinishTimerRequest) => {
     if (request.tpEntity === null) {
         return;
     }
 
     log.info(`> Updating Targetprocess`);
 
-    const timeEntity = getTargetprocessTimeEntity(targetprocessApi, request.tpEntity);
+    const timeEntity = await getTargetprocessTimeEntity(targetprocessApi, request.tpEntity);
 
     if (timeEntity === null) {
         return;
     }
 
-    return targetprocessApi.addTime(request.tpEntity.Id, request.timeEntry.hours, request.timeRemaining, new Date(request.timeEntry.created), "-");
+    return targetprocessApi.addTime(timeEntity.Id, request.timeEntry.hours, request.timeRemaining, new Date(request.timeEntry.created), "-");
 };
 
 const getTimerDisplayName = (request: FinishTimerRequest) => {
