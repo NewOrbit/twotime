@@ -16,7 +16,7 @@ commander
     .name("twotime")
     .version(packageInfo.version, "-v, --version");
 
-registerCommands(commander, new ApiProvider());
+registerCommands(commander, new ApiProvider(), packageInfo.version);
 
 commander.parse(process.argv);
 
