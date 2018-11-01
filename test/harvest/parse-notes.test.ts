@@ -121,6 +121,37 @@ export class ParseNotesTests {
     }
 
     @Test()
+    public shouldParseCorrectlyForUnescapedSymbol() {
+        const input = "> user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
+            + "> task #12345 Foo! Bar\n"
+            + "> finished\n"
+            + "> twotime 0.0.0\n"
+            + "some additional notes\n"
+            + "and some more";
+
+        const expected = {
+            metadata: {
+                userStory: {
+                    id: 35858,
+                    name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
+                },
+                entity: {
+                    type: EntityType.TASK,
+                    id: 12345,
+                    name: "Foo! Bar"
+                },
+                finished: true,
+                version: "0.0.0"
+            },
+            additionalNotes: ["some additional notes", "and some more"]
+        };
+
+        const res = parseNotes(input);
+
+        Expect(res).toEqual(expected);
+    }
+
+    @Test()
     public shouldParseUnfinishedTaskCorrectlyForBadFinishedNote() {
         const input = "&gt; user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
             + "&gt; task #12345 Foo! Bar\n"
