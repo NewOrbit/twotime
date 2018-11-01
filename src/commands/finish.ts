@@ -42,6 +42,8 @@ const getTargetprocessTimeEntity = async (targetprocessApi: Targetprocess, tpEnt
         return tpEntity.UserStory;
     }
 
+    log.info(`Project ${tpEntity.Project.Name} (${tpEntity.Project.Id}) is configured to log issue time to the issue`);
+
     return tpEntity;
 };
 
