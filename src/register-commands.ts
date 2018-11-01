@@ -47,7 +47,7 @@ const allFlagConfig = {
     description: "finish all of a day's timers"
 };
 
-export const registerCommands = (commander: CommanderStatic, apiProvider: ApiProvider) => {
+export const registerCommands = (commander: CommanderStatic, apiProvider: ApiProvider, packageVersion: string) => {
     commander
         .command("start")
         .description("start a timer")
@@ -61,7 +61,7 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
                 process.exit(1);
             }
 
-            return start(apiProvider, date);
+            return start(packageVersion, apiProvider, date);
         });
 
     commander
@@ -80,7 +80,7 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
 
             const all = getAllForCommand(cmd);
 
-            return finish(apiProvider, date, all);
+            return finish(packageVersion, apiProvider, date, all);
         });
 
     commander

@@ -13,7 +13,8 @@ export interface TargetProcessItem {
 }
 
 export interface NoteMetadata {
-    userStory: any;
-    entity: any;
-    finished: any;
+    userStory: TargetProcessItem;
+    entity: Entity;
+    finished: boolean;
+    version: string;
 }

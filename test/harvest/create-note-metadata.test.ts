@@ -28,10 +28,11 @@ export class CreateNoteMetadataTests {
                 id: 67890,
                 name: "Some Task Name"
             },
-            finished: false
+            finished: false,
+            version: "0.0.0"
         };
 
-        const res = createNoteMetadata(input);
+        const res = createNoteMetadata(input, "0.0.0");
 
         Expect(res).toEqual(expected);
     }
@@ -59,10 +60,11 @@ export class CreateNoteMetadataTests {
                 id: 94123,
                 name: "A very very horrible bug"
             },
-            finished: false
+            finished: false,
+            version: "0.0.0"
         };
 
-        const res = createNoteMetadata(input);
+        const res = createNoteMetadata(input, "0.0.0");
 
         Expect(res).toEqual(expected);
     }
@@ -83,10 +85,11 @@ export class CreateNoteMetadataTests {
                 id: 94123,
                 name: "A very very horrible bug"
             },
-            finished: false
+            finished: false,
+            version: "0.0.0"
         };
 
-        const res = createNoteMetadata(input);
+        const res = createNoteMetadata(input, "0.0.0");
 
         Expect(res).toEqual(expected);
     }
@@ -97,7 +100,34 @@ export class CreateNoteMetadataTests {
 
         const expected = null;
 
-        const res = createNoteMetadata(input);
+        const res = createNoteMetadata(input, "0.0.0");
+
+        Expect(res).toEqual(expected);
+    }
+
+    @TestCase("1.0.0")
+    @TestCase("0.5.0")
+    @TestCase("2.7.3")
+    public shouldCreateNoteMetadataWithCorrectVersion(version: string) {
+        const input = {
+            ResourceType: "Bug",
+            Id: 94123,
+            Name: "A very very horrible bug",
+            UserStory: null
+        };
+
+        const expected: NoteMetadata = {
+            userStory: null,
+            entity: {
+                type: EntityType.BUG,
+                id: 94123,
+                name: "A very very horrible bug"
+            },
+            finished: false,
+            version
+        };
+
+        const res = createNoteMetadata(input, version);
 
         Expect(res).toEqual(expected);
     }

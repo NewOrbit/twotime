@@ -2,6 +2,7 @@ import { TestFixture, Test, Expect } from "alsatian";
 import { HarvestTimeEntry } from "../src/harvest/api";
 import { isRunningOrUnfinished } from "../src/utils/is-running-or-unfinished";
 import { EntityType } from "../src/harvest/notes/note-metadata";
+import { NoteMetadataBuilder } from "./_builders/note-metadata.builder";
 
 @TestFixture()
 export class IsRunningOrUnfinishedTests {
@@ -27,11 +28,7 @@ export class IsRunningOrUnfinishedTests {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
-            metadata: {
-                userStory: { id: 0, name: "Foo" },
-                entity: { type: EntityType.BUG, id: 0, Name: "Foo" },
-                finished: false
-            },
+            metadata: new NoteMetadataBuilder().withFinished(false).build(),
             hours: 0.00,
             created: "2017-06-26T22:32:52Z",
             running: false
@@ -47,11 +44,7 @@ export class IsRunningOrUnfinishedTests {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
-            metadata: {
-                userStory: { id: 0, name: "Foo" },
-                entity: { type: EntityType.BUG, id: 0, Name: "Foo" },
-                finished: true
-            },
+            metadata: new NoteMetadataBuilder().withFinished(true).build(),
             hours: 0.00,
             created: "2017-06-26T22:32:52Z",
             running: false
@@ -67,11 +60,7 @@ export class IsRunningOrUnfinishedTests {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
-            metadata: {
-                userStory: { id: 0, name: "Foo" },
-                entity: { type: EntityType.BUG, id: 0, Name: "Foo" },
-                finished: true
-            },
+            metadata: new NoteMetadataBuilder().withFinished(true).build(),
             hours: 0.00,
             created: "2017-06-26T22:32:52Z",
             running: true

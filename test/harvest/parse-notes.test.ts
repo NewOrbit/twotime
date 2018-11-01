@@ -9,7 +9,8 @@ export class ParseNotesTests {
     public shouldParseFinishedBugCorrectly() {
         const input = "> user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
             + "> bug #40732 v8.13 - FK AdditionalApplicationAnswers\n"
-            + "> finished";
+            + "> finished\n"
+            + "> twotime 0.0.0";
 
         const expected = {
             metadata: {
@@ -22,7 +23,8 @@ export class ParseNotesTests {
                     id: 40732,
                     name: "v8.13 - FK AdditionalApplicationAnswers"
                 },
-                finished: true
+                finished: true,
+                version: "0.0.0"
             },
             additionalNotes: []
         };
@@ -35,7 +37,8 @@ export class ParseNotesTests {
     @Test()
     public shouldParseUnfinishedBugCorrectly() {
         const input = "> user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
-            + "> bug #40732 v8.13 - FK AdditionalApplicationAnswers\n";
+            + "> bug #40732 v8.13 - FK AdditionalApplicationAnswers\n"
+            + "> twotime 0.0.0";
 
         const expected = {
             metadata: {
@@ -48,7 +51,8 @@ export class ParseNotesTests {
                     id: 40732,
                     name: "v8.13 - FK AdditionalApplicationAnswers"
                 },
-                finished: false
+                finished: false,
+                version: "0.0.0"
             },
             additionalNotes: []
         };
@@ -62,7 +66,8 @@ export class ParseNotesTests {
     public shouldParseUnfinishedBugCorrectlyForBadFinishedNote() {
         const input = "> user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
             + "> bug #40732 v8.13 - FK AdditionalApplicationAnswers\n"
-            + "> finished but it's not the correct format!";
+            + "> finished but it's not the correct format!\n"
+            + "> twotime 0.0.0";
 
         const expected = {
             metadata: {
@@ -75,7 +80,8 @@ export class ParseNotesTests {
                     id: 40732,
                     name: "v8.13 - FK AdditionalApplicationAnswers"
                 },
-                finished: false
+                finished: false,
+                version: "0.0.0"
             },
             additionalNotes: []
         };
@@ -89,7 +95,8 @@ export class ParseNotesTests {
     public shouldParseFinishedTaskCorrectly() {
         const input = "> user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
             + "> task #12345 Foo! Bar\n"
-            + "> finished";
+            + "> finished\n"
+            + "> twotime 0.0.0";
 
         const expected = {
             metadata: {
@@ -102,7 +109,8 @@ export class ParseNotesTests {
                     id: 12345,
                     name: "Foo! Bar"
                 },
-                finished: true
+                finished: true,
+                version: "0.0.0"
             },
             additionalNotes: []
         };
@@ -116,7 +124,8 @@ export class ParseNotesTests {
     public shouldParseUnfinishedTaskCorrectlyForBadFinishedNote() {
         const input = "> user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
             + "> task #12345 Foo! Bar\n"
-            + "> finished but it's not the correct format!";
+            + "> finished but it's not the correct format!\n"
+            + "> twotime 0.0.0";
 
         const expected = {
             metadata: {
@@ -129,7 +138,8 @@ export class ParseNotesTests {
                     id: 12345,
                     name: "Foo! Bar"
                 },
-                finished: false
+                finished: false,
+                version: "0.0.0"
             },
             additionalNotes: []
         };
@@ -146,6 +156,7 @@ export class ParseNotesTests {
         const input = "> user_story #12345 Foo\n"
             + "> task #67890 Bar\n"
             + "> finished\n"
+            + "> twotime 0.0.0\n"
             + additionalNotes;
 
         const res = parseNotes(input);
@@ -159,11 +170,26 @@ export class ParseNotesTests {
             + "> task #67890 Bar\n"
             + "this is the first initial part\n"
             + "> finished\n"
+            + "> twotime 0.0.0\n"
             + "second initial parts";
 
         const res = parseNotes(input);
 
         Expect(res.additionalNotes).toEqual(["this is the first initial part", "second initial parts"]);
+    }
+
+    @TestCase("0.0.0")
+    @TestCase("1.2.3")
+    @TestCase("7.16.1")
+    public shouldParseVersionCorrectly(version: string) {
+        const input = "> user_story #12345 Foo\n"
+            + "> task #67890 Bar\n"
+            + "> finished\n"
+            + "> twotime " + version;
+
+        const res = parseNotes(input);
+
+        Expect(res.metadata.version).toEqual(version);
     }
 
 }

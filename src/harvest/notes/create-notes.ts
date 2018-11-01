@@ -1,4 +1,3 @@
-import { getPrefix } from "./get-prefix";
 import { NoteMetadata, TargetProcessItem, EntityType } from "./note-metadata";
 import { prefixes } from "./prefixes";
 
@@ -25,6 +24,10 @@ const addLinesForMetadata = (lines: string[], metadata: NoteMetadata) => {
 
     if (metadata && metadata.finished) {
         lines.push(prefixes.finished);
+    }
+
+    if (metadata) {
+        lines.push(`${prefixes.twotime}${metadata.version}`);
     }
 };
 
