@@ -36,7 +36,7 @@ const getUserStoryInformationFromTpEntity = (tpEntity: {
     };
 };
 
-export const createNoteMetadata = (tpEntity: any) => {
+export const createNoteMetadata = (tpEntity: any, version: string) => {
     if (!tpEntity) {
         return null;
     }
@@ -47,6 +47,7 @@ export const createNoteMetadata = (tpEntity: any) => {
     return {
         userStory,
         entity,
-        finished: false
+        finished: false,
+        version
     } as NoteMetadata;
 };
