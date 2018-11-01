@@ -5,13 +5,14 @@ import { log } from "../utils/log";
 import { askFinishDetails, FinishTimerRequest } from "./prompts/finish";
 import { ApiProvider } from "../api-provider";
 
-const stopHarvestTimer = async (harvestApi: HarvestApi, request: FinishTimerRequest) => {
+const stopHarvestTimer = async (harvestApi: HarvestApi, request: FinishTimerRequest, packageVersion: string) => {
     log.info(`> Updating Harvest`);
 
     const { timeEntry, tpEntity, timeRemaining } = request;
 
     if (timeEntry.metadata !== null) {
         timeEntry.metadata.finished = true;
+        timeEntry.metadata.version = packageVersion;
 
         const notes = createNotes(timeEntry.metadata, timeEntry.notes);
 
@@ -71,7 +72,7 @@ const getTimerDisplayName = (request: FinishTimerRequest) => {
     return `#${request.tpEntity.Id}`;
 };
 
-export const finish = async (apiProvider: ApiProvider, date: string, all: boolean) => {
+export const finish = async (packageVersion: string, apiProvider: ApiProvider, date: string, all: boolean) => {
     const finishTimerRequests = await askFinishDetails(apiProvider, date, all);
 
     const harvestApi = apiProvider.getHarvestApi();
@@ -82,7 +83,7 @@ export const finish = async (apiProvider: ApiProvider, date: string, all: boolea
 
         await updateTargetprocess(targetprocessApi, request);
 
-        await stopHarvestTimer(harvestApi, request);
+        await stopHarvestTimer(harvestApi, request, packageVersion);
 
         log.info(`> Timer finished\n`);
     }

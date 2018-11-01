@@ -4,7 +4,7 @@ import { createNoteMetadata } from "../harvest/notes/create-note-metadata";
 import { ApiProvider } from "../api-provider";
 import { log } from "../utils/log";
 
-export const start = async (apiProvider: ApiProvider, date: string) => {
+export const start = async (packageVersion: string, apiProvider: ApiProvider, date: string) => {
     const details = await askStartDetails(apiProvider);
 
     if (details === null) {
@@ -12,7 +12,7 @@ export const start = async (apiProvider: ApiProvider, date: string) => {
         return;
     }
 
-    const noteInformation = createNoteMetadata(details.entity);
+    const noteInformation = createNoteMetadata(details.entity, packageVersion);
     const notes = createNotes(noteInformation, [ details.notes ]);
 
     const harvestApi = apiProvider.getHarvestApi();
