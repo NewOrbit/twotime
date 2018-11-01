@@ -23,9 +23,9 @@ export class CreateNotesTests {
             version: "0.0.0"
         };
 
-        const expected = "> user_story #12345 Foo\n"
-            + "> task #67890 Some Task Name\n"
-            + "> twotime 0.0.0";
+        const expected = "&gt; user_story #12345 Foo\n"
+            + "&gt; task #67890 Some Task Name\n"
+            + "&gt; twotime 0.0.0";
 
         const res = createNotes(input);
 
@@ -48,9 +48,9 @@ export class CreateNotesTests {
             version: "0.0.0"
         };
 
-        const expected = "> user_story #17441 User should be able to eat cheese\n"
-            + "> bug #94123 A very very horrible bug\n"
-            + "> twotime 0.0.0";
+        const expected = "&gt; user_story #17441 User should be able to eat cheese\n"
+            + "&gt; bug #94123 A very very horrible bug\n"
+            + "&gt; twotime 0.0.0";
 
         const res = createNotes(input);
 
@@ -70,8 +70,8 @@ export class CreateNotesTests {
             version: "0.0.0"
         };
 
-        const expected = "> bug #94123 A very very horrible bug\n"
-            + "> twotime 0.0.0";
+        const expected = "&gt; bug #94123 A very very horrible bug\n"
+            + "&gt; twotime 0.0.0";
 
         const res = createNotes(input);
 
@@ -92,9 +92,9 @@ export class CreateNotesTests {
             .withFinished(true)
             .build();
 
-        const expected = "> bug #94123 A very very horrible bug\n"
-            + "> finished\n"
-            + "> twotime 0.0.0";
+        const expected = "&gt; bug #94123 A very very horrible bug\n"
+            + "&gt; finished\n"
+            + "&gt; twotime 0.0.0";
 
         const res = createNotes(input);
 
@@ -115,8 +115,8 @@ export class CreateNotesTests {
             version: "0.0.0"
         };
 
-        const expected = "> bug #94123 A very very horrible bug\n"
-            + "> twotime 0.0.0\n"
+        const expected = "&gt; bug #94123 A very very horrible bug\n"
+            + "&gt; twotime 0.0.0\n"
             + additional.join("\n");
 
         const res = createNotes(input, additional);
