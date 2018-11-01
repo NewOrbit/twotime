@@ -7,10 +7,10 @@ export class ParseNotesTests {
 
     @Test()
     public shouldParseFinishedBugCorrectly() {
-        const input = "> user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
-            + "> bug #40732 v8.13 - FK AdditionalApplicationAnswers\n"
-            + "> finished\n"
-            + "> twotime 0.0.0";
+        const input = "&gt; user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
+            + "&gt; bug #40732 v8.13 - FK AdditionalApplicationAnswers\n"
+            + "&gt; finished\n"
+            + "&gt; twotime 0.0.0";
 
         const expected = {
             metadata: {
@@ -36,9 +36,9 @@ export class ParseNotesTests {
 
     @Test()
     public shouldParseUnfinishedBugCorrectly() {
-        const input = "> user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
-            + "> bug #40732 v8.13 - FK AdditionalApplicationAnswers\n"
-            + "> twotime 0.0.0";
+        const input = "&gt; user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
+            + "&gt; bug #40732 v8.13 - FK AdditionalApplicationAnswers\n"
+            + "&gt; twotime 0.0.0";
 
         const expected = {
             metadata: {
@@ -64,10 +64,10 @@ export class ParseNotesTests {
 
     @Test()
     public shouldParseUnfinishedBugCorrectlyForBadFinishedNote() {
-        const input = "> user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
-            + "> bug #40732 v8.13 - FK AdditionalApplicationAnswers\n"
-            + "> finished but it's not the correct format!\n"
-            + "> twotime 0.0.0";
+        const input = "&gt; user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
+            + "&gt; bug #40732 v8.13 - FK AdditionalApplicationAnswers\n"
+            + "&gt; finished but it's not the correct format!\n"
+            + "&gt; twotime 0.0.0";
 
         const expected = {
             metadata: {
@@ -93,10 +93,10 @@ export class ParseNotesTests {
 
     @Test()
     public shouldParseFinishedTaskCorrectly() {
-        const input = "> user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
-            + "> task #12345 Foo! Bar\n"
-            + "> finished\n"
-            + "> twotime 0.0.0";
+        const input = "&gt; user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
+            + "&gt; task #12345 Foo! Bar\n"
+            + "&gt; finished\n"
+            + "&gt; twotime 0.0.0";
 
         const expected = {
             metadata: {
@@ -121,11 +121,42 @@ export class ParseNotesTests {
     }
 
     @Test()
-    public shouldParseUnfinishedTaskCorrectlyForBadFinishedNote() {
+    public shouldParseCorrectlyForUnescapedSymbol() {
         const input = "> user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
             + "> task #12345 Foo! Bar\n"
-            + "> finished but it's not the correct format!\n"
-            + "> twotime 0.0.0";
+            + "> finished\n"
+            + "> twotime 0.0.0\n"
+            + "some additional notes\n"
+            + "and some more";
+
+        const expected = {
+            metadata: {
+                userStory: {
+                    id: 35858,
+                    name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
+                },
+                entity: {
+                    type: EntityType.TASK,
+                    id: 12345,
+                    name: "Foo! Bar"
+                },
+                finished: true,
+                version: "0.0.0"
+            },
+            additionalNotes: ["some additional notes", "and some more"]
+        };
+
+        const res = parseNotes(input);
+
+        Expect(res).toEqual(expected);
+    }
+
+    @Test()
+    public shouldParseUnfinishedTaskCorrectlyForBadFinishedNote() {
+        const input = "&gt; user_story #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
+            + "&gt; task #12345 Foo! Bar\n"
+            + "&gt; finished but it's not the correct format!\n"
+            + "&gt; twotime 0.0.0";
 
         const expected = {
             metadata: {
@@ -153,10 +184,10 @@ export class ParseNotesTests {
     @TestCase("bla bla bla")
     @TestCase("it's true!")
     public shouldParseAdditionalNotesCorrectly(additionalNotes: string) {
-        const input = "> user_story #12345 Foo\n"
-            + "> task #67890 Bar\n"
-            + "> finished\n"
-            + "> twotime 0.0.0\n"
+        const input = "&gt; user_story #12345 Foo\n"
+            + "&gt; task #67890 Bar\n"
+            + "&gt; finished\n"
+            + "&gt; twotime 0.0.0\n"
             + additionalNotes;
 
         const res = parseNotes(input);
@@ -166,11 +197,11 @@ export class ParseNotesTests {
 
     @Test()
     public shouldParseAdditionalNotesWhenSplit() {
-        const input = "> user_story #12345 Foo\n"
-            + "> task #67890 Bar\n"
+        const input = "&gt; user_story #12345 Foo\n"
+            + "&gt; task #67890 Bar\n"
             + "this is the first initial part\n"
-            + "> finished\n"
-            + "> twotime 0.0.0\n"
+            + "&gt; finished\n"
+            + "&gt; twotime 0.0.0\n"
             + "second initial parts";
 
         const res = parseNotes(input);
@@ -182,10 +213,10 @@ export class ParseNotesTests {
     @TestCase("1.2.3")
     @TestCase("7.16.1")
     public shouldParseVersionCorrectly(version: string) {
-        const input = "> user_story #12345 Foo\n"
-            + "> task #67890 Bar\n"
-            + "> finished\n"
-            + "> twotime " + version;
+        const input = "&gt; user_story #12345 Foo\n"
+            + "&gt; task #67890 Bar\n"
+            + "&gt; finished\n"
+            + "&gt; twotime " + version;
 
         const res = parseNotes(input);
 

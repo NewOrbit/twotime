@@ -2,8 +2,10 @@ import { NoteMetadata, TargetProcessItem, EntityType } from "./note-metadata";
 import { prefixes } from "./prefixes";
 
 const createLine = (prefix: string, entity: TargetProcessItem) => {
-    return `${prefix}${entity.id} ${entity.name}`;
+    return `${sanitizePrefix(prefix)}${entity.id} ${entity.name}`;
 };
+
+const sanitizePrefix = (prefix: string) => prefix.replace(/\>/g, "&gt;");
 
 const addLinesForMetadata = (lines: string[], metadata: NoteMetadata) => {
     if (metadata && metadata.userStory) {
@@ -23,11 +25,11 @@ const addLinesForMetadata = (lines: string[], metadata: NoteMetadata) => {
     }
 
     if (metadata && metadata.finished) {
-        lines.push(prefixes.finished);
+        lines.push(sanitizePrefix(prefixes.finished));
     }
 
     if (metadata) {
-        lines.push(`${prefixes.twotime}${metadata.version}`);
+        lines.push(`${sanitizePrefix(prefixes.twotime)}${metadata.version}`);
     }
 };
 
