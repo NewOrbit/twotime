@@ -1,7 +1,7 @@
 {
   "name": "twotime",
-  "version": "0.12.0",
-  "description": "Harvest/TargetProcess",
+  "version": "1.0.1",
+  "description": "Sync timesheets between Harvest and Targetprocess",
   "main": "index.js",
   "bin": "bin/index.js",
   "scripts": {
