@@ -48,6 +48,18 @@ const getTargetprocessTimeEntity = async (targetprocessApi: Targetprocess, tpEnt
     return tpEntity;
 };
 
+const getTargetprocessNotes = (request: FinishTimerRequest, entity: any) => {
+    if (request.tpEntity.Id !== entity.Id) {
+        return `time spent on ${ request.tpEntity.ResourceType.toLowerCase() } #${ request.tpEntity.Id }`;
+    }
+
+    if (request.timeEntry.notes.length > 0) {
+        return request.timeEntry.notes.join("\n");
+    }
+
+    return "-";
+};
+
 const updateTargetprocess = async (targetprocessApi: Targetprocess, request: FinishTimerRequest) => {
     if (request.tpEntity === null) {
         return;
@@ -61,7 +73,9 @@ const updateTargetprocess = async (targetprocessApi: Targetprocess, request: Fin
         return;
     }
 
-    return targetprocessApi.addTime(timeEntity.Id, request.timeEntry.hours, request.timeRemaining, new Date(request.timeEntry.created), "-");
+    const notes = getTargetprocessNotes(request, timeEntity);
+
+    return targetprocessApi.addTime(timeEntity.Id, request.timeEntry.hours, request.timeRemaining, new Date(request.timeEntry.created), notes);
 };
 
 const getTimerDisplayName = (request: FinishTimerRequest) => {
