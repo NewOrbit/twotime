@@ -75,9 +75,12 @@ export class HarvestApi {
     }
 
     public async getTimeEntries(date: string) {
+        const userId = await this.getCurrentUserId();
+
         const query = {
             from: date,
-            to: date
+            to: date,
+            user_id: userId
         };
 
         const res = await this.api.timeEntries.list(query);
@@ -98,6 +101,12 @@ export class HarvestApi {
     public async stopTimeEntry(id: number) {
         // cast to TimeEntry required until https://github.com/simplyspoke/node-harvest/issues/119
         return await this.api.timeEntries.stop(id) as TimeEntry;
+    }
+
+    private async getCurrentUserId() {
+        const res = await this.api.users.me();
+
+        return res.id;
     }
 
     private getActiveTasksFromAssignments(assignments: TaskAssignment[]) {
