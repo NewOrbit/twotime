@@ -182,7 +182,7 @@ const askTargetprocessEntityIfRequired = async (targetprocessApi: Targetprocess,
     return await askTargetprocessEntity(targetprocessApi);
 };
 
-export const askStartDetails = async (apiProvider: ApiProvider, tpId: number) => {
+export const askStartDetails = async (apiProvider: ApiProvider, tpId?: number) => {
     const tp = apiProvider.getTargetprocessApi();
     const harvest = apiProvider.getHarvestApi();
 
