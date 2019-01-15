@@ -32,6 +32,20 @@ const getDateForCommand = (command) => {
 
 const getAllForCommand = (command) => command.all !== null && command.all !== undefined;
 
+const getTpForCommand = (command) => {
+    if (command.tp === undefined) {
+        return undefined;
+    }
+
+    const parsed = parseInt(command.tp, 10);
+
+    if (isNaN(parsed)) {
+        return null;
+    }
+
+    return parsed;
+};
+
 const dateFlagConfig = {
     flags: "-d, --date <date>",
     description: "specify a date in YYYY-MM-DD format"
@@ -47,21 +61,33 @@ const allFlagConfig = {
     description: "finish all of a day's timers"
 };
 
+const tpFlagConfig = {
+    flags: "--tp <id>",
+    description: "Start a timer for a given TP id"
+};
+
 export const registerCommands = (commander: CommanderStatic, apiProvider: ApiProvider, packageVersion: string) => {
     commander
         .command("start")
         .description("start a timer")
         .option(dateFlagConfig.flags, dateFlagConfig.description)
         .option(offsetFlagConfig.flags, offsetFlagConfig.description)
+        .option(tpFlagConfig.flags, tpFlagConfig.description)
         .action((cmd) => {
             const date = getDateForCommand(cmd);
+            const tp = getTpForCommand(cmd);
 
             if (date === null) {
                 log.error("Invalid date provided. Use YYYY-MM-DD");
                 process.exit(1);
             }
 
-            return start(packageVersion, apiProvider, date);
+            if (tp === null) {
+                log.error("Invalid Targetprocess id provided. Must be a number");
+                process.exit(1);
+            }
+
+            return start(packageVersion, apiProvider, date, tp);
         });
 
     commander

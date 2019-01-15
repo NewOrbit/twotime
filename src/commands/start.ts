@@ -4,8 +4,8 @@ import { createNoteMetadata } from "../harvest/notes/create-note-metadata";
 import { ApiProvider } from "../api-provider";
 import { log } from "../utils/log";
 
-export const start = async (packageVersion: string, apiProvider: ApiProvider, date: string) => {
-    const details = await askStartDetails(apiProvider);
+export const start = async (packageVersion: string, apiProvider: ApiProvider, date: string, tpId?: number) => {
+    const details = await askStartDetails(apiProvider, tpId);
 
     if (details === null) {
         log.info("No timer started");
