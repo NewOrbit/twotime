@@ -44,6 +44,12 @@ Or an offset with `--offset` (or `-o` for short) - the number of days in the pas
 
 Provide the `--all` option to finish all of a day's timers at once.
 
+### Targetprocess Shortcut
+
+Use the `--tp` option to start a timer without prompting for a Targetprocess ID:
+
+    twotime start --tp 12345
+
 ## License
 
 Made with :sparkling_heart: by [NewOrbit](https://www.neworbit.co.uk/) in Oxfordshire, and licensed under the [MIT Licence](LICENCE)

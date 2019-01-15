@@ -35,6 +35,24 @@ const logTpEntity = (entity: any) => {
     log.info(`> ${entity.ResourceType.toLowerCase()}: #${entity.Id} ${entity.Name}`);
 };
 
+const getLoggableTargetprocessEntity = async (targetprocessApi: Targetprocess, id: number) => {
+    const entity = await getTargetprocessEntity(targetprocessApi, id);
+
+    if (entity === null) {
+        log.error(`Targetprocess entity ${ id } could not be found or access is forbidden.`);
+
+        return null;
+    }
+
+    if (entity.ResourceType === "UserStory") {
+        log.error("You cannot log time directly to a user story");
+
+        return null;
+    }
+
+    return entity;
+};
+
 const askTargetprocessEntity = async (targetprocessApi: Targetprocess) => {
     // keep asking the question until the user gives nothing or a valid TP id
     while (true) {
@@ -45,18 +63,9 @@ const askTargetprocessEntity = async (targetprocessApi: Targetprocess) => {
             return null;
         }
 
-        const entity = await getTargetprocessEntity(targetprocessApi, tpEntityId);
+        const entity = await getLoggableTargetprocessEntity(targetprocessApi, tpEntityId);
 
         if (entity === null) {
-            log.error(`Targetprocess entity ${ tpEntityId } could not be found or access is forbidden.`);
-
-            // ask for it again
-            continue;
-        }
-
-        if (entity.ResourceType === "UserStory") {
-            log.error("You cannot log time directly to a user story");
-
             // ask for it again
             continue;
         }
@@ -165,11 +174,24 @@ const askTimeSpent = async () => {
     };
 };
 
-export const askStartDetails = async (apiProvider: ApiProvider) => {
+const askTargetprocessEntityIfRequired = async (targetprocessApi: Targetprocess, id?: number) => {
+    if (id) {
+        return await getLoggableTargetprocessEntity(targetprocessApi, id);
+    }
+
+    return await askTargetprocessEntity(targetprocessApi);
+};
+
+export const askStartDetails = async (apiProvider: ApiProvider, tpId?: number) => {
     const tp = apiProvider.getTargetprocessApi();
     const harvest = apiProvider.getHarvestApi();
 
-    const entity = await askTargetprocessEntity(tp);
+    const entity = await askTargetprocessEntityIfRequired(tp, tpId);
+
+    if (entity === null) {
+        return null;
+    }
+
     logTpEntity(entity);
 
     const { projectId, taskId } = await askHarvestDetails(harvest, entity);
