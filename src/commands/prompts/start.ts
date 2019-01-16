@@ -176,7 +176,14 @@ const askTimeSpent = async () => {
 
 const askTargetprocessEntityIfRequired = async (targetprocessApi: Targetprocess, id?: number) => {
     if (id) {
-        return await getLoggableTargetprocessEntity(targetprocessApi, id);
+        const entity = await getLoggableTargetprocessEntity(targetprocessApi, id);
+
+        // null is used for "didn't provide an entity" rather than invalid, so we need to differentiate
+        if (entity === null) {
+            return undefined;
+        }
+
+        return entity;
     }
 
     return await askTargetprocessEntity(targetprocessApi);
@@ -188,7 +195,7 @@ export const askStartDetails = async (apiProvider: ApiProvider, tpId?: number) =
 
     const entity = await askTargetprocessEntityIfRequired(tp, tpId);
 
-    if (entity === null) {
+    if (entity === undefined) {
         return null;
     }
 
