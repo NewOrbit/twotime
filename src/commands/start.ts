@@ -18,6 +18,12 @@ export const start = async (packageVersion: string, apiProvider: ApiProvider, da
     const harvestApi = apiProvider.getHarvestApi();
 
     log.info("Starting Harvest timer...");
-    await harvestApi.startTimeEntry(details.projectId, details.taskId, date, notes, details.hours, details.running);
-    log.info("> Timer started");
+    try {
+        await harvestApi.startTimeEntry(details.projectId, details.taskId, date, notes, details.hours, details.running)
+    }
+    catch(e) {
+        log.error(e);
+    }
+    
+    log.info("> Timer started"); 
 };

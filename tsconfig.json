@@ -4,7 +4,8 @@
         "outDir": "bin",
         "moduleResolution": "node",
         "lib": [ "es2015" ],
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "sourceMap": true
     },
     "include": [
         "src/**/*"
