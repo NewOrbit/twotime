@@ -60,7 +60,7 @@ export class ApiProvider {
 
         const { username, password, subdomain } = this.getTargetprocessConfig();
 
-        if (username == null || password == null || subdomain == null) {
+        if (username === null || password === null || subdomain === null) {
             log.error("Targetprocess authentication not configured correctly.");
             log.error("Use `twotime auth` to authenticate.");
             process.exit(1);
