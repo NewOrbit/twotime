@@ -113,7 +113,7 @@ export class ApiProvider {
         }
 
         if (config.subdomain !== "neworbit") {
-            log.warn(`twotime is currently configured for non-neworbit TP subdomain, '${config.subdomain}'`);
+            log.warn(`twotime is currently configured for non-NewOrbit TP subdomain, '${config.subdomain}'`);
         }
 
         return config as TargetprocessConfig;
