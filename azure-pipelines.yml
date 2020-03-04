@@ -4,7 +4,20 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- master
+  batch: true
+  branches:
+    include:
+      - master
+      - develop
+      - release/*
+
+pr:
+  autoCancel: true
+  branches:
+    include:
+      - master
+      - develop
+      - release/*
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -17,5 +30,7 @@ steps:
 
 - script: |
     npm install
+    npm run lint
     npm run build
-  displayName: 'npm install and build'
+    npm run test
+  displayName: 'npm install, lint, build and test'

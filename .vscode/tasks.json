@@ -16,8 +16,11 @@
         },
         {
             "type": "npm",
-            "script": "build-test",
-            "group": "build"
+            "script": "test",
+            "group": "build",
+            "problemMatcher": [
+                "$tsc"
+            ]
         },
         {
             "type": "npm",
