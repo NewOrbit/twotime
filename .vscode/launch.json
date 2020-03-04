@@ -51,6 +51,6 @@
             ],
             "internalConsoleOptions": "openOnSessionStart",
             "console": "integratedTerminal"
-        }, 
+        }
     ]
 }
