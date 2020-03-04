@@ -105,7 +105,7 @@ export class ApiProvider {
             return null;
         }
 
-        // Existing clients won't have subdomain in config, so put it there with existing default.
+        // Existing configs won't have subdomain setting, so put it there with existing default.
         if (!config.subdomain) {
             config.subdomain = "neworbit";
             log.info(`Setting TargetProcess to default TP subdomain, '${config.subdomain}'`);
