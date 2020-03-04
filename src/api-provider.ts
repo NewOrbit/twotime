@@ -40,7 +40,7 @@ export class ApiProvider {
 
         const config = this.getHarvestConfig();
 
-        if (config === null || config.accessToken == null || config.accountId == null) {
+        if (config === null || config.accessToken === null || config.accountId === null) {
             log.error("Harvest authentication not configured correctly.");
             log.error("Use `twotime auth` to authenticate.");
             process.exit(1);
