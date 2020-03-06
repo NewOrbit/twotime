@@ -8,7 +8,7 @@ interface HarvestConfig {
     accountId: number;
 }
 
-interface TargetprocessConfig {
+export interface TargetprocessConfig {
     username: string;
     password: string;
     subdomain: string;
@@ -25,8 +25,9 @@ export class ApiProvider {
     private harvestApi: HarvestApi;
     private targetprocessApi: Targetprocess;
 
-    constructor() {
-        this.store = new Configstore(CONFIG_KEYS.TWOTIME);
+    // An optional DI makes testing a little easier.
+    constructor(store?: Configstore) {
+        this.store = store || new Configstore(CONFIG_KEYS.TWOTIME);
         log.info(`Getting config from ${this.store.path}`);
 
         this.harvestApi = null;
@@ -73,19 +74,11 @@ export class ApiProvider {
         return this.targetprocessApi;
     }
 
-    public setHarvestConfig(accessToken: string, accountId: number, ) {
-        const config: HarvestConfig = {
-            accessToken, accountId
-        };
-
+    public setHarvestConfig(config: HarvestConfig) {
         this.store.set(CONFIG_KEYS.HARVEST, config);
     }
 
-    public setTargetprocessConfig(username: string, password: string, subdomain: string) {
-        const config: TargetprocessConfig = {
-            username, password, subdomain
-        };
-
+    public setTargetprocessConfig(config: TargetprocessConfig) {
         this.store.set(CONFIG_KEYS.TARGETPROCESS, config);
     }
 
@@ -100,6 +93,7 @@ export class ApiProvider {
     }
 
     private getTargetprocessConfig() {
+        const defaultSubdomain = "neworbit";
         const config = this.store.get(CONFIG_KEYS.TARGETPROCESS);
         if (!config) {
             return null;
@@ -107,12 +101,12 @@ export class ApiProvider {
 
         // Existing configs won't have subdomain setting, so put it there with existing default.
         if (!config.subdomain) {
-            config.subdomain = "neworbit";
+            config.subdomain = defaultSubdomain;
             log.info(`Setting TargetProcess to default TP subdomain, '${config.subdomain}'`);
-            this.setTargetprocessConfig(config.username, config.password, config.subdomain);
+            this.setTargetprocessConfig(config);
         }
 
-        if (config.subdomain !== "neworbit") {
+        if (config.subdomain !== defaultSubdomain) {
             log.warn(`twotime is currently configured for non-NewOrbit TP subdomain, '${config.subdomain}'`);
         }
 
