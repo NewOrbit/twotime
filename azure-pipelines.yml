@@ -8,16 +8,12 @@ trigger:
   branches:
     include:
       - master
-      - develop
-      - release/*
 
 pr:
   autoCancel: true
   branches:
     include:
       - master
-      - develop
-      - release/*
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -28,9 +24,14 @@ steps:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
 
-- script: |
-    npm install
-    npm run lint
-    npm run build
-    npm run test
-  displayName: 'npm install, lint, build and test'
+- script: npm install
+  displayName: 'npm install'
+
+- script: npm run lint
+  displayName: 'linting'
+
+- script: npm run build
+  displayName: 'building'
+
+- script: npm run test
+  displayName: 'run tests'
