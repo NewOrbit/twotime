@@ -6,6 +6,7 @@ import mapValues = require("lodash.mapvalues");
 
 export const log = {
     error: (message: string) => console.log(chalk.red("[ERROR] ") + message),
+    warn: (message: string) => console.log(chalk.yellow("[WARN] ") + message),
     info: (message: string) => console.log(chalk.cyan("[INFO] ") + message),
     table: (headers: string[], rows: string[][]) => {
         const data = [

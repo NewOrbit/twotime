@@ -7,12 +7,44 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch twotime",
+            "name": "twotime start",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\bin\\index.js",
             "args": [ "start" ],
+            "preLaunchTask": "${defaultBuildTask}",
+            "outFiles": [
+                "${workspaceFolder}/bin/**/*.js"
+            ],
+            "internalConsoleOptions": "openOnSessionStart",
+            "console": "integratedTerminal"
+        }, 
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "twotime list",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\bin\\index.js",
+            "args": [ "list" ],
+            "preLaunchTask": "${defaultBuildTask}",
+            "outFiles": [
+                "${workspaceFolder}/bin/**/*.js"
+            ],
+            "internalConsoleOptions": "openOnSessionStart",
+            "console": "integratedTerminal"
+        }, 
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "twotime auth",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\bin\\index.js",
+            "args": [ "auth" ],
             "preLaunchTask": "${defaultBuildTask}",
             "outFiles": [
                 "${workspaceFolder}/bin/**/*.js"
