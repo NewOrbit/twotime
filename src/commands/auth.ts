@@ -7,11 +7,12 @@ export const auth = async (apiProvider: ApiProvider) => {
         harvestAccessToken,
         harvestAccountId,
         targetprocessUsername,
-        targetprocessPassword
+        targetprocessPassword,
+        targetprocessSubdomain
     } = await askAuthDetails();
 
-    apiProvider.setHarvestConfig(harvestAccessToken, harvestAccountId);
-    apiProvider.setTargetprocessConfig(targetprocessUsername, targetprocessPassword);
+    apiProvider.setHarvestConfig({ accessToken: harvestAccessToken, accountId: harvestAccountId });
+    apiProvider.setTargetprocessConfig({username: targetprocessUsername, password: targetprocessPassword, subdomain: targetprocessSubdomain });
 
     log.info("Authentication complete.");
 };

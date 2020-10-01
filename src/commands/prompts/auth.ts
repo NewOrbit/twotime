@@ -8,7 +8,8 @@ export const askAuthDetails = async () => {
         harvestAccessToken: string,
         harvestAccountId: number,
         targetprocessUsername: string,
-        targetprocessPassword: string
+        targetprocessPassword: string,
+        targetprocessSubdomain: string
     }>([{
         name: "harvestAccessToken",
         message: "What is your Harvest access token?",
@@ -27,5 +28,10 @@ export const askAuthDetails = async () => {
         message: "What is your Targetprocess password?",
         validate: notEmpty,
         type: "password"
+    }, {
+        name: "targetprocessSubdomain",
+        message: "What is your Targetprocess subdomain (e.g. 'neworbit')?",
+        validate: notEmpty,
+        default: "neworbit"
     }]);
 };
