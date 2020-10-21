@@ -76,8 +76,14 @@ const updateTargetprocess = async (targetprocessApi: Targetprocess, request: Fin
     const notes = getTargetprocessNotes(request, timeEntity);
 
     // Issue #64: If the linked TP entity is a Task *and* its timeRemaining is 0, set the task to 'Done'
-    if (timeEntity.ResourceType === "Task" && request.timeRemaining === 0) {
-      await targetprocessApi.setTaskState(timeEntity.Id, "Done");
+    if (timeEntity.ResourceType === "Task" &&
+        request.timeRemaining === 0 &&
+        request.tpEntity &&
+        request.tpEntity.Project &&
+        request.tpEntity.Project.Process &&
+        request.tpEntity.Project.Process.Id) {
+
+      await targetprocessApi.setTaskState(timeEntity.Id, "Done", request.tpEntity.Project.Process.Id);
     }
 
     return targetprocessApi.addTime(timeEntity.Id, request.timeEntry.hours, request.timeRemaining, new Date(request.timeEntry.created), notes);
