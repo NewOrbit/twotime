@@ -49,6 +49,6 @@
     "moment": "^2.22.2",
     "request-promise-json": "^1.0.4",
     "table": "^5.1.0",
-    "targetprocess-rest-api": "^0.3.0"
+    "targetprocess-rest-api": "^1.0.0"
   }
 }
