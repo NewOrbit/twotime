@@ -22,7 +22,6 @@ export const start = async (packageVersion: string, apiProvider: ApiProvider, da
     try {
         await harvestApi.startTimeEntry(details.projectId, details.taskId, date, notes, details.hours, details.running);
 
-        // Issue #81: If the linked TP entity is a Task *and* its current state is 'Open' or 'Dev ready', set the task to 'In Progress'
         if (details.entity &&
             details.entity.Id &&
             details.entity.ResourceType === "Task" &&
