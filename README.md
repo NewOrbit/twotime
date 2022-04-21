@@ -6,11 +6,9 @@ Sync timesheets between Harvest and Targetprocess
 
     npm install -g twotime
 
-## Usage
+## Setup
 
-### Authentication
-
-Before you can start tracking time properly, you first need to authenticate against Harvest and Targetprocess.
+Once [installed](#installation), you need to authenticate against Harvest and Targetprocess.
 
     twotime auth
 
@@ -18,6 +16,35 @@ You will need:
 
 - Harvest [personal access token](https://id.getharvest.com/developers) and account ID
 - Targetprocess username and password
+
+### Windows and WSL
+
+If you're using Windows and WSL, you may wish to be able to use twotime in either environment.  To avoid having two separate authentication configurations you can symlink the configuration files.  
+
+<details>
+    <summary>Windows and WSL example</summary>
+<br/>
+    Assuming you've already installed and authenticated your Windows installation of twotime, then head to WSL:
+
+1. Install `twotime` in WSL 
+    ```bash
+    $ npm -g i twotime
+    ```
+    
+2. symlink the configs, substituting `USER_NAME` with the value from `%USERNAME%` in your Windows environment
+    ```bash
+    $ mkdir -p ~/.config/configstore
+    $ ln -s /mnt/c/Users/USER_NAME/.config/configstore/twotime.json ~/.config/configstore/twotime.json
+    $ twotime list
+    [INFO] Getting config from /home/JohnDoe/.config/configstore/twotime.json
+    ╔═══════════════╤══════════════════════════╤═════════════╤════════╗
+    ║  Entity Type  │  Title                   │    Hours    │ Status ║
+    ```
+</details>
+
+## Usage
+
+Please ensure you've authenticated (see [Setup](#setup)) before using `twotime`.
 
 ### Time tracking
 
