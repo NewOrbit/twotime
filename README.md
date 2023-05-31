@@ -77,6 +77,18 @@ Use the `--tp` option to start a timer without prompting for a Targetprocess ID:
 
     twotime start --tp 12345
 
+### Issue time entries
+
+When a time entry for a TargetProcess `Issue` is finished, time is booked on the relevant TargetProcess entity based on the value of custom field `IssueTime to` on the TargetProcess project. Values for this custom field can be as below:
+
+- `User story` - Issue time is booked on the user story. If the issue is not attached to a user story, no time is booked on TargetProcess.
+- `Issue` - Issue time is booked to the issue.
+- `none` - No issue time is booked on TargetProcess.
+
+### Task time entries
+
+When a time entry for a TargetProcess `Task` is finished, if the time remaining on the task is 0, then it is moved to `Done` state.
+
 ## License
 
 Made with :sparkling_heart: by [NewOrbit](https://www.neworbit.co.uk/) in Oxfordshire, and licensed under the [MIT Licence](LICENCE)
