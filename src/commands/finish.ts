@@ -112,5 +112,6 @@ export const finish = async (packageVersion: string, apiProvider: ApiProvider, d
         log.info(`> Timer finished\n`);
     }
 
-    log.info(`Finished ${ finishTimerRequests.length } timers`);
+    const pluralSuffix = finishTimerRequests.length === 1 ? "" : "s";
+    log.info(`Finished ${finishTimerRequests.length} timer${pluralSuffix}.`);
 };

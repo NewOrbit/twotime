@@ -1,6 +1,6 @@
 {
   "name": "twotime",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Sync timesheets between Harvest and Targetprocess",
   "main": "index.js",
   "bin": "bin/index.js",
@@ -9,7 +9,10 @@
     "build": "tsc",
     "build-test": "tsc -p ./tsconfig.test.json",
     "test": "npm run build-test && alsatian \"bin-test/**/*.test.js\"",
-    "lint": "tslint -c tslint.json \"{src,test}/**/*.ts\""
+    "lint": "tslint -c tslint.json \"{src,test}/**/*.ts\"",
+    "start": "node bin/index.js start",
+    "list": "node bin/index.js list",
+    "finish": "node bin/index.js finish"
   },
   "files": [
     "bin"

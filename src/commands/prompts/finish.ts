@@ -2,7 +2,6 @@ import * as inquirer from "inquirer";
 import { HarvestApi, HarvestTimeEntry } from "../../harvest/api";
 import { log } from "../../utils/log";
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
-import { getProjectedTimeRemaining } from "../../utils/get-projected-time-remaining";
 import { ApiProvider } from "../../api-provider";
 import { getTimeEntryPrompt } from "../../utils/get-time-entry-prompt";
 import { isRunningOrUnfinished } from "../../utils/is-running-or-unfinished";
@@ -20,12 +19,24 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
         return null;
     }
 
-    const projectedTimeRemaining = getProjectedTimeRemaining(tpEntity.TimeRemain, timeEntry.hours);
-
     log.info(`${ timeEntry.metadata.entity.name } (#${ timeEntry.metadata.entity.id })`);
-    log.info(`> Projected hours remaining: ${ projectedTimeRemaining.toFixed(2) }`);
 
-    return askHours("How much time remaining?", projectedTimeRemaining);
+    let hoursRemaining = 0.0;
+    if (timeEntry.hours > tpEntity.TimeRemain) {
+        const overrun = timeEntry.hours - tpEntity.TimeRemain;
+        log.warn(`The time entered exceeds that remaining in TP by ${overrun.toFixed(2)} hours. Please ensure your tech lead (or PM) is aware.`);
+        hoursRemaining = await askHours("How much time remaining? [no default]");  // no default passed in, so user has to type something
+    } else {
+        // Normal case of no overrun at this point
+        const projectedTimeRemaining = tpEntity.TimeRemain - timeEntry.hours;
+        hoursRemaining = await askHours(`How much time remaining? (No default; TP says ${projectedTimeRemaining.toFixed(2)} hours)`);
+        if (hoursRemaining > projectedTimeRemaining) {
+            const excess = hoursRemaining - projectedTimeRemaining;
+            log.warn(`The time entered will exceed that remaining in TP by ${excess.toFixed(2)} hours. Please ensure your tech lead (or PM) is aware.`);
+        }
+    }
+
+    return hoursRemaining;
 };
 
 const getTimeEntries = async (harvestApi: HarvestApi, date: string, all: boolean) => {
