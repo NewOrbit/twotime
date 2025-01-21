@@ -25,7 +25,8 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     const projectedTimeRemaining = tpEntity.TimeRemain - timeEntry.hours;
     if (projectedTimeRemaining < -0.016) {
         // The projected time remaining is more than a minute over (allows for rounding error and time taken to go through this process)
-        log.warn(`The time entered exceeds that remaining in TP by ${-projectedTimeRemaining.toFixed(2)} hours. Please ensure your tech lead (or PM) is aware.`);
+        log.warn(`The time entered exceeds that remaining in TP by ${-projectedTimeRemaining.toFixed(2)} hours.` +
+          " Please ensure your tech lead (or PM) is aware.");
         hoursRemaining = await askHours("How much time remaining? [no default]");  // no default passed in, so user has to type something
     } else {
         // Normal case of no overrun at this point
