@@ -1,7 +1,7 @@
 import * as inquirer from "inquirer";
 import { ApiProvider } from "../api-provider";
 import { getTodayDate } from "../utils/get-today-date";
-import { HarvestTimeEntry } from "../harvest/api";
+import { HarvestTimeEntry } from "../harvest/models/time-entry";
 import { getTimeEntryPrompt } from "../utils/get-time-entry-prompt";
 import { log } from "../utils/log";
 import { isPausedAndUnfinished } from "../utils/is-paused-and-unfinished";

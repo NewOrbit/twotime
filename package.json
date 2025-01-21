@@ -1,6 +1,6 @@
 {
-  "name": "twotime",
-  "version": "2.0.1",
+  "name": "twotime-y",
+  "version": "2.0.2",
   "description": "Sync timesheets between Harvest and Targetprocess",
   "main": "index.js",
   "bin": "bin/index.js",
@@ -45,7 +45,6 @@
     "commander": "^2.18.0",
     "configstore": "^4.0.0",
     "entities": "^1.1.1",
-    "harvest": "^2.2.5",
     "inquirer": "^6.2.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "lodash.mapvalues": "^4.6.0",

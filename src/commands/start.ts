@@ -1,6 +1,5 @@
 import { askStartDetails } from "./prompts/start";
-import { createNotes } from "../harvest/notes/create-notes";
-import { createNoteMetadata } from "../harvest/notes/create-note-metadata";
+import { createNoteMetadata, createNotes } from "../harvest/helpers/create-notes";
 import { ApiProvider } from "../api-provider";
 import { log } from "../utils/log";
 
@@ -36,7 +35,7 @@ export const start = async (packageVersion: string, apiProvider: ApiProvider, da
             await targetprocessApi.setTaskState(details.entity.Id, "In Progress", details.entity.Project.Process.Id);
         }
     } catch (e) {
-        log.error(e);
+        log.error(e instanceof Error ? e.message : "An unknown error occurred");
     }
 
     log.info("> Timer started");

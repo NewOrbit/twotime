@@ -1,5 +1,6 @@
 import * as inquirer from "inquirer";
-import { HarvestApi, HarvestTimeEntry } from "../../harvest/api";
+import { HarvestApi } from "../../harvest/api";
+import { HarvestTimeEntry } from "../../harvest/models/time-entry";
 import { log } from "../../utils/log";
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { ApiProvider } from "../../api-provider";
@@ -19,7 +20,7 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
         return null;
     }
 
-    log.info(`${ timeEntry.metadata.entity.name } (#${ timeEntry.metadata.entity.id })`);
+    log.info(`${ timeEntry.metadata.tpItem?.Name } (#${ timeEntry.metadata.tpItem?.Id })`);
 
     let hoursRemaining = 0.0;
     const projectedTimeRemaining = tpEntity.TimeRemain - timeEntry.hours;
@@ -67,11 +68,11 @@ const getTimeEntries = async (harvestApi: HarvestApi, date: string, all: boolean
 };
 
 const getTargetprocessEntityForEntry = async (targetprocessApi: Targetprocess, timeEntry: HarvestTimeEntry) => {
-    if (timeEntry.metadata === null) {
+    if (timeEntry.metadata === null || timeEntry.metadata.tpItem === null) {
         return null;
     }
 
-    return getTargetprocessEntity(targetprocessApi, timeEntry.metadata.entity.id);
+    return getTargetprocessEntity(targetprocessApi, timeEntry.metadata.tpItem.Id);
 };
 
 export const askFinishDetails = async (apiProvider: ApiProvider, date: string, all: boolean) => {
