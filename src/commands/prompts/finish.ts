@@ -20,7 +20,7 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
         return null;
     }
 
-    log.info(`${ timeEntry.metadata.tpItem?.Name } (#${ timeEntry.metadata.tpItem?.Id })`);
+    log.info(`${ timeEntry.metadata.tpBookableEntity?.Name } (#${ timeEntry.metadata.tpBookableEntity?.Id })`);
 
     let hoursRemaining = 0.0;
     const projectedTimeRemaining = tpEntity.TimeRemain - timeEntry.hours;
@@ -68,11 +68,11 @@ const getTimeEntries = async (harvestApi: HarvestApi, date: string, all: boolean
 };
 
 const getTargetprocessEntityForEntry = async (targetprocessApi: Targetprocess, timeEntry: HarvestTimeEntry) => {
-    if (timeEntry.metadata === null || timeEntry.metadata.tpItem === null) {
+    if (timeEntry.metadata === null || timeEntry.metadata.tpBookableEntity === null) {
         return null;
     }
 
-    return getTargetprocessEntity(targetprocessApi, timeEntry.metadata.tpItem.Id);
+    return getTargetprocessEntity(targetprocessApi, timeEntry.metadata.tpBookableEntity.Id);
 };
 
 export const askFinishDetails = async (apiProvider: ApiProvider, date: string, all: boolean) => {

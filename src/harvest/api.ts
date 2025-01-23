@@ -12,9 +12,9 @@ import { HarvestUserData } from "./models/userdata";
  * Harvest API class
  */
 export class HarvestApi {
-  //private subdomain = "neworbit";  // neworbit.harvestapp.com is seen in the browser plugin but doesn't work with the API
+  // private subdomain = "neworbit";  // neworbit.harvestapp.com is seen in the browser plugin but doesn't work with the API
   private userAgent = "twotime";
-  private baseUrlV2 = 'https://api.harvestapp.com/v2';
+  private baseUrlV2 = "https://api.harvestapp.com/v2";
   private accessToken: string;
   private accountId: number;
 
@@ -50,9 +50,8 @@ export class HarvestApi {
               };
             })
           };
-
-        convertedProjects.push(convertedProject);
-      });
+          convertedProjects.push(convertedProject);
+        });
     }
 
     return convertedProjects;
@@ -105,7 +104,7 @@ export class HarvestApi {
     const response = await fetch(
       `${this.baseUrlV2}/time_entries`,
       {
-        method: 'POST',
+        method: "POST",
         headers: this.createHeaders(),
         body: JSON.stringify(timer)
       }
@@ -120,12 +119,12 @@ export class HarvestApi {
           if (started) {
             return body.id;
           } else {
-            console.log('Failed to start time entry!!');
+            throw new Error("Failed to start time entry");
           }
         }
       }
     } else {
-      console.log(`Failed to get time entry for project ID ${projectId} and task ID ${taskId}.`);
+      throw new Error(`Failed to get time entry for project ID ${projectId} and task ID ${taskId}.`);
     }
 
     return -1;
@@ -137,7 +136,7 @@ export class HarvestApi {
    * @returns {boolean} true if the timer was successfully resumed
    */
   public async resumeTimeEntry(timeEntryId: number): Promise<boolean> {
-    return this.patchOperation('restart', timeEntryId);
+    return this.patchOperation("restart", timeEntryId);
   }
 
   /**
@@ -147,7 +146,7 @@ export class HarvestApi {
    * @returns {boolean} true if the timer was successfully stopped
    */
   public async stopTimeEntry(timeEntryId: number): Promise<boolean> {
-    return this.patchOperation('stop', timeEntryId);
+    return this.patchOperation("stop", timeEntryId);
   }
 
   /**
@@ -157,7 +156,7 @@ export class HarvestApi {
    * @returns {boolean} true if the notes were successfully updated
    */
   public async updateNotes(timeEntryId: number, notes: string): Promise<boolean> {
-    return this.patchOperation('', timeEntryId, notes);
+    return this.patchOperation("", timeEntryId, notes);
   }
 
   // ---  Private methods  ---
@@ -180,10 +179,10 @@ export class HarvestApi {
   // Single place to create the headers for the fetch requests
   private createHeaders() {
     return {
-      'Authorization': `Bearer ${this.accessToken}`,
-      'Harvest-Account-Id': `${this.accountId}`,
-      'User-Agent': this.userAgent,
-      'Content-Type': 'application/json'
+      "Authorization": `Bearer ${this.accessToken}`,
+      "Harvest-Account-Id": `${this.accountId}`,
+      "User-Agent": this.userAgent,
+      "Content-Type": "application/json"
     };
   }
 
@@ -201,10 +200,10 @@ export class HarvestApi {
   }
 
   // Single place to perform a patch operation on a time entry - starting it, stopping it or updating the notes
-  private async patchOperation(directive: string, entryId: number, updatedNotes = ''): Promise<boolean> {
+  private async patchOperation(directive: string, entryId: number, updatedNotes = ""): Promise<boolean> {
     const url = directive ? `${this.baseUrlV2}/time_entries/${entryId}/${directive}` : `${this.baseUrlV2}/time_entries/${entryId}`;
     const requestInfo: RequestInit =  {
-      method: 'PATCH',
+      method: "PATCH",
       headers: this.createHeaders()
     };
 

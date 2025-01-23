@@ -1,5 +1,5 @@
 import { TestFixture, Test, Expect } from "alsatian";
-import { findLinesWithoutPrefix } from "../../src/harvest/notes/parse-prefix";
+import { findLinesWithoutPrefix } from "../../src/harvest/helpers/notes-utilities";
 
 @TestFixture()
 export class FindLinesWithoutPrefixTests {

@@ -9,18 +9,22 @@ import { findLinesWithoutPrefix, findPrefixInLines, splitLines } from "./notes-u
 import { EntityType } from "../../target-process/models/tp-bookable-entity";
 import { constructTpEntity } from "../../target-process/helpers/tp-utilities";
 
-const decodeHTML = require("entities").decodeHTML;  // this is going away but keep for now
+/* tslint:disable:no-var-requires */
+const entities = require("entities");  // this is going away but keep for now
+/* tslint:enable:no-var-requires */
 
 // --- Declare internal interfaces ---
-
-interface ParsedNotes {
-  metadata: NoteMetadata | null;
-  additionalNotes: string[];
-}
 
 interface ParsedLine {
   id: number;
   name: string;
+}
+
+// --- Exported interfaces
+
+export interface ParsedNotes {
+  metadata: NoteMetadata | null;
+  additionalNotes: string[];
 }
 
 // --- Exported functions ---
@@ -32,7 +36,7 @@ interface ParsedLine {
  * @returns {ParsedNotes} the parsed notes object.
  */
 export const parseNotes = (notes: string) => {
-  const lines = splitLines(decodeHTML(notes));
+  const lines = splitLines(entities.decodeHTML(notes));
   const metadata = getMetadata(lines);
   const additionalNotes = getAdditionalNotes(lines);
 
@@ -44,7 +48,7 @@ export const parseNotes = (notes: string) => {
   return parsedNotes;
 };
 
-//--- Internal functions ---
+// --- Internal functions ---
 
 /**
  * Get the various bits of information (metadata) from the notes lines.
@@ -54,11 +58,12 @@ export const parseNotes = (notes: string) => {
 const getMetadata = (lines: string[]) => {
   // Extract the user story information from the notes lines
   const userStoryLine = findPrefixInLines(lines, NotePrefixes.userStory);
-  const userStoryParts = userStoryLine ? splitIdAndName(userStoryLine): null;
+  const userStoryParts = userStoryLine !== null ? splitIdAndName(userStoryLine) : null;
 
   // Extract the TP entity information from the notes lines, trying for task first, then bug
   let entityLine = findPrefixInLines(lines, NotePrefixes.task);
   let entityType = EntityType.TASK;
+  // Check if entityLine is falsy rather than explicitly null, as there won't be valid info in an empty string.
   if (!entityLine) {
     entityLine = findPrefixInLines(lines, NotePrefixes.bug);
     entityType = EntityType.BUG;
@@ -66,25 +71,25 @@ const getMetadata = (lines: string[]) => {
   const entityParts = entityLine ? splitIdAndName(entityLine) : null;
 
   // Extract the TP entity status
-  const finished = findPrefixInLines(lines, NotePrefixes.finished) ? true : false;
+  const finished = findPrefixInLines(lines, NotePrefixes.finished) === "";
 
   // Return null if there is no TP entity and there is no 'finished' indication in the notes
-  if (userStoryParts === null && entityParts === null && !finished) {
+  if (entityParts === null && !finished) {
     return null;
   }
 
-  const version = findPrefixInLines(lines, NotePrefixes.twotime);
-  const tpItem = userStoryParts && entityParts
-    ? constructTpEntity(userStoryParts.id, userStoryParts.name, entityParts.id, entityParts.name, entityType)
+  const version = findPrefixInLines(lines, NotePrefixes.twotime) || "Twotime unknown version";
+  const tpBookableEntity = entityParts
+    ? constructTpEntity(userStoryParts?.id || 0, userStoryParts?.name || "", entityParts.id, entityParts.name, entityType)
     : null;
 
   const notesMetadata: NoteMetadata = {
-    tpItem,
+    tpBookableEntity,
     finished,
     version
   };
 
-  return notesMetadata
+  return notesMetadata;
 };
 
 // Get any additional notes that are not part of the metadata

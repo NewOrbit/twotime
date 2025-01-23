@@ -1,6 +1,7 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
-import { createNotes } from "../../src/harvest/notes/create-notes";
-import { NoteMetadata, EntityType } from "../../src/harvest/notes/note-metadata";
+import { createNotes } from "../../src/harvest/helpers/create-notes";
+import { EntityType } from "../../src/target-process/models/tp-bookable-entity";
+import { NoteMetadata } from "../../src/harvest/models/time-entry";
 import { NoteMetadataBuilder } from "../_builders/note-metadata.builder";
 import { EntityBuilder } from "../_builders/entity.builder";
 
@@ -10,14 +11,15 @@ export class CreateNotesTests {
     @Test()
     public shouldCreateNotesCorrectlyForTask() {
         const input: NoteMetadata = {
-            userStory: {
-                id: 12345,
-                name: "Foo"
-            },
-            entity: {
-                type: EntityType.TASK,
-                id: 67890,
-                name: "Some Task Name"
+            tpBookableEntity: {
+                ResourceType: EntityType.TASK,
+                Id: 67890,
+                Name: "Some Task Name",
+                UserStory: {
+                    Id: 12345,
+                    Name: "Foo",
+                    ResourceType: "UserStory"
+                },
             },
             finished: false,
             version: "0.0.0"
@@ -35,14 +37,15 @@ export class CreateNotesTests {
     @Test()
     public shouldCreateNotesCorrectlyForBug() {
         const input: NoteMetadata = {
-            userStory: {
-                id: 17441,
-                name: "User should be able to eat cheese"
-            },
-            entity: {
-                type: EntityType.BUG,
-                id: 94123,
-                name: "A very very horrible bug"
+            tpBookableEntity: {
+                ResourceType: EntityType.BUG,
+                Id: 94123,
+                Name: "A very very horrible bug",
+                UserStory: {
+                    Id: 17441,
+                    Name: "User should be able to eat cheese",
+                    ResourceType: "UserStory"
+                },
             },
             finished: false,
             version: "0.0.0"
@@ -60,11 +63,10 @@ export class CreateNotesTests {
     @Test()
     public shouldCreateNotesCorrectlyWithoutUserStory() {
         const input: NoteMetadata = {
-            userStory: null,
-            entity: {
-                type: EntityType.BUG,
-                id: 94123,
-                name: "A very very horrible bug"
+            tpBookableEntity: {
+                ResourceType: EntityType.BUG,
+                Id: 94123,
+                Name: "A very very horrible bug"
             },
             finished: false,
             version: "0.0.0"
@@ -87,7 +89,6 @@ export class CreateNotesTests {
             .build();
 
         const input = new NoteMetadataBuilder()
-            .withUserStory(null)
             .withEntity(entity)
             .withFinished(true)
             .build();
@@ -105,11 +106,10 @@ export class CreateNotesTests {
     @TestCase(["some additional notes", "more"])
     public shouldDisplayAdditionalNotesCorrectly(additional: string[]) {
         const input: NoteMetadata = {
-            userStory: null,
-            entity: {
-                type: EntityType.BUG,
-                id: 94123,
-                name: "A very very horrible bug"
+            tpBookableEntity: {
+                ResourceType: EntityType.BUG,
+                Id: 94123,
+                Name: "A very very horrible bug"
             },
             finished: false,
             version: "0.0.0"

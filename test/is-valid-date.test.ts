@@ -1,5 +1,5 @@
 import { TestFixture, TestCase, Expect } from "alsatian";
-import { isValidDate } from "../src/utils/is-valid-date";
+import { isValidDate } from "../src/utils/dates";
 
 const MOCK_TODAY_DATE_RESULT = "1996-01-01";
 const MOCK_GET_TODAY_DATE = () => MOCK_TODAY_DATE_RESULT;

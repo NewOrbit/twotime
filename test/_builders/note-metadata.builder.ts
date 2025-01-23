@@ -1,19 +1,13 @@
-import { NoteMetadata, TargetProcessItem, EntityType, Entity } from "../../src/harvest/notes/note-metadata";
-import { TargetprocessItemBuilder } from "./targetprocess-item.builder";
+import { TpBookableEntity } from "../../src/target-process/models/tp-bookable-entity";
+import { NoteMetadata } from "../../src/harvest/models/time-entry";
 import { EntityBuilder } from "./entity.builder";
 
 export class NoteMetadataBuilder {
-    private userStory: TargetProcessItem = new TargetprocessItemBuilder().build();
-    private entity: Entity = new EntityBuilder().build();
+    private entity: TpBookableEntity = new EntityBuilder().build();
     private finished: boolean = false;
     private version: string = "0.0.0";
 
-    public withUserStory(userStory: TargetProcessItem) {
-        this.userStory = userStory;
-        return this;
-    }
-
-    public withEntity(entity: Entity) {
+    public withEntity(entity: TpBookableEntity) {
         this.entity = entity;
         return this;
     }
@@ -30,8 +24,7 @@ export class NoteMetadataBuilder {
 
     public build(): NoteMetadata {
         return {
-            userStory: this.userStory,
-            entity: this.entity,
+            tpBookableEntity: this.entity,
             finished: this.finished,
             version: this.version
         };

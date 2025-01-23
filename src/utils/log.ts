@@ -14,7 +14,7 @@ export const log = {
             ...rows
         ];
 
-        const tableBorder = mapValues(getBorderCharacters("honeywell"), char => chalk.gray(char));
+        const tableBorder = mapValues(getBorderCharacters("honeywell"), char => chalk.gray(char || ""));
 
         const output = table(data, {
             border: tableBorder,

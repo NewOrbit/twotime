@@ -13,10 +13,10 @@ import { NotePrefixes } from "../models/note-prefixes";
  * @param version the twotime version string.
  * @returns {NoteMetadata | null} the metadata object for the notes field, or null if there's no TP entity.
  */
-export const createNoteMetadata = (tpItem: TpBookableEntity, version: string) => {
+export const createNoteMetadata = (tpItem: TpBookableEntity | null, version: string) => {
   if (tpItem) {
     const notesMetadata: NoteMetadata = {
-      tpItem,
+      tpBookableEntity: tpItem,
       finished: false,
       version
     };
@@ -35,17 +35,17 @@ export const createNoteMetadata = (tpItem: TpBookableEntity, version: string) =>
 export const createNotes = (metadata: NoteMetadata | null, additionalNotes?: string[]): string => {
   const notesLines: string[] = [];
 
-  const tpItem = metadata?.tpItem;
+  const tpItem = metadata?.tpBookableEntity;
   if (tpItem) {
-    // There is a TP item in play i.e. it's not a NewOrbit internal item
+    // There is a TP bookable entity in play i.e. it's not a NewOrbit internal item
     if (tpItem.UserStory) {
-      const line = createNotesLine(NotePrefixes.userStory, tpItem.UserStory.Id, tpItem.UserStory.Name);
-      notesLines.push(line);
+      const usLine = createNotesLine(NotePrefixes.userStory, tpItem.UserStory.Id, tpItem.UserStory.Name);
+      notesLines.push(usLine);
     }
 
     const prefix = tpItem.ResourceType === EntityType.TASK ? NotePrefixes.task : NotePrefixes.bug;
-    const line = createNotesLine(prefix, tpItem.Id, tpItem.Name);
-    notesLines.push(line);
+    const entLine = createNotesLine(prefix, tpItem.Id, tpItem.Name);
+    notesLines.push(entLine);
   }
 
   if (metadata?.finished) {

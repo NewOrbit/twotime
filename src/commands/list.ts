@@ -4,17 +4,17 @@ import { HarvestTimeEntry } from "../harvest/models/time-entry";
 import chalk from "chalk";
 
 const getTypeForEntry = (entry: HarvestTimeEntry) => {
-    let resType = '';
+    let resType = "";
     if (entry.metadata) {
-        resType = entry.metadata.tpItem?.ResourceType?.toString() || '';
+        resType = entry.metadata.tpBookableEntity?.ResourceType?.toString() || "";
     }
 
     return resType || chalk.gray("n/a");
 };
 
 const getTextForEntry = (entry: HarvestTimeEntry) => {
-    if (entry.metadata && entry.metadata.tpItem) {
-        return `${ entry.metadata.tpItem.Name } (#${ entry.metadata.tpItem.Id })`;
+    if (entry.metadata && entry.metadata.tpBookableEntity) {
+        return `${ entry.metadata.tpBookableEntity.Name } (#${ entry.metadata.tpBookableEntity.Id })`;
     }
 
     return entry.notes[0];

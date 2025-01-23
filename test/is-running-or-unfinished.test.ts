@@ -1,7 +1,6 @@
 import { TestFixture, Test, Expect } from "alsatian";
-import { HarvestTimeEntry } from "../src/harvest/api";
+import { HarvestTimeEntry } from "../src/harvest/models/time-entry";
 import { isRunningOrUnfinished } from "../src/utils/is-running-or-unfinished";
-import { EntityType } from "../src/harvest/notes/note-metadata";
 import { NoteMetadataBuilder } from "./_builders/note-metadata.builder";
 
 @TestFixture()

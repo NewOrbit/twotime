@@ -1,6 +1,6 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
-import { parseNotes } from "../../src/harvest/notes/parse-notes";
-import { EntityType } from "../../src/harvest/notes/note-metadata";
+import { parseNotes, ParsedNotes } from "../../src/harvest/helpers/parse-notes";
+import { EntityType } from "../../src/target-process/models/tp-bookable-entity";
 
 @TestFixture()
 export class ParseNotesTests {
@@ -12,16 +12,17 @@ export class ParseNotesTests {
             + "&gt; finished\n"
             + "&gt; twotime 0.0.0";
 
-        const expected = {
+        const expected: ParsedNotes = {
             metadata: {
-                userStory: {
-                    id: 35858,
-                    name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
-                },
-                entity: {
-                    type: EntityType.BUG,
-                    id: 40732,
-                    name: "v8.13 - FK AdditionalApplicationAnswers"
+                tpBookableEntity: {
+                    ResourceType: EntityType.BUG,
+                    Id: 40732,
+                    Name: "v8.13 - FK AdditionalApplicationAnswers",
+                    UserStory: {
+                        Id: 35858,
+                        Name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process",
+                        ResourceType: "UserStory"
+                    }
                 },
                 finished: true,
                 version: "0.0.0"
@@ -40,16 +41,17 @@ export class ParseNotesTests {
             + "&gt; bug #40732 v8.13 - FK AdditionalApplicationAnswers\n"
             + "&gt; twotime 0.0.0";
 
-        const expected = {
+        const expected: ParsedNotes = {
             metadata: {
-                userStory: {
-                    id: 35858,
-                    name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
-                },
-                entity: {
-                    type: EntityType.BUG,
-                    id: 40732,
-                    name: "v8.13 - FK AdditionalApplicationAnswers"
+                tpBookableEntity: {
+                    ResourceType: EntityType.BUG,
+                    Id: 40732,
+                    Name: "v8.13 - FK AdditionalApplicationAnswers",
+                    UserStory: {
+                        Id: 35858,
+                        Name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process",
+                        ResourceType: "UserStory"
+                    }
                 },
                 finished: false,
                 version: "0.0.0"
@@ -69,16 +71,17 @@ export class ParseNotesTests {
             + "&gt; finished but it's not the correct format!\n"
             + "&gt; twotime 0.0.0";
 
-        const expected = {
+        const expected: ParsedNotes = {
             metadata: {
-                userStory: {
-                    id: 35858,
-                    name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
-                },
-                entity: {
-                    type: EntityType.BUG,
-                    id: 40732,
-                    name: "v8.13 - FK AdditionalApplicationAnswers"
+                tpBookableEntity: {
+                    ResourceType: EntityType.BUG,
+                    Id: 40732,
+                    Name: "v8.13 - FK AdditionalApplicationAnswers",
+                    UserStory: {
+                        Id: 35858,
+                        Name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process",
+                        ResourceType: "UserStory"
+                    }
                 },
                 finished: false,
                 version: "0.0.0"
@@ -98,16 +101,17 @@ export class ParseNotesTests {
             + "&gt; finished\n"
             + "&gt; twotime 0.0.0";
 
-        const expected = {
+        const expected: ParsedNotes = {
             metadata: {
-                userStory: {
-                    id: 35858,
-                    name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
-                },
-                entity: {
-                    type: EntityType.TASK,
-                    id: 12345,
-                    name: "Foo! Bar"
+                tpBookableEntity: {
+                    ResourceType: EntityType.TASK,
+                    Id: 12345,
+                    Name: "Foo! Bar",
+                    UserStory: {
+                        Id: 35858,
+                        Name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process",
+                        ResourceType: "UserStory"
+                    }
                 },
                 finished: true,
                 version: "0.0.0"
@@ -129,16 +133,17 @@ export class ParseNotesTests {
             + "some additional notes\n"
             + "and some more";
 
-        const expected = {
+        const expected: ParsedNotes = {
             metadata: {
-                userStory: {
-                    id: 35858,
-                    name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
-                },
-                entity: {
-                    type: EntityType.TASK,
-                    id: 12345,
-                    name: "Foo! Bar"
+                tpBookableEntity: {
+                    ResourceType: EntityType.TASK,
+                    Id: 12345,
+                    Name: "Foo! Bar",
+                    UserStory: {
+                        Id: 35858,
+                        Name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process",
+                        ResourceType: "UserStory"
+                    }
                 },
                 finished: true,
                 version: "0.0.0"
@@ -160,14 +165,15 @@ export class ParseNotesTests {
 
         const expected = {
             metadata: {
-                userStory: {
-                    id: 35858,
-                    name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process"
-                },
-                entity: {
-                    type: EntityType.TASK,
-                    id: 12345,
-                    name: "Foo! Bar"
+                tpBookableEntity: {
+                    ResourceType: EntityType.TASK,
+                    Id: 12345,
+                    Name: "Foo! Bar",
+                    UserStory: {
+                        Id: 35858,
+                        Name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process",
+                        ResourceType: "UserStory"
+                    }
                 },
                 finished: false,
                 version: "0.0.0"
@@ -220,7 +226,7 @@ export class ParseNotesTests {
 
         const res = parseNotes(input);
 
-        Expect(res.metadata.version).toEqual(version);
+        Expect(res.metadata?.version).toEqual(version);
     }
 
 }

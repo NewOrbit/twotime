@@ -26,14 +26,15 @@ export const parsePrefix = (line: string, prefix: string) => {
 
 /**
  * Given a list of lines and a prefix, find the line beginning with that prefix (minus the prefix itself).
- * For example, given ([ "> alpha bravo", "> foo bar" ], "> foo"), it will return "bar"
+ * For example, given ([ "> alpha bravo", "> foo bar" ], "> foo"), it will return "bar".
+ * Note that the empty string is a valid outcome, so this function returns null if no matches were found.
  * @param lines the incoming list of lines.
  * @param prefix the prefix to search for.
  * @returns {string} the found line or the empty string if not found.
  */
 export const findPrefixInLines = (lines: string[], prefix: string) => {
   const matching = lines.map(line => parsePrefix(line, prefix)).filter(mappedLine => mappedLine !== null);
-  return matching.length > 0 ? matching[0] : '';
+  return matching.length > 0 ? matching[0] : null;
 };
 
 /**

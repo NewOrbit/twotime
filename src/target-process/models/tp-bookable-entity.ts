@@ -3,7 +3,7 @@
  * Ian French, NewOrbit Ltd, Jan 2025.
  */
 
-import { TpUserStory } from './tp-user-story';
+import { TpUserStory } from "./tp-user-story";
 
 /**
  * Enumeration of the possible entity types, extracted from the "ResourceType" property of the TP entity.
@@ -12,7 +12,6 @@ export enum EntityType {
   BUG = "Bug",
   TASK = "Task"
 }
-
 
 /**
  * Targetprocess bookable entity (task or bug) common model. Straight from TP, properties start with
@@ -25,5 +24,5 @@ export interface TpBookableEntity {
   TimeRemain?: number;
   TimeSpent?: number;
   Units?: string;
-  UserStory: TpUserStory;
+  UserStory?: TpUserStory;
 }
