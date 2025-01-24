@@ -1,6 +1,6 @@
 import { Targetprocess } from "targetprocess-rest-api";
 import { HarvestApi } from "../harvest/api";
-import { createNotes } from "../harvest/notes/create-notes";
+import { createNotes } from "../harvest/helpers/create-notes";
 import { log } from "../utils/log";
 import { askFinishDetails, FinishTimerRequest } from "./prompts/finish";
 import { ApiProvider } from "../api-provider";
@@ -85,7 +85,7 @@ const updateTargetprocess = async (targetprocessApi: Targetprocess, request: Fin
       await targetprocessApi.setTaskState(timeEntity.Id, "Done", request.tpEntity.Project.Process.Id);
     }
 
-    return targetprocessApi.addTime(timeEntity.Id, request.timeEntry.hours, request.timeRemaining, new Date(request.timeEntry.created), notes);
+    return targetprocessApi.addTime(timeEntity.Id, request.timeEntry.hours, request.timeRemaining || 0, new Date(request.timeEntry.created), notes);
 };
 
 const getTimerDisplayName = (request: FinishTimerRequest) => {

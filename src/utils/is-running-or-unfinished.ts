@@ -1,4 +1,4 @@
-import { HarvestTimeEntry } from "../harvest/api";
+import { HarvestTimeEntry } from "../harvest/models/time-entry";
 
 export const isRunningOrUnfinished = (entry: HarvestTimeEntry) => {
     if (entry.running) {

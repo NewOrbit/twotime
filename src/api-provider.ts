@@ -22,8 +22,8 @@ const CONFIG_KEYS = {
 
 export class ApiProvider {
     private store: Configstore;
-    private harvestApi: HarvestApi;
-    private targetprocessApi: Targetprocess;
+    private harvestApi: HarvestApi | null;
+    private targetprocessApi: Targetprocess | null;
 
     // An optional DI makes testing a little easier.
     constructor(store?: Configstore) {
@@ -59,15 +59,14 @@ export class ApiProvider {
             return this.targetprocessApi;
         }
 
-        const { username, password, subdomain } = this.getTargetprocessConfig();
-
-        if (username === null || password === null || subdomain === null) {
+        const tpConfig = this.getTargetprocessConfig();
+        if (tpConfig === null || !tpConfig.username || !tpConfig.password || !tpConfig.subdomain) {
             log.error("Targetprocess authentication not configured correctly.");
             log.error("Use `twotime auth` to authenticate.");
             process.exit(1);
         }
 
-        const api = new Targetprocess(subdomain, username, password);
+        const api = new Targetprocess(tpConfig.subdomain, tpConfig.username, tpConfig.password);
 
         this.targetprocessApi = api;
 

@@ -1,20 +1,20 @@
 import { ApiProvider } from "../api-provider";
 import { log } from "../utils/log";
-import { HarvestTimeEntry } from "../harvest/api";
-import { getEntityTypeText } from "../utils/get-entity-type-text";
+import { HarvestTimeEntry } from "../harvest/models/time-entry";
 import chalk from "chalk";
 
 const getTypeForEntry = (entry: HarvestTimeEntry) => {
+    let resType = "";
     if (entry.metadata) {
-        return getEntityTypeText(entry.metadata.entity.type);
+        resType = entry.metadata.tpBookableEntity?.ResourceType?.toString() || "";
     }
 
-    return chalk.gray("n/a");
+    return resType || chalk.gray("n/a");
 };
 
 const getTextForEntry = (entry: HarvestTimeEntry) => {
-    if (entry.metadata) {
-        return `${ entry.metadata.entity.name } (#${ entry.metadata.entity.id })`;
+    if (entry.metadata && entry.metadata.tpBookableEntity) {
+        return `${ entry.metadata.tpBookableEntity.Name } (#${ entry.metadata.tpBookableEntity.Id })`;
     }
 
     return entry.notes[0];

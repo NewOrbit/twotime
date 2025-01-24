@@ -4,23 +4,22 @@ import { ApiProvider } from "./api-provider";
 import { start } from "./commands/start";
 import { finish } from "./commands/finish";
 import { auth } from "./commands/auth";
-import { isValidDate } from "./utils/is-valid-date";
-import { getTodayDate } from "./utils/get-today-date";
+import { getTodaysDate, getDateInPast, isValidDate } from "./utils/dates";
 import { log } from "./utils/log";
-import { getPastDate } from "./utils/get-past-date";
 import { resume } from "./commands/resume";
 import { pause } from "./commands/pause";
 import { list } from "./commands/list";
 
-const getDateForCommand = (command) => {
+// Temporary fixup of Typescript errors before a proper revamp (when we won't use 'any'!)
+const getDateForCommand = (command: any) => {
     if (command.date == null && command.offset == null) {
-        return getTodayDate();
+        return getTodaysDate();
     }
 
     const offset = parseInt(command.offset, 10);
 
     if (isFinite(offset) && offset > 0) {
-        return getPastDate(offset);
+        return getDateInPast(offset);
     }
 
     if (isValidDate(command.date)) {
@@ -30,9 +29,9 @@ const getDateForCommand = (command) => {
     return null;
 };
 
-const getAllForCommand = (command) => command.all !== null && command.all !== undefined;
+const getAllForCommand = (command: any) => command.all !== null && command.all !== undefined;
 
-const getTpForCommand = (command) => {
+const getTpForCommand = (command: any) => {
     if (command.tp === undefined) {
         return undefined;
     }

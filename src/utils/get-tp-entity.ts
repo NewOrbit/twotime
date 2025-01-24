@@ -8,7 +8,8 @@ export const getTargetprocessEntity = async (api: Targetprocess, id: number) => 
         const task = await api.getTask(id);
 
         return task;
-    } catch (e) {
+    } catch (err) {
+        const e = err as any;  // VERY NASTY TEMPORARY HACK BEFORE THIS IS CLEANED UP!
         switch (e.statusCode) {
             case 401:
                 log.error("TP returned 401: Please check your credentials and run `twotime auth`.");
@@ -23,8 +24,9 @@ export const getTargetprocessEntity = async (api: Targetprocess, id: number) => 
             const bug = await api.getBug(id);
 
             return bug;
-        } catch (e) {
-            if (e.statusCode !== 404) {
+        } catch (err) {
+            const e2 = err as any;  // VERY NASTY TEMPORARY HACK BEFORE THIS IS CLEANED UP!
+            if (e2.statusCode !== 404) {
                 throw e;
             }
 
@@ -32,9 +34,10 @@ export const getTargetprocessEntity = async (api: Targetprocess, id: number) => 
                 const story = await api.getStory(id);
 
                 return story;
-            } catch (e) {
-                if (e.statusCode !== 404) {
-                    throw e;
+            } catch (err) {
+                const e3 = err as any;  // VERY NASTY TEMPORARY HACK BEFORE THIS IS CLEANED UP!
+                if (e3.statusCode !== 404) {
+                    throw e3;
                 }
             }
         }

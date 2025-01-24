@@ -1,9 +1,9 @@
 import { ApiProvider } from "../api-provider";
-import { getTodayDate } from "../utils/get-today-date";
+import { getTodaysDate } from "../utils/dates";
 import { log } from "../utils/log";
 
 export const pause = async (apiProvider: ApiProvider) => {
-    const date = getTodayDate();
+    const date = getTodaysDate();
     const harvestApi = apiProvider.getHarvestApi();
 
     const entries = await harvestApi.getTimeEntries(date);

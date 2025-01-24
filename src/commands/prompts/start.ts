@@ -1,5 +1,6 @@
 import * as inquirer from "inquirer";
-import { HarvestProject, HarvestApi } from "../../harvest/api";
+import { HarvestApi } from "../../harvest/api";
+import { HarvestProject } from "../../harvest/models/projects";
 import { Targetprocess } from "targetprocess-rest-api";
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { askConfirm } from "./confirm";
@@ -114,7 +115,7 @@ const reorderChoices = (choices: { value: any, name: string }[], name: string) =
 };
 
 const askHarvestDetails = async (harvest: HarvestApi, tpEntity: any) => {
-    const projects = await harvest.getProjects();
+    const projects = await harvest.getMyProjects();
 
     const projectChoices = projects.map(p => ({ value: p, name: p.name }));
 

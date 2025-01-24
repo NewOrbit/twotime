@@ -1,6 +1,6 @@
 import { TestCase, TestFixture, Expect } from "alsatian";
-import { HarvestTimeEntry } from "../src/harvest/api";
-import { EntityType, NoteMetadata } from "../src/harvest/notes/note-metadata";
+import { HarvestTimeEntry } from "../src/harvest/models/time-entry";
+import { EntityType } from "../src/target-process/models/tp-bookable-entity";
 import { getTimeEntryPrompt } from "../src/utils/get-time-entry-prompt";
 import { EntityBuilder } from "./_builders/entity.builder";
 import { NoteMetadataBuilder } from "./_builders/note-metadata.builder";
@@ -8,9 +8,9 @@ import { NoteMetadataBuilder } from "./_builders/note-metadata.builder";
 @TestFixture()
 export class GetTimeEntryPromptTests {
 
-    @TestCase(123, "Foo", 0, EntityType.BUG, "0.00 hours - Foo (bug #123)")
-    @TestCase(456, "Bar", 1.2, EntityType.TASK, "1.20 hours - Bar (task #456)")
-    @TestCase(48337, "Bla bla this is a bug", 1.748, EntityType.BUG, "1.75 hours - Bla bla this is a bug (bug #48337)")
+    @TestCase(123, "Foo", 0, EntityType.BUG, "0.00 hours - Foo (Bug #123)")
+    @TestCase(456, "Bar", 1.2, EntityType.TASK, "1.20 hours - Bar (Task #456)")
+    @TestCase(48337, "Bla bla this is a bug", 1.748, EntityType.BUG, "1.75 hours - Bla bla this is a bug (Bug #48337)")
     public shouldReturnCorrectPrompt(entityId: number, entityName: string, hours: number, entityType: EntityType, expectedPrompt: string) {
         const entity = new EntityBuilder().withId(entityId).withName(entityName).withType(entityType).build();
 

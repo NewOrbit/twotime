@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import * as inquirer from "inquirer";
-import * as commander from "commander";
+import commander from "commander";
 import { ApiProvider } from "./api-provider";
 import { registerCommands } from "./register-commands";
 
