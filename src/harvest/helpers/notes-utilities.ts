@@ -30,7 +30,7 @@ export const parsePrefix = (line: string, prefix: string) => {
  * Note that the empty string is a valid outcome, so this function returns null if no matches were found.
  * @param lines the incoming list of lines.
  * @param prefix the prefix to search for.
- * @returns {string} the found line or the empty string if not found.
+ * @returns {string} the found line minus prefix or null if not found.
  */
 export const findPrefixInLines = (lines: string[], prefix: string) => {
   const matching = lines.map(line => parsePrefix(line, prefix)).filter(mappedLine => mappedLine !== null);
