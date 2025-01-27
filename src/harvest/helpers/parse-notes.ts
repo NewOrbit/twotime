@@ -5,13 +5,14 @@
 
 import { NoteMetadata } from "../models/time-entry";
 import { NotePrefixes } from "../models/note-prefixes";
-import { findLinesWithoutPrefix, findPrefixInLines, splitLines } from "./notes-utilities";
+
 import { EntityType } from "../../target-process/models/tp-bookable-entity";
 import { constructTpEntity } from "../../target-process/helpers/tp-utilities";
 
-/* tslint:disable:no-var-requires */
+import { findLinesWithoutPrefix, findPrefixInLines, splitLines } from "./notes-utilities";
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const entities = require("entities");  // this is going away but keep for now
-/* tslint:enable:no-var-requires */
 
 // --- Declare internal interfaces ---
 
@@ -32,7 +33,7 @@ export interface ParsedNotes {
 /**
  * Given an single string holding a complete Harvest notes entry, parse it into its constituent
  * parts for further processing.
- * @param notes the notes field of a Harvest time entry.
+ * @param {string} notes the notes field of a Harvest time entry.
  * @returns {ParsedNotes} the parsed notes object.
  */
 export const parseNotes = (notes: string) => {
@@ -52,7 +53,7 @@ export const parseNotes = (notes: string) => {
 
 /**
  * Get the various bits of information (metadata) from the notes lines.
- * @param lines the incoming list of lines holding all the notes
+ * @param {string[]} lines the incoming list of lines holding all the notes
  * @returns {NoteMetadata | null} the notes metadata object, or null if no metadata found.
  */
 const getMetadata = (lines: string[]) => {

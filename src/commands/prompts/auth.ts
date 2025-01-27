@@ -1,10 +1,11 @@
 import * as inquirer from "inquirer";
 
 const notEmpty = (input: string) => input.length > 0 ? true : "Please enter a value";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isNumeric = (input: any) => isNaN(input) === false ? true : "Please enter a number";
 
 export const askAuthDetails = async () => {
-    return await inquirer.prompt<{
+    const promptResult = await inquirer.prompt<{
         harvestAccessToken: string,
         harvestAccountId: number,
         targetprocessUsername: string,
@@ -34,4 +35,6 @@ export const askAuthDetails = async () => {
         validate: notEmpty,
         default: "neworbit"
     }]);
+
+    return promptResult;
 };

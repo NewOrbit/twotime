@@ -59,7 +59,7 @@ export class HarvestApi {
 
   /**
    * Get a list of time entries for the current user on a given date.
-   * @param date a partial ISO date e.g. '2025-01-14'
+   * @param {string} date a partial ISO date e.g. '2025-01-14'
    * @returns {HarvestTimeEntry[]} a list of time entries for the current user on the given date.
    */
   public async getTimeEntries(date: string): Promise<HarvestTimeEntry[]> {
@@ -81,12 +81,12 @@ export class HarvestApi {
 
   /**
    * Start a timer for a given project and task.
-   * @param projectId the Harvest project ID
-   * @param taskId the Harvest task ID
-   * @param date the date of the time entry in partial ISO format e.g. '2025-01-14'
-   * @param notes timer notes, which may include user story and task information
-   * @param hours how many hours to start the timer with, i.e. already spent
-   * @param running true if the timer is to be started immediately
+   * @param {number} projectId the Harvest project ID
+   * @param {number} taskId the Harvest task ID
+   * @param {string} date the date of the time entry in partial ISO format e.g. '2025-01-14'
+   * @param {string} notes timer notes, which may include user story and task information
+   * @param {number} hours how many hours to start the timer with, i.e. already spent
+   * @param {boolean} running true if the timer is to be started immediately
    * @returns {number} the ID of the time entry that was started, or -1 if 'running' is false or something went wrong
    */
   public async startTimeEntry(projectId: number, taskId: number, date: string, notes: string, hours: number, running: boolean): Promise<number> {
@@ -132,7 +132,7 @@ export class HarvestApi {
 
   /**
    * Resume a timer that has been stopped.
-   * @param timeEntryId the timer ID
+   * @param {number} timeEntryId the timer ID
    * @returns {boolean} true if the timer was successfully resumed
    */
   public async resumeTimeEntry(timeEntryId: number): Promise<boolean> {
@@ -141,8 +141,7 @@ export class HarvestApi {
 
   /**
    * Stop a running timer.
-   * @param timeEntryId
-   * @param timeEntryId the timer ID
+   * @param {number} timeEntryId the timer ID
    * @returns {boolean} true if the timer was successfully stopped
    */
   public async stopTimeEntry(timeEntryId: number): Promise<boolean> {
@@ -151,8 +150,8 @@ export class HarvestApi {
 
   /**
    * Update the notes for a time entry.
-   * @param timeEntryId the timer ID
-   * @param notes the updated notes (multi-line)
+   * @param {number} timeEntryId the timer ID
+   * @param {string} notes the updated notes (multi-line)
    * @returns {boolean} true if the notes were successfully updated
    */
   public async updateNotes(timeEntryId: number, notes: string): Promise<boolean> {

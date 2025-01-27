@@ -1,7 +1,10 @@
-import { askStartDetails } from "./prompts/start";
 import { createNoteMetadata, createNotes } from "../harvest/helpers/create-notes";
+
 import { ApiProvider } from "../api-provider";
+
 import { log } from "../utils/log";
+
+import { askStartDetails } from "./prompts/start";
 
 export const start = async (packageVersion: string, apiProvider: ApiProvider, date: string, tpId?: number) => {
     const details = await askStartDetails(apiProvider, tpId);

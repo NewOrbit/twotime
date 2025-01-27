@@ -1,8 +1,9 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 
 import chalk from "chalk";
 import { table, getBorderCharacters } from "table";
-import mapValues = require("lodash.mapvalues");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+import mapValues = require("lodash.mapvalues");  // TODO: factor out this old package
 
 export const log = {
     error: (message: string) => console.log(chalk.red("[ERROR] ") + message),

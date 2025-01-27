@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 
-import * as inquirer from "inquirer";
+import inquirer from "inquirer";
 import commander from "commander";
+
+import * as packageInfo from "../package.json";
+
 import { ApiProvider } from "./api-provider";
+
 import { registerCommands } from "./register-commands";
 
-/* tslint:disable:no-var-requires */
-const autocompletePrompt = require("inquirer-autocomplete-prompt");
-const packageInfo = require("../package.json");
-/* tslint:enable:no-var-requires */
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const autocompletePrompt = require("inquirer-autocomplete-prompt");   // really old - TODO: update
 
-inquirer.registerPrompt("autocomplete", autocompletePrompt);
+inquirer.registerPrompt("autocomplete", autocompletePrompt );
 
 commander
     .name("twotime")

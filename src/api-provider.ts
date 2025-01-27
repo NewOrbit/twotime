@@ -1,6 +1,9 @@
-import Configstore = require("configstore");
-import { HarvestApi } from "./harvest/api";
+import Configstore from "configstore";
+
 import { Targetprocess } from "targetprocess-rest-api";
+
+import { HarvestApi } from "./harvest/api";
+
 import { log } from "./utils/log";
 
 interface HarvestConfig {
