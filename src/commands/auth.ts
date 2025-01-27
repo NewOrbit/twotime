@@ -1,5 +1,7 @@
 import { ApiProvider } from "../api-provider";
+
 import { log } from "../utils/log";
+
 import { askAuthDetails } from "./prompts/auth";
 
 export const auth = async (apiProvider: ApiProvider) => {

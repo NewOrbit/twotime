@@ -1,4 +1,5 @@
-import inquirer = require("inquirer");
+import inquirer from 'inquirer';
+
 import { parseDuration } from "../../utils/parse-duration";
 
 export const askHours = async (message: string, defaultValue?: number) => {

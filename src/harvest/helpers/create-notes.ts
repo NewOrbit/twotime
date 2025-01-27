@@ -9,8 +9,8 @@ import { NotePrefixes } from "../models/note-prefixes";
 
 /**
  * Given a Targetprocess bookable item and a twotime version string, create the metadata for the notes field.
- * @param tpItem the Targetprocess bookable item.
- * @param version the twotime version string.
+ * @param {TpBookableEntity} tpItem the Targetprocess bookable item.
+ * @param {string} version the twotime version string.
  * @returns {NoteMetadata | null} the metadata object for the notes field, or null if there's no TP entity.
  */
 export const createNoteMetadata = (tpItem: TpBookableEntity | null, version: string) => {
@@ -28,8 +28,8 @@ export const createNoteMetadata = (tpItem: TpBookableEntity | null, version: str
 
 /**
  * Given the already-constructed notes metadata and an optional array of additional notes, create the notes field.
- * @param metadata the notes metadata object.
- * @param additionalNotes the optional array of additional notes.
+ * @param {NoteMetadata | null} metadata the notes metadata object.
+ * @param {string[]} additionalNotes the optional array of additional notes.
  * @returns {string} the constructed notes field as a single string, suitable for the Harvest API.
  */
 export const createNotes = (metadata: NoteMetadata | null, additionalNotes?: string[]): string => {
@@ -69,4 +69,4 @@ const createNotesLine = (prefix: string, id: number, name: string) => {
 };
 
 // Internal function to sanitise the prefix for HTML display - will be going away soon.
-const sanitisePrefix = (prefix: string) => prefix.replace(/\>/g, "&gt;");
+const sanitisePrefix = (prefix: string) => prefix.replace(/>/g, "&gt;");

@@ -1,16 +1,22 @@
 import * as inquirer from "inquirer";
-import { HarvestApi } from "../../harvest/api";
-import { HarvestProject } from "../../harvest/models/projects";
+
 import { Targetprocess } from "targetprocess-rest-api";
+
+import { HarvestProject } from "../../harvest/models/projects";
+import { HarvestApi } from "../../harvest/api";
+
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
-import { askConfirm } from "./confirm";
 import { log } from "../../utils/log";
 import { ApiProvider } from "../../api-provider";
+
 import { startArrayAt } from "../../utils/start-array-at";
+
+import { askConfirm } from "./confirm";
 import { askHours } from "./hours";
 
 const promptTargetprocessId = async () => {
-    const { tpEntityId } = await inquirer.prompt<{ tpEntityId: any }>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { tpEntityId } = await inquirer.prompt<{ tpEntityId: any }>({  // 'any' is valid here as they might type anything
         name: "tpEntityId",
         message: "Enter a Targetprocess task or bug ID"
     });
@@ -22,6 +28,8 @@ const promptTargetprocessId = async () => {
     return parseInt(tpEntityId, 10);
 };
 
+// TODO: Replace the 'any' with explicit type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const logTpEntity = (entity: any) => {
     if (entity === null) {
         return;
@@ -88,6 +96,8 @@ const filterChoices = (choices: { name: string }[], input: string) => {
     });
 };
 
+// TODO: Replace the 'any' with explicit type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getChoiceIndexForName = (choices: { value: any, name: string }[], name: string) => {
     const totalMatch = choices.findIndex(c => c.name.toUpperCase() === name.toUpperCase());
 
@@ -104,6 +114,8 @@ const getChoiceIndexForName = (choices: { value: any, name: string }[], name: st
     return -1;
 };
 
+// TODO: Replace the 'any' with explicit type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const reorderChoices = (choices: { value: any, name: string }[], name: string) => {
     const index = getChoiceIndexForName(choices, name);
 
@@ -114,6 +126,8 @@ const reorderChoices = (choices: { value: any, name: string }[], name: string) =
     return startArrayAt(choices, index);
 };
 
+// TODO: Replace the 'any' with explicit type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const askHarvestDetails = async (harvest: HarvestApi, tpEntity: any) => {
     const projects = await harvest.getMyProjects();
 
@@ -123,7 +137,11 @@ const askHarvestDetails = async (harvest: HarvestApi, tpEntity: any) => {
         name: "project",
         message: "Which project?",
         type: "autocomplete",
+        // TODO: Replace the 'any' with explicit type
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         source: (answers: any, input: string) => filterChoices(projectChoices, input)
+        // TODO: Replace the 'any' with explicit type
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any ]);
 
     const taskChoices = project.tasks.map(t => ({ value: t.id, name: t.name }));
@@ -135,7 +153,11 @@ const askHarvestDetails = async (harvest: HarvestApi, tpEntity: any) => {
         name: "taskId",
         message: "What kind of task?",
         type: "autocomplete",
+        // TODO: Replace the 'any' with explicit type
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         source: (answers: any, input: string) => filterChoices(orderedChoices, input)
+        // TODO: Replace the 'any' with explicit type
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any ]);
 
     return {
@@ -180,14 +202,11 @@ const askTargetprocessEntityIfRequired = async (targetprocessApi: Targetprocess,
         const entity = await getLoggableTargetprocessEntity(targetprocessApi, id);
 
         // null is used for "didn't provide an entity" rather than invalid, so we need to differentiate
-        if (entity === null) {
-            return undefined;
-        }
-
-        return entity;
+        return entity === null ? undefined : entity;
     }
 
-    return await askTargetprocessEntity(targetprocessApi);
+    const tpEntity = await askTargetprocessEntity(targetprocessApi);
+    return tpEntity;
 };
 
 export const askStartDetails = async (apiProvider: ApiProvider, tpId?: number) => {

@@ -1,16 +1,19 @@
 import { CommanderStatic } from "commander";
+
 import { ApiProvider } from "./api-provider";
 
 import { start } from "./commands/start";
 import { finish } from "./commands/finish";
 import { auth } from "./commands/auth";
-import { getTodaysDate, getDateInPast, isValidDate } from "./utils/dates";
-import { log } from "./utils/log";
 import { resume } from "./commands/resume";
 import { pause } from "./commands/pause";
 import { list } from "./commands/list";
 
-// Temporary fixup of Typescript errors before a proper revamp (when we won't use 'any'!)
+import { getTodaysDate, getDateInPast, isValidDate } from "./utils/dates";
+import { log } from "./utils/log";
+
+// Get date for a command - unfortunately the 'commander' package does not give a command type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getDateForCommand = (command: any) => {
     if (command.date == null && command.offset == null) {
         return getTodaysDate();
@@ -27,22 +30,6 @@ const getDateForCommand = (command: any) => {
     }
 
     return null;
-};
-
-const getAllForCommand = (command: any) => command.all !== null && command.all !== undefined;
-
-const getTpForCommand = (command: any) => {
-    if (command.tp === undefined) {
-        return undefined;
-    }
-
-    const parsed = parseInt(command.tp, 10);
-
-    if (isNaN(parsed)) {
-        return null;
-    }
-
-    return parsed;
 };
 
 const dateFlagConfig = {
@@ -74,15 +61,17 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
         .option(tpFlagConfig.flags, tpFlagConfig.description)
         .action((cmd) => {
             const date = getDateForCommand(cmd);
-            const tp = getTpForCommand(cmd);
-
             if (date === null) {
                 log.error("Invalid date provided. Use YYYY-MM-DD");
                 process.exit(1);
             }
 
-            if (tp === null) {
-                log.error("Invalid Targetprocess id provided. Must be a number");
+            let tp = 0;
+            if (cmd.tp) {
+                tp = parseInt(cmd.tp, 10);
+            }
+            if (tp === 0 || isNaN(tp)) {
+                log.error("Invalid Targetprocess ID provided. Must be a number");
                 process.exit(1);
             }
 
@@ -103,8 +92,7 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
                 process.exit(1);
             }
 
-            const all = getAllForCommand(cmd);
-
+            const all = cmd.all !== null && cmd.all !== undefined;
             return finish(packageVersion, apiProvider, date, all);
         });
 
@@ -141,7 +129,7 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
 
     commander
         .on("command:*", () => {
-            console.error("Invalid command: %s\nSee --help for a list of available commands.", commander.args.join(" "));
+            log.error(`Invalid command: ${commander.args.join(" ")}\nSee --help for a list of available commands.`);
             process.exit(1);
         });
 };

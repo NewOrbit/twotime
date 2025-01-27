@@ -11,7 +11,7 @@ export const getTodaysDate = () => formatDate(new Date());
 
 /**
  * Get a date in the past via 'offset' number of days
- * @param offset the number of days in the past
+ * @param {number} offset the number of days in the past
  * @returns {string} the date in the past
  */
 export const getDateInPast = (offset: number) => {
@@ -22,7 +22,7 @@ export const getDateInPast = (offset: number) => {
 
 /**
  * Check whether a date is valid.
- * @param inputDate the input date, expected as a string in ISO format e.g. '2024-01-14'
+ * @param {string} inputDate the input date, expected as a string in ISO format e.g. '2024-01-14'
  * @returns {boolean} true if the date is valid, false otherwise
  */
 export const isValidDate = (inputDate: string) => {

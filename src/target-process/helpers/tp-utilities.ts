@@ -7,11 +7,11 @@ import { EntityType, TpBookableEntity } from "../models/tp-bookable-entity";
 
 /**
  * Construct a TP bookable item (entity) from the incoming user story and entity values.
- * @param userStoryid numerical user story ID (may be blank)
- * @param userStoryName user story name (may be blank)
- * @param entityId numerical entity ID
- * @param entityName entity name i.e. the task or bug name
- * @param entityType the entity type, see EntityType enum
+ * @param {number} userStoryid numerical user story ID (may be blank)
+ * @param {string} userStoryName user story name (may be blank)
+ * @param {number} entityId numerical entity ID
+ * @param {string} entityName entity name i.e. the task or bug name
+ * @param {EntityType} entityType the entity type, see EntityType enum
  * @returns {TpBookableEntity} the constructed TP bookable entity
  */
 export const constructTpEntity = (userStoryid: number, userStoryName: string, entityId: number, entityName: string, entityType: EntityType) => {

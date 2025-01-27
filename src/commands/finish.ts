@@ -1,14 +1,18 @@
 import { Targetprocess } from "targetprocess-rest-api";
+
+import { ApiProvider } from "../api-provider";
+
 import { HarvestApi } from "../harvest/api";
 import { createNotes } from "../harvest/helpers/create-notes";
+
 import { log } from "../utils/log";
+
 import { askFinishDetails, FinishTimerRequest } from "./prompts/finish";
-import { ApiProvider } from "../api-provider";
 
 const stopHarvestTimer = async (harvestApi: HarvestApi, request: FinishTimerRequest, packageVersion: string) => {
     log.info(`> Updating Harvest`);
 
-    const { timeEntry, tpEntity, timeRemaining } = request;
+    const timeEntry = request.timeEntry;
 
     if (timeEntry.metadata !== null) {
         timeEntry.metadata.finished = true;
@@ -25,6 +29,8 @@ const stopHarvestTimer = async (harvestApi: HarvestApi, request: FinishTimerRequ
     }
 };
 
+// TODO: Replace the 'any' with explicit type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getTargetprocessTimeEntity = async (targetprocessApi: Targetprocess, tpEntity: any) => {
     // if it's not a bug, we always log the time directly
     if (tpEntity.ResourceType !== "Bug") {
@@ -48,9 +54,12 @@ const getTargetprocessTimeEntity = async (targetprocessApi: Targetprocess, tpEnt
     return tpEntity;
 };
 
+// TODO: Replace the 'any' with explicit type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getTargetprocessNotes = (request: FinishTimerRequest, entity: any) => {
     if (request.tpEntity.Id !== entity.Id) {
-        return `time spent on ${ request.tpEntity.ResourceType.toLowerCase() } #${ request.tpEntity.Id }`;
+        const entityDescription = request.tpEntity.ResourceType?.toLowerCase() || "UNKNOWN ENTITY TYPE";
+        return `time spent on ${entityDescription} #${ request.tpEntity.Id }`;
     }
 
     if (request.timeEntry.notes.length > 0) {

@@ -9,7 +9,8 @@
     "build": "tsc",
     "build-test": "tsc -p ./tsconfig.test.json",
     "test": "npm run build-test && alsatian \"bin-test/**/*.test.js\"",
-    "lint": "tslint -c tslint.json \"{src,test}/**/*.ts\"",
+    "lint": "eslint src/**/*.ts --max-warnings=0",
+    "lint:fix": "eslint src/**/*.ts --max-warnings=0 --quiet --fix --ignore-path ./.gitignore",
     "start": "node bin/index.js start",
     "list": "node bin/index.js list",
     "finish": "node bin/index.js finish"
@@ -28,11 +29,17 @@
   },
   "homepage": "https://github.com/NewOrbit/twotime#readme",
   "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.18.0",
     "@types/node": "^22.10.7",
+    "@typescript-eslint/eslint-plugin": "^8.21.0",
+    "@typescript-eslint/parser": "^8.21.0",
     "alsatian": "^2.3.0",
-    "neworbit-tslint-config": "^3.0.0",
-    "tslint": "^5.11.0",
-    "typescript": "^5.7.3"
+    "eslint": "^9.18.0",
+    "eslint-config-neworbit": "^10.0.0",
+    "globals": "^15.14.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.21.0"
   },
   "dependencies": {
     "@types/btoa": "^1.2.0",

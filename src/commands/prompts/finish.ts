@@ -1,22 +1,30 @@
 import * as inquirer from "inquirer";
+
+import { Targetprocess } from "targetprocess-rest-api";
+
+import { TpBookableEntity } from "../../target-process/models/tp-bookable-entity";
+
 import { HarvestApi } from "../../harvest/api";
 import { HarvestTimeEntry } from "../../harvest/models/time-entry";
+
 import { log } from "../../utils/log";
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
-import { ApiProvider } from "../../api-provider";
 import { getTimeEntryPrompt } from "../../utils/get-time-entry-prompt";
 import { isRunningOrUnfinished } from "../../utils/is-running-or-unfinished";
-import { Targetprocess } from "targetprocess-rest-api";
+
+import { ApiProvider } from "../../api-provider";
+
 import { askHours } from "./hours";
 
 export interface FinishTimerRequest {
     timeEntry: HarvestTimeEntry;
-    tpEntity: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    tpEntity: any;  // TODO: Replace the 'any' with explicit type TpBookableEntity
     timeRemaining: number | null;
 }
 
-const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
-    if (timeEntry.metadata === null) {
+const askTimeRemaining = async (tpEntity: TpBookableEntity, timeEntry: HarvestTimeEntry) => {
+    if (timeEntry.metadata === null || tpEntity.TimeRemain === undefined ) {
         return null;
     }
 
@@ -32,8 +40,8 @@ const askTimeRemaining = async (tpEntity: any, timeEntry: HarvestTimeEntry) => {
     } else {
         // Normal case of no overrun at this point
         hoursRemaining = await askHours(`How much time remaining? (No default; TP says ${projectedTimeRemaining.toFixed(2)} hours)`);
-        if (hoursRemaining > projectedTimeRemaining) {
-            const excess = hoursRemaining - projectedTimeRemaining;
+        const excess = hoursRemaining - projectedTimeRemaining;
+        if (excess > 0.016) {
             log.warn(`The time entered will exceed that remaining in TP by ${excess.toFixed(2)} hours. Please ensure your tech lead (or PM) is aware.`);
         }
     }
@@ -77,16 +85,13 @@ const getTargetprocessEntityForEntry = async (targetprocessApi: Targetprocess, t
 
 export const askFinishDetails = async (apiProvider: ApiProvider, date: string, all: boolean) => {
     const harvestApi = apiProvider.getHarvestApi();
-
     const timeEntries = await getTimeEntries(harvestApi, date, all);
 
     const targetprocessApi = apiProvider.getTargetprocessApi();
-
     const finishDetails: FinishTimerRequest[] = [];
 
     for (const timeEntry of timeEntries) {
         const tpEntity = await getTargetprocessEntityForEntry(targetprocessApi, timeEntry);
-
         const timeRemaining = await askTimeRemaining(tpEntity, timeEntry);
 
         finishDetails.push({
