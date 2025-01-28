@@ -23,47 +23,43 @@ PS> npm run prepublishOnly
 
 There are several new scripts added to `package.json` to enable running the utility with one of the arguments, for example starting a timer:
 
-    npm run start
+    PS> npm run start
 
-However during the latest development work by Ian F, the utility would not run from the VS Code command window, using any of these added scripts.  The Harvest API was rejecting all requests with 400 bad-request errors.  The error was occurring in one of the harvest package dependencies,
-a stack trace is provided at the bottom of this README.  An explanation remains elusive.  The only way to try out any changes was to pack the utility as if it were about to be published. If you hit the same issue, follow this procedure assuming the current directory is the twotime project folder:
+Other features can be tested by running `node` directly, for example:
 
-1. Temporarily edit the `package.json` to put an alternative name in, e.g. ` "name": "twotime-x", ` and version, optionally.
+    PS> node bin/src/index.js --help
+    PS> node bin/src/index.js pause
+
+## Packaging the code
+
+1. Ensure you are at the root of the repo, i.e. the same folder as this README.
+1. Ensure the `package.json` file contains the correct name and version.
 1. Delete the `bin` folder if you've made significant changes or deleted _any_ source file.
 1. `npm run build`
-1. Create npm package locally: `npm pack --pack-destination <destinationFolder>` (e.g. your Downloads folder. The process writes a .tgz 'tarball')
-1. Install the package globally, as per the real twotime, using the package just created e.g.: `npm install -g <destinationFolder>\twotime-x-2.0.1.tgz`
-1. Run this version just like real twotime, e.g. `twotime-x start`.
+1. Create a npm package locally: `npm pack --pack-destination .` The process writes a .tgz 'tarball' with the package name and version embedded in the file name.
+1. Commit the change to make the new package part of this repo, as the public package is deprecated rather than removed.
 
+## Recent history
 
-This method, though straightforard, has the disadvantage of no debugging or application of any other code tools.  To resolve problems you'll just have to
-keep adding console.log statements and republishing locally.
+The codebase was very old and most library dependencies were hugely behind current versions.  In January 2025, a `npm audit` reported 85 vulnerabilities (1 low, 22 moderate, 50 high, 12 critical). Most were centred on the `harvest` package which looks like it's been abandoned.  Ian F updated everything to more modern versions as part of a piece of work to tighten up the reporting of task time-remaining.  Several old libraries such as moment were factored out.
 
-## !! Vulnerabilities !!
+There are currently no vulnerabilities reported by `npm audit`, or on packaging the utility.
 
-
-The codebase is very old and most library dependencies are hugely behind current versions.  At the time of writing, a `npm audit` reports 85 vulnerabilities (1 low, 22 moderate, 50 high, 12 critical). Several things here:
-
-1. Ian F tried to update to more modern versions as a limited side-task to the user story time-remaining work, but too many things broke so it was abandoned.  It would need to be a longer, separate piece of work.
-2. On analysing the vulnerabilities, most are centred on the `harvest` package. Twotime uses version 2.2.5, but the latest is only 2.2.6 which was issued 4 years ago. Therefore an exercise to upgrade Twotime's libraries will only have a limited impact.
-3. Harvest package v2.2.6 was tried directly from the `master` branch, having deleted `node_modules` and reinstalling everything.
-However the project would not build, giving syntax errors in `@types/minimatch` and other libraries, all beyond our control.
-
-_The recommendation is a rewrite of the utility, factoring out this complex web of interdependencies on old and deprecated packages._
-
-## Stack trace from npm run error
+_However_, not all of the dependent packages could be upgraded to the latest versions due to run-time problems, specifically ERR_REQUIRE_ESM errors.  There was not enough time in the project to see if this can be addressed - none of these has any security vulnerabilities.  A `npm outdated` command gave the following output as of end Jan 2025:
 
 ```
-StatusCodeError: 400 - "\n<html><head>\n<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n<title>400 Bad Request</title>\n</head>\n<body text=#000000 bgcolor=#ffffff>\n<h1>Error: Bad Request</h1>\n<h2>Your client has issued a malformed or illegal request.</h2>\n<h2></h2>\n</body></html>\n"
-    at new StatusCodeError (C:\Users\IanFrench\source\repos\twotime\node_modules\request-promise-core\lib\errors.js:32:15)
-    at C:\Users\IanFrench\source\repos\twotime\node_modules\request-promise-core\lib\plumbing.js:97:41
-    at tryCatcher (C:\Users\IanFrench\source\repos\twotime\node_modules\bluebird\js\release\util.js:16:23)
-    at Promise._settlePromiseFromHandler (C:\Users\IanFrench\source\repos\twotime\node_modules\bluebird\js\release\promise.js:512:31)
-    at Promise._settlePromise (C:\Users\IanFrench\source\repos\twotime\node_modules\bluebird\js\release\promise.js:569:18)
-    at Promise._settlePromiseCtx (C:\Users\IanFrench\source\repos\twotime\node_modules\bluebird\js\release\promise.js:606:10)
-    at _drainQueueStep (C:\Users\IanFrench\source\repos\twotime\node_modules\bluebird\js\release\async.js:142:12)
-    at _drainQueue (C:\Users\IanFrench\source\repos\twotime\node_modules\bluebird\js\release\async.js:131:9)
-    at Async._drainQueues (C:\Users\IanFrench\source\repos\twotime\node_modules\bluebird\js\release\async.js:147:5)
-    at Async.drainQueues [as _onImmediate] (C:\Users\IanFrench\source\repos\twotime\node_modules\bluebird\js\release\async.js:17:14)
-    at process.processImmediate (node:internal/timers:478:21)
+Package                              Current  Wanted  Latest  Location                                          Depended by
+--------                             -------  ------  ------  ------------------------------------------------  -----------
+@types/inquirer                        7.3.3   7.3.3   9.0.7  node_modules/@types/inquirer                      twotime
+@types/inquirer-autocomplete-prompt    1.3.5   1.3.5   3.0.3  node_modules/@types/inquirer-autocomplete-prompt  twotime
+chalk                                  4.1.2   4.1.2   5.4.1  node_modules/chalk                                twotime
+configstore                            4.0.0   4.0.0   7.0.0  node_modules/configstore                          twotime
+inquirer                               8.2.6   8.2.6  12.3.2  node_modules/inquirer                             twotime
+inquirer-autocomplete-prompt           2.0.1   2.0.1   3.0.1  node_modules/inquirer-autocomplete-prompt         twotime
 ```
+
+## To Do
+
+Delete the public package!  At the moment this isn't possible as there are several owners who have left the company.
+
+If possible, enable the use of the latest package versions as explained above.

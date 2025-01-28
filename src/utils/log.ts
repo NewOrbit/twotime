@@ -2,8 +2,6 @@
 
 import chalk from "chalk";
 import { table, getBorderCharacters } from "table";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-import mapValues = require("lodash.mapvalues");  // TODO: factor out this old package
 
 export const log = {
     error: (message: string) => console.log(chalk.red("[ERROR] ") + message),
@@ -15,7 +13,7 @@ export const log = {
             ...rows
         ];
 
-        const tableBorder = mapValues(getBorderCharacters("honeywell"), char => chalk.gray(char || ""));
+        const tableBorder = mapValues(getBorderCharacters("honeywell"), (char) => chalk.gray(char || ""));
 
         const output = table(data, {
             border: tableBorder,
@@ -37,4 +35,11 @@ export const log = {
 
         console.log(output);
     }
+};
+
+// Replacement for lodash.mapvalues courtesy of Copilot
+const mapValues = <T, U>(obj: Record<string, T>, fn: (value: T, key: string) => U): Record<string, U> => {
+    return Object.fromEntries(
+        Object.entries(obj).map(([key, value]) => [key, fn(value, key)])
+    );
 };

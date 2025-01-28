@@ -11,9 +11,9 @@
     "test": "npm run build-test && alsatian \"bin-test/**/*.test.js\"",
     "lint": "eslint src/**/*.ts --max-warnings=0",
     "lint:fix": "eslint src/**/*.ts --max-warnings=0 --quiet --fix --ignore-path ./.gitignore",
-    "start": "node bin/index.js start",
-    "list": "node bin/index.js list",
-    "finish": "node bin/index.js finish"
+    "start": "node bin/src/index.js start",
+    "list": "node bin/src/index.js list",
+    "finish": "node bin/src/index.js finish"
   },
   "files": [
     "bin"
@@ -30,33 +30,29 @@
   "homepage": "https://github.com/NewOrbit/twotime#readme",
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "^9.18.0",
-    "@types/node": "^22.10.7",
-    "@typescript-eslint/eslint-plugin": "^8.21.0",
-    "@typescript-eslint/parser": "^8.21.0",
-    "alsatian": "^2.3.0",
-    "eslint": "^9.18.0",
+    "@eslint/js": "^9.19.0",
+    "@types/node": "^22.10.10",
+    "@typescript-eslint/eslint-plugin": "^8.22.0",
+    "@typescript-eslint/parser": "^8.22.0",
+    "alsatian": "^3.2.1",
+    "eslint": "^9.19.0",
     "eslint-config-neworbit": "^10.0.0",
     "globals": "^15.14.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.21.0"
+    "typescript-eslint": "^8.22.0"
   },
   "dependencies": {
-    "@types/btoa": "^1.2.0",
-    "@types/configstore": "^2.1.1",
-    "@types/inquirer": "0.0.43",
+    "@types/configstore": "^6.0.2",
+    "@types/inquirer": "7.3.3",
+    "@types/inquirer-autocomplete-prompt": "^1.3.2",
     "@types/lodash.mapvalues": "^4.6.4",
-    "@types/table": "^4.0.5",
-    "btoa": "^1.2.1",
-    "chalk": "^2.4.1",
-    "commander": "^2.18.0",
+    "chalk": "^4.1.2",
+    "commander": "^13.1.0",
     "configstore": "^4.0.0",
     "entities": "^1.1.1",
-    "inquirer": "^6.2.0",
-    "inquirer-autocomplete-prompt": "^1.0.1",
-    "lodash.mapvalues": "^4.6.0",
-    "request-promise-json": "^1.0.4",
-    "table": "^5.1.0",
+    "inquirer": "^8.2.4",
+    "inquirer-autocomplete-prompt": "^2.0.1",
+    "table": "^6.9.0",
     "targetprocess-rest-api": "^1.0.0"
   }
 }
