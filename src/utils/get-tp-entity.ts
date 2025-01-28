@@ -45,5 +45,16 @@ export const getTargetprocessEntity = async (api: Targetprocess, id: number) => 
         }
     }
 
+    // If reached here, trying for a bug must have thrown a 404 not-found. Try a user story as a last resort.
+    try {
+        const story = await api.getStory(id) as TpBookableEntity;  // not a bookable entity but we can use the type
+        return story;
+    } catch (ex) {
+        const err = ex as TpException;
+        if (err.statusCode !== 404) {
+            throw ex;
+        }
+    }
+
     return null;
 };
