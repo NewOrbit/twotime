@@ -11,9 +11,6 @@ import { constructTpEntity } from "../../target-process/helpers/tp-utilities";
 
 import { findLinesWithoutPrefix, findPrefixInLines, splitLines } from "./notes-utilities";
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const entities = require("entities");  // this is going away but keep for now
-
 // --- Declare internal interfaces ---
 
 interface ParsedLine {
@@ -37,7 +34,7 @@ export interface ParsedNotes {
  * @returns {ParsedNotes} the parsed notes object.
  */
 export const parseNotes = (notes: string) => {
-  const lines = splitLines(entities.decodeHTML(notes));
+  const lines = splitLines(notes);
   const metadata = getMetadata(lines);
   const additionalNotes = getAdditionalNotes(lines);
 

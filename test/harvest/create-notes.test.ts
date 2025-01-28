@@ -25,9 +25,9 @@ export class CreateNotesTests {
             version: "0.0.0"
         };
 
-        const expected = "&gt; user_story #12345 Foo\n"
-            + "&gt; task #67890 Some Task Name\n"
-            + "&gt; twotime 0.0.0";
+        const expected = "*User story:* #12345 Foo\n"
+            + "*Task:* #67890 Some Task Name\n"
+            + "*Recorded by:* twotime 0.0.0";
 
         const res = createNotes(input);
 
@@ -51,9 +51,9 @@ export class CreateNotesTests {
             version: "0.0.0"
         };
 
-        const expected = "&gt; user_story #17441 User should be able to eat cheese\n"
-            + "&gt; bug #94123 A very very horrible bug\n"
-            + "&gt; twotime 0.0.0";
+        const expected = "*User story:* #17441 User should be able to eat cheese\n"
+            + "*Bug:* #94123 A very very horrible bug\n"
+            + "*Recorded by:* twotime 0.0.0";
 
         const res = createNotes(input);
 
@@ -72,8 +72,8 @@ export class CreateNotesTests {
             version: "0.0.0"
         };
 
-        const expected = "&gt; bug #94123 A very very horrible bug\n"
-            + "&gt; twotime 0.0.0";
+        const expected = "*Bug:* #94123 A very very horrible bug\n"
+            + "*Recorded by:* twotime 0.0.0";
 
         const res = createNotes(input);
 
@@ -93,9 +93,9 @@ export class CreateNotesTests {
             .withFinished(true)
             .build();
 
-        const expected = "&gt; bug #94123 A very very horrible bug\n"
-            + "&gt; finished\n"
-            + "&gt; twotime 0.0.0";
+        const expected = "*Bug:* #94123 A very very horrible bug\n"
+            + "*Status:* finished\n"
+            + "*Recorded by:* twotime 0.0.0";
 
         const res = createNotes(input);
 
@@ -115,8 +115,8 @@ export class CreateNotesTests {
             version: "0.0.0"
         };
 
-        const expected = "&gt; bug #94123 A very very horrible bug\n"
-            + "&gt; twotime 0.0.0\n"
+        const expected = "*Bug:* #94123 A very very horrible bug\n"
+            + "*Recorded by:* twotime 0.0.0\n"
             + additional.join("\n");
 
         const res = createNotes(input, additional);
