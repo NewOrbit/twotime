@@ -19,6 +19,13 @@ PS> npm install
 PS> npm run prepublishOnly
 ```
 
+## Developing the code
+
+1. From the root of the repo, i.e. the same folder as this README:
+1. Ensure the `package.json` file contains the correct name and version.
+1. Delete the `bin` folder if you've made significant changes or deleted _any_ source file.
+1. `npm run build`, then `npm run lint`, then `npm run test`.
+
 ## Running the code
 
 There are several new scripts added to `package.json` to enable running the utility with one of the arguments, for example starting a timer:
@@ -30,14 +37,9 @@ Other features can be tested by running `node` directly, for example:
     PS> node bin/src/index.js --help
     PS> node bin/src/index.js pause
 
-## Packaging the code
+## Publishing the code
 
-1. Ensure you are at the root of the repo, i.e. the same folder as this README.
-1. Ensure the `package.json` file contains the correct name and version.
-1. Delete the `bin` folder if you've made significant changes or deleted _any_ source file.
-1. `npm run build`
-1. Create a npm package locally: `npm pack --pack-destination .` The process writes a .tgz 'tarball' with the package name and version embedded in the file name.
-1. Commit the change to make the new package part of this repo, as the public package is deprecated rather than removed.
+**TODO** via a DevOps feed.
 
 ## Recent history
 
