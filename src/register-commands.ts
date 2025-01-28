@@ -1,4 +1,4 @@
-import { CommanderStatic } from "commander";
+import { Command } from "commander";
 
 import { ApiProvider } from "./api-provider";
 
@@ -32,6 +32,22 @@ const getDateForCommand = (command: any) => {
     return null;
 };
 
+// Get TP ID for a command - unfortunately the 'commander' package does not give a command type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getTpForCommand = (command: any) => {
+    if (command.tp === undefined) {
+        return undefined;
+    }
+
+    const parsed = parseInt(command.tp, 10);
+
+    if (isNaN(parsed)) {
+        return null;
+    }
+
+    return parsed;
+};
+
 const dateFlagConfig = {
     flags: "-d, --date <date>",
     description: "specify a date in YYYY-MM-DD format"
@@ -52,7 +68,7 @@ const tpFlagConfig = {
     description: "Start a timer for a given TP id"
 };
 
-export const registerCommands = (commander: CommanderStatic, apiProvider: ApiProvider, packageVersion: string) => {
+export const registerCommands = (commander: Command, apiProvider: ApiProvider, packageVersion: string) => {
     commander
         .command("start")
         .description("start a timer")
@@ -61,16 +77,14 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
         .option(tpFlagConfig.flags, tpFlagConfig.description)
         .action((cmd) => {
             const date = getDateForCommand(cmd);
+            const tp = getTpForCommand(cmd);
+
             if (date === null) {
                 log.error("Invalid date provided. Use YYYY-MM-DD");
                 process.exit(1);
             }
 
-            let tp = 0;
-            if (cmd.tp) {
-                tp = parseInt(cmd.tp, 10);
-            }
-            if (tp === 0 || isNaN(tp)) {
+            if (tp === null) {
                 log.error("Invalid Targetprocess ID provided. Must be a number");
                 process.exit(1);
             }

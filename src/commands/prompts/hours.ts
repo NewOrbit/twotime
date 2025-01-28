@@ -1,9 +1,9 @@
-import inquirer from 'inquirer';
+import inquirer, { QuestionCollection } from 'inquirer';
 
 import { parseDuration } from "../../utils/parse-duration";
 
 export const askHours = async (message: string, defaultValue?: number) => {
-    const questions: inquirer.Questions = {
+    const questions: QuestionCollection = {
         name: "hours",
         message: `${message} (0.00 or 0:00)`,
         validate: input => {
