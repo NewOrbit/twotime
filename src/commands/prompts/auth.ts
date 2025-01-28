@@ -2,7 +2,7 @@ import inquirer from "inquirer";
 
 const notEmpty = (input: string) => input.length > 0 ? true : "Please enter a value";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isNumeric = (input: any) => isNaN(input) === false ? true : "Please enter a number";
+const isNumeric = (input: any) => isNaN(input) === false ? true : "Please enter a number";  // 'any' is valid here
 
 export const askAuthDetails = async () => {
     const promptResult = await inquirer.prompt<{
