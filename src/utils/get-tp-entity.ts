@@ -16,7 +16,7 @@ interface TpException {
  * @returns {TpBookableEntity | null} the found TP bookable entity (task or bug) or null if not found.
  */
 export const getTargetprocessEntity = async (api: Targetprocess, id: number) => {
-    // tasks are most used, then bugs, so attempt to find them in that order
+    // Tasks are most used, then bugs, so attempt to find them in that order. Try user story as a last resort.
 
     try {
         const task = await api.getTask(id) as TpBookableEntity;

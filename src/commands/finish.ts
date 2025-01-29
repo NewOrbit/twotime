@@ -47,7 +47,7 @@ const checkTargetprocessTimeEntity = async (targetprocessApi: Targetprocess, tpE
 
     // It is a bug so check its configuration for issuing time
     if (!tpEntity.Project) {
-        log.info(`TP BUG ID ${tpEntity.Id} HAS NO PROJECT DETAILS - REPORT THIS.`);
+        log.error(`TP BUG ID ${tpEntity.Id} HAS NO PROJECT DETAILS - REPORT THIS.`);
         return TimeIssueCheck.Error;
     }
 
