@@ -8,6 +8,7 @@ import { HarvestApi } from "../../harvest/api";
 import { HarvestTimeEntry } from "../../harvest/models/time-entry";
 
 import { log } from "../../utils/log";
+
 import { getTargetprocessEntity } from "../../utils/get-tp-entity";
 import { getTimeEntryPrompt } from "../../utils/get-time-entry-prompt";
 import { isRunningOrUnfinished } from "../../utils/is-running-or-unfinished";
@@ -18,13 +19,40 @@ import { askHours } from "./hours";
 
 export interface FinishTimerRequest {
     timeEntry: HarvestTimeEntry;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    tpEntity: any;  // TODO: Replace the 'any' with explicit type TpBookableEntity
+    tpEntity: TpBookableEntity | null;
     timeRemaining: number | null;
 }
 
-const askTimeRemaining = async (tpEntity: TpBookableEntity, timeEntry: HarvestTimeEntry) => {
-    if (timeEntry.metadata === null || tpEntity.TimeRemain === undefined ) {
+/**
+ * Request timer finishing details, possibly for all timers.
+ * @param {ApiProvider} apiProvider the general API provider service
+ * @param {string} date the date of the timer(s) in the form YYYY-MM-DD
+ * @param {boolean} all true if all timers are to be finished
+ * @returns {FinishTimerRequest[]} an array of finish timer requests
+ */
+export const askFinishDetails = async (apiProvider: ApiProvider, date: string, all: boolean) => {
+    const harvestApi = apiProvider.getHarvestApi();
+    const timeEntries = await getTimeEntries(harvestApi, date, all);
+
+    const targetprocessApi = apiProvider.getTargetprocessApi();
+    const finishDetails: FinishTimerRequest[] = [];
+
+    for (const timeEntry of timeEntries) {
+        const tpEntity = await getTargetprocessEntityForEntry(targetprocessApi, timeEntry);
+        const timeRemaining = await askTimeRemaining(tpEntity, timeEntry);
+
+        finishDetails.push({
+            tpEntity,
+            timeEntry,
+            timeRemaining
+        });
+    }
+
+    return finishDetails;
+};
+
+const askTimeRemaining = async (tpEntity: TpBookableEntity | null, timeEntry: HarvestTimeEntry) => {
+    if (tpEntity === null || timeEntry.metadata === null || tpEntity.TimeRemain === undefined ) {
         return null;
     }
 
@@ -81,25 +109,4 @@ const getTargetprocessEntityForEntry = async (targetprocessApi: Targetprocess, t
     }
 
     return getTargetprocessEntity(targetprocessApi, timeEntry.metadata.tpBookableEntity.Id);
-};
-
-export const askFinishDetails = async (apiProvider: ApiProvider, date: string, all: boolean) => {
-    const harvestApi = apiProvider.getHarvestApi();
-    const timeEntries = await getTimeEntries(harvestApi, date, all);
-
-    const targetprocessApi = apiProvider.getTargetprocessApi();
-    const finishDetails: FinishTimerRequest[] = [];
-
-    for (const timeEntry of timeEntries) {
-        const tpEntity = await getTargetprocessEntityForEntry(targetprocessApi, timeEntry);
-        const timeRemaining = await askTimeRemaining(tpEntity, timeEntry);
-
-        finishDetails.push({
-            tpEntity,
-            timeEntry,
-            timeRemaining
-        });
-    }
-
-    return finishDetails;
 };

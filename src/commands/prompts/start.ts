@@ -11,8 +11,78 @@ import { ApiProvider } from "../../api-provider";
 
 import { startArrayAt } from "../../utils/start-array-at";
 
+import { EntityType, TpBookableEntity } from "../../target-process/models/tp-bookable-entity";
+
 import { askConfirm } from "./confirm";
 import { askHours } from "./hours";
+
+// --- Define internal interfaces  ---
+interface ValueNamePair {
+    value: number;
+    name: string;
+}
+
+interface HarvestIdPair {
+    projectId: number;
+    taskId: number;
+}
+
+interface TimeSpent {
+    hours: number;
+    running: boolean;
+}
+
+// --- Define external interfaces and functions
+
+export interface TimerStartDetails {
+    entity: TpBookableEntity | null;
+    projectId: number;
+    taskId: number;
+    notes: string;
+    hours: number;
+    running: boolean;
+}
+
+/**
+ * Ask the user for start-timer details
+ * @param {ApiProvider} apiProvider the general API provider service
+ * @param {number} tpId the Targetprocess entity ID
+ * @returns {TimerStartDetails | null} the timer start details or null
+ */
+export const askStartDetails = async (apiProvider: ApiProvider, tpId?: number) => {
+    const tp = apiProvider.getTargetprocessApi();
+    const harvest = apiProvider.getHarvestApi();
+
+    const entity = await askTargetprocessEntityIfRequired(tp, tpId);
+
+    if (entity === undefined) {
+        return null;
+    }
+
+    logTpEntity(entity);
+
+    const { projectId, taskId } = await askHarvestDetails(harvest, entity);
+    const notes = await askNotes();
+    const { hours, running } = await askTimeSpent();
+    const confirm = await askConfirm();
+
+    if (!confirm) {
+        return null;
+    }
+
+    const timerDetails: TimerStartDetails = {
+        entity,
+        projectId,
+        taskId,
+        notes,
+        hours,
+        running
+    };
+
+    return timerDetails;
+};
+
+// --- Define internal functions ---
 
 const promptTargetprocessId = async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,9 +98,7 @@ const promptTargetprocessId = async () => {
     return parseInt(tpEntityId, 10);
 };
 
-// TODO: Replace the 'any' with explicit type
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const logTpEntity = (entity: any) => {
+const logTpEntity = (entity: TpBookableEntity | null) => {
     if (entity === null) {
         return;
     }
@@ -41,7 +109,7 @@ const logTpEntity = (entity: any) => {
         log.info("> user story: none");
     }
 
-    log.info(`> ${entity.ResourceType.toLowerCase()}: #${entity.Id} ${entity.Name}`);
+    log.info(`> ${entity.ResourceType?.toLowerCase() || "UNKNOWN"}: #${entity.Id} ${entity.Name}`);
 };
 
 const getLoggableTargetprocessEntity = async (targetprocessApi: Targetprocess, id: number) => {
@@ -49,13 +117,11 @@ const getLoggableTargetprocessEntity = async (targetprocessApi: Targetprocess, i
 
     if (entity === null) {
         log.error(`Targetprocess entity ${ id } could not be found or access is forbidden.`);
-
         return null;
     }
 
-    if (entity.ResourceType === "UserStory") {
+    if (entity.ResourceType === EntityType.USERSTORY) {
         log.error("You cannot log time directly to a user story");
-
         return null;
     }
 
@@ -96,9 +162,7 @@ const filterChoices = (choices: { name: string }[], input: string) => {
     });
 };
 
-// TODO: Replace the 'any' with explicit type
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getChoiceIndexForName = (choices: { value: any, name: string }[], name: string) => {
+const getChoiceIndexForName = (choices: ValueNamePair[], name: string) => {
     const totalMatch = choices.findIndex(c => c.name.toUpperCase() === name.toUpperCase());
 
     if (totalMatch !== -1) {
@@ -114,9 +178,7 @@ const getChoiceIndexForName = (choices: { value: any, name: string }[], name: st
     return -1;
 };
 
-// TODO: Replace the 'any' with explicit type
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const reorderChoices = (choices: { value: any, name: string }[], name: string) => {
+const reorderChoices = (choices: ValueNamePair[], name: string) => {
     const index = getChoiceIndexForName(choices, name);
 
     if (index === -1) {
@@ -126,9 +188,7 @@ const reorderChoices = (choices: { value: any, name: string }[], name: string) =
     return startArrayAt(choices, index);
 };
 
-// TODO: Replace the 'any' with explicit type
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const askHarvestDetails = async (harvest: HarvestApi, tpEntity: any) => {
+const askHarvestDetails = async (harvest: HarvestApi, tpEntity: TpBookableEntity | null) => {
     const projects = await harvest.getMyProjects();
 
     const projectChoices = projects.map(p => ({ value: p, name: p.name }));
@@ -137,14 +197,10 @@ const askHarvestDetails = async (harvest: HarvestApi, tpEntity: any) => {
         name: "project",
         message: "Which project?",
         type: "autocomplete",
-        // TODO: Replace the 'any' with explicit type
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        source: (answers: any, input: string) => filterChoices(projectChoices, input)
-        // TODO: Replace the 'any' with explicit type
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any ]);
+        source: (answers: string, input: string) => filterChoices(projectChoices, input)
+    }]);
 
-    const taskChoices = project.tasks.map(t => ({ value: t.id, name: t.name }));
+    const taskChoices = project.tasks.map(t => ({ value: t.id, name: t.name } as ValueNamePair));
 
     const targetTaskName = tpEntity === null ? "Dev Management Time" : "Development";
     const orderedChoices = reorderChoices(taskChoices, targetTaskName);
@@ -153,17 +209,15 @@ const askHarvestDetails = async (harvest: HarvestApi, tpEntity: any) => {
         name: "taskId",
         message: "What kind of task?",
         type: "autocomplete",
-        // TODO: Replace the 'any' with explicit type
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        source: (answers: any, input: string) => filterChoices(orderedChoices, input)
-        // TODO: Replace the 'any' with explicit type
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any ]);
+        source: (answers: string, input: string) => filterChoices(orderedChoices, input)
+    }]);
 
-    return {
+    const projectAndTaskId: HarvestIdPair = {
         projectId: project.id,
         taskId
     };
+
+    return projectAndTaskId;
 };
 
 const askNotes = async () => {
@@ -176,13 +230,15 @@ const askNotes = async () => {
 };
 
 const askTimeSpent = async () => {
+    let timeSpent: TimeSpent = {
+        hours: 0,
+        running: true
+    };
+
     const hours = await askHours("How many hours have you already spent on it?", 0);
 
     if (hours === 0) {
-        return {
-            hours,
-            running: true
-        };
+        return timeSpent;
     }
 
     const { running } = await inquirer.prompt<{ running: boolean }>([{
@@ -191,10 +247,12 @@ const askTimeSpent = async () => {
         message: "Are you still doing this?"
     }]);
 
-    return {
+    timeSpent = {
         hours,
         running
     };
+
+    return timeSpent;
 };
 
 const askTargetprocessEntityIfRequired = async (targetprocessApi: Targetprocess, id?: number) => {
@@ -207,35 +265,4 @@ const askTargetprocessEntityIfRequired = async (targetprocessApi: Targetprocess,
 
     const tpEntity = await askTargetprocessEntity(targetprocessApi);
     return tpEntity;
-};
-
-export const askStartDetails = async (apiProvider: ApiProvider, tpId?: number) => {
-    const tp = apiProvider.getTargetprocessApi();
-    const harvest = apiProvider.getHarvestApi();
-
-    const entity = await askTargetprocessEntityIfRequired(tp, tpId);
-
-    if (entity === undefined) {
-        return null;
-    }
-
-    logTpEntity(entity);
-
-    const { projectId, taskId } = await askHarvestDetails(harvest, entity);
-    const notes = await askNotes();
-    const { hours, running } = await askTimeSpent();
-    const confirm = await askConfirm();
-
-    if (!confirm) {
-        return null;
-    }
-
-    return {
-        entity,
-        projectId,
-        taskId,
-        notes,
-        hours,
-        running
-    };
 };
