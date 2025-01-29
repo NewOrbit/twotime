@@ -49,11 +49,11 @@ export const createNotes = (metadata: NoteMetadata | null, additionalNotes?: str
   }
 
   if (metadata?.finished) {
-    notesLines.push(sanitisePrefix(NotePrefixes.finished));
+    notesLines.push(NotePrefixes.finished);
   }
 
   if (metadata) {
-    notesLines.push(`${sanitisePrefix(NotePrefixes.twotime)}${metadata.version}`);
+    notesLines.push(`${NotePrefixes.twotime}${metadata.version}`);
   }
 
   if (additionalNotes) {
@@ -65,8 +65,5 @@ export const createNotes = (metadata: NoteMetadata | null, additionalNotes?: str
 
 // Internal function to create a single line of notes, given a prefix, numerical ID and name.
 const createNotesLine = (prefix: string, id: number, name: string) => {
-  return `${sanitisePrefix(prefix)}${id} ${name}`;
+  return `${prefix}${id} ${name}`;
 };
-
-// Internal function to sanitise the prefix for HTML display - will be going away soon.
-const sanitisePrefix = (prefix: string) => prefix.replace(/>/g, "&gt;");
