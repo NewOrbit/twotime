@@ -4,7 +4,33 @@ Sync timesheets between Harvest and Targetprocess
 
 ## Installation
 
-    npm install -g twotime
+Note that the old, public package (v2.0.0) is deprecated and will be removed at some point. _Do not use this version_.
+
+### Setting up .npmrc
+If necessary, set up access to the NewOrbit DevOps artefacts by following the `Connect to a feed` procedure in [Get started with npm packages in Azure Artifacts](https://learn.microsoft.com/en-us/azure/devops/artifacts/get-started-npm?view=azure-devops).  A few things are not clear from that page:
+
+1. Make sure you have installed the npm package `vsts-npm-auth` first, by using `npm install vsts-npm-auth`.
+2. Your `.npmrc` file needs to have these entries:
+   ```
+   registry=https://registry.npmjs.org/
+   @neworbit:registry=https://pkgs.dev.azure.com/neworbit/_packaging/NewOrbit/npm/registry/
+   always-auth=true
+   ````
+3. If `vsts-npm-auth -config .npmrc` doesn't work, try `npx vsts-npm-auth -config .npmrc`.
+
+### Installing the correct version
+
+_Uninstall_ the old version 2.0.0:
+
+    npm uninstall -g twotime
+
+Then install the latest twotime from our own feed:
+
+    npm install -g @neworbit/twotime
+
+If this command fails:
+1. Ensure you have the correct `.npmrc` file set up as described above.
+1. If the installation process cannot get rid of old files, please report this. As a last resort, use `--force`.
 
 ## Setup
 
@@ -91,4 +117,4 @@ When a time entry for a TargetProcess `Task` is finished, if the time remaining 
 
 ## License
 
-Made with :sparkling_heart: by [NewOrbit](https://www.neworbit.co.uk/) in Oxfordshire, and licensed under the [MIT Licence](LICENCE)
+(Original public package: Made with :sparkling_heart: by [NewOrbit](https://www.neworbit.co.uk/) in Oxfordshire, and licensed under the [MIT Licence](LICENCE))
