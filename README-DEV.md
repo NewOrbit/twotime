@@ -39,7 +39,21 @@ Other features can be tested by running `node` directly, for example:
 
 ## Publishing the code
 
-**TODO** via a DevOps feed.
+This will be done manually when necessary, rather than tying it to a DevOps pipeline.
+
+1. Ensure you have enough privileges to add a package to the NewOrbit registry.
+2. The npm package `vsts-npm-auth` should already be installed as part of a general `npm install`.  Otherwise install it manually by using `npm install vsts-npm-auth`
+3. Unless you already have this all set up, add a `.npmrc` file to the project in the same directory as package.json with the following contents:
+    ```
+    registry=https://registry.npmjs.org/
+    @neworbit:registry=https://pkgs.dev.azure.com/neworbit/_packaging/NewOrbit/npm/registry/
+    always-auth=true
+    ```
+    (This file must be ignored by git as it will contain an unencrypted authentication token.)
+4. Run vsts-npm-auth to get an Azure Artifacts token added:  `npx vsts-npm-auth -config .npmrc`.  Note:
+    - You don't need to do this every time. npm will give a 401 unauthorized error when you need to run it again.
+    - You should get an email entitled "Azure DevOps personal access token added".
+5. Publish the package with `npm publish`.  Check it exists in [NewOrbit internal artefacts](https://dev.azure.com/neworbit/NewOrbit%20Internal/_artifacts/feed/NewOrbit).
 
 ## Recent history
 
