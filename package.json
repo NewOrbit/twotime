@@ -1,6 +1,6 @@
 {
   "name": "@neworbit/twotime",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Sync timesheets between Harvest and Targetprocess",
   "main": "index.js",
   "bin": {
