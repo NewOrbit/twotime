@@ -7,7 +7,7 @@ Sync timesheets between Harvest and Targetprocess
 Note that the old, public package (v2.0.0) is deprecated and will be removed at some point. _Do not use this version_.
 
 ### Setting up .npmrc
-If necessary, set up access to the NewOrbit DevOps artefacts by following the `Connect to a feed` procedure in [Get started with npm packages in Azure Artifacts](https://learn.microsoft.com/en-us/azure/devops/artifacts/get-started-npm?view=azure-devops).  A few things are not clear from that page:
+If necessary, set up access to the NewOrbit DevOps artefacts by following the `Connect to a feed` procedure in [Get started with npm packages in Azure Artifacts](https://learn.microsoft.com/en-us/azure/devops/artifacts/get-started-npm?view=azure-devops).  A few things in addition to that page:
 
 1. Make sure you have installed the npm package `vsts-npm-auth` first, by using `npm install vsts-npm-auth`.
 2. Your `.npmrc` file needs to have these entries:
@@ -17,8 +17,13 @@ If necessary, set up access to the NewOrbit DevOps artefacts by following the `C
    always-auth=true
    ````
 3. If `vsts-npm-auth -config .npmrc` doesn't work, try `npx vsts-npm-auth -config .npmrc`.
+4. If that command fails with a "Couldn't get an authentication token" message, try adding `-F` to the end of the command to force it.
+    - This can also happen if you already have an expired auth token in `.npmrc`. You can try clearing the contents of the file down to just the above three lines and then retrying the `vsts-npm-auth` command.
 
 ### Installing the correct version
+
+**Note:** _You can't finish timers from previous days that were started with the old twotime. Either finish those timers first, or
+fix up manually in Harvest and TP afterwards._
 
 _Uninstall_ the old version 2.0.0:
 
@@ -31,6 +36,8 @@ Then install the latest twotime from our own feed:
 If this command fails:
 1. Ensure you have the correct `.npmrc` file set up as described above.
 1. If the installation process cannot get rid of old files, please report this. As a last resort, use `--force`.
+
+If you are upgrading from version 2.0.0 there should be no need to reauthenticate as v3.x uses the same mechanism and files.
 
 ## Setup
 
