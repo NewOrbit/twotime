@@ -1,14 +1,27 @@
 import { Targetprocess } from "targetprocess-rest-api";
-import { HarvestApi } from "../harvest/api";
-import { createNotes } from "../harvest/notes/create-notes";
-import { log } from "../utils/log";
-import { askFinishDetails, FinishTimerRequest } from "./prompts/finish";
+
 import { ApiProvider } from "../api-provider";
+
+import { HarvestApi } from "../harvest/api";
+import { createNotes } from "../harvest/helpers/create-notes";
+
+import { log } from "../utils/log";
+
+import { EntityType, TpBookableEntity } from "../target-process/models/tp-bookable-entity";
+
+import { askFinishDetails, FinishTimerRequest } from "./prompts/finish";
+
+enum TimeIssueCheck {
+    Error,
+    LogTimeDirectly,
+    LogTimeToUserStory,
+    CantLogTime
+}
 
 const stopHarvestTimer = async (harvestApi: HarvestApi, request: FinishTimerRequest, packageVersion: string) => {
     log.info(`> Updating Harvest`);
 
-    const { timeEntry, tpEntity, timeRemaining } = request;
+    const timeEntry = request.timeEntry;
 
     if (timeEntry.metadata !== null) {
         timeEntry.metadata.finished = true;
@@ -25,32 +38,40 @@ const stopHarvestTimer = async (harvestApi: HarvestApi, request: FinishTimerRequ
     }
 };
 
-const getTargetprocessTimeEntity = async (targetprocessApi: Targetprocess, tpEntity: any) => {
+// Check where time is issued for a given TP entity
+const checkTargetprocessTimeEntity = async (targetprocessApi: Targetprocess, tpEntity: TpBookableEntity) => {
     // if it's not a bug, we always log the time directly
-    if (tpEntity.ResourceType !== "Bug") {
-        return tpEntity;
+    if (tpEntity.ResourceType !== EntityType.BUG) {
+        return TimeIssueCheck.LogTimeDirectly;
     }
 
-    const issueTimeTo = await targetprocessApi.getCustomValueForProject(tpEntity.Project.Id, "IssueTime to");
+    // It is a bug so check its configuration for issuing time
+    if (!tpEntity.Project) {
+        log.error(`TP BUG ID ${tpEntity.Id} HAS NO PROJECT DETAILS - REPORT THIS.`);
+        return TimeIssueCheck.Error;
+    }
+
+    const issueTimeTo: string = await targetprocessApi.getCustomValueForProject(tpEntity.Project.Id, "IssueTime to");
 
     if (issueTimeTo === "none") {
         log.info(`Project ${tpEntity.Project.Name} (${tpEntity.Project.Id}) is not configured to log issue time`);
-        return null;
+        return TimeIssueCheck.CantLogTime;
     }
 
     if (issueTimeTo === "User story") {
         log.info(`Project ${tpEntity.Project.Name} (${tpEntity.Project.Id}) is configured to log issue time to the user story`);
-        return tpEntity.UserStory;
+        return TimeIssueCheck.LogTimeToUserStory;
     }
 
     log.info(`Project ${tpEntity.Project.Name} (${tpEntity.Project.Id}) is configured to log issue time to the issue`);
 
-    return tpEntity;
+    return TimeIssueCheck.LogTimeDirectly;
 };
 
-const getTargetprocessNotes = (request: FinishTimerRequest, entity: any) => {
-    if (request.tpEntity.Id !== entity.Id) {
-        return `time spent on ${ request.tpEntity.ResourceType.toLowerCase() } #${ request.tpEntity.Id }`;
+const getTargetprocessNotes = (request: FinishTimerRequest, tpEntity: TpBookableEntity, isUserStory: boolean) => {
+    if (isUserStory && tpEntity.UserStory) {
+        const entityDescription = tpEntity.UserStory.ResourceType?.toLowerCase() || "UNKNOWN ENTITY TYPE";
+        return `time spent on ${entityDescription} #${tpEntity.UserStory.Id}`;
     }
 
     if (request.timeEntry.notes.length > 0) {
@@ -67,25 +88,19 @@ const updateTargetprocess = async (targetprocessApi: Targetprocess, request: Fin
 
     log.info(`> Updating Targetprocess`);
 
-    const timeEntity = await getTargetprocessTimeEntity(targetprocessApi, request.tpEntity);
-
-    if (timeEntity === null) {
+    const timeEntity = request.tpEntity;
+    const timeIssueDirective = await checkTargetprocessTimeEntity(targetprocessApi, timeEntity);
+    if (timeIssueDirective === TimeIssueCheck.Error || timeIssueDirective === TimeIssueCheck.CantLogTime) {
         return;
     }
 
-    const notes = getTargetprocessNotes(request, timeEntity);
+    const notes = getTargetprocessNotes(request, timeEntity, timeIssueDirective === TimeIssueCheck.LogTimeToUserStory);
 
-    if (timeEntity.ResourceType === "Task" &&
-        request.timeRemaining === 0 &&
-        request.tpEntity &&
-        request.tpEntity.Project &&
-        request.tpEntity.Project.Process &&
-        request.tpEntity.Project.Process.Id) {
-
-      await targetprocessApi.setTaskState(timeEntity.Id, "Done", request.tpEntity.Project.Process.Id);
+    if (timeEntity.ResourceType === EntityType.TASK && request.timeRemaining === 0 && timeEntity.Project?.Process?.Id) {
+      await targetprocessApi.setTaskState(timeEntity.Id, "Done", timeEntity.Project.Process.Id);
     }
 
-    return targetprocessApi.addTime(timeEntity.Id, request.timeEntry.hours, request.timeRemaining, new Date(request.timeEntry.created), notes);
+    targetprocessApi.addTime(timeEntity.Id, request.timeEntry.hours, request.timeRemaining || 0, new Date(request.timeEntry.created), notes);
 };
 
 const getTimerDisplayName = (request: FinishTimerRequest) => {
@@ -112,5 +127,6 @@ export const finish = async (packageVersion: string, apiProvider: ApiProvider, d
         log.info(`> Timer finished\n`);
     }
 
-    log.info(`Finished ${ finishTimerRequests.length } timers`);
+    const pluralSuffix = finishTimerRequests.length === 1 ? "" : "s";
+    log.info(`Finished ${finishTimerRequests.length} timer${pluralSuffix}.`);
 };

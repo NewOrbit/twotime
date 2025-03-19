@@ -8,12 +8,14 @@ trigger:
   branches:
     include:
       - master
+      - develop
 
 pr:
   autoCancel: true
   branches:
     include:
       - master
+      - develop
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -21,7 +23,7 @@ pool:
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '10.x'
+    versionSpec: '20.x'
   displayName: 'Install Node.js'
 
 - script: npm install

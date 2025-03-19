@@ -1,26 +1,28 @@
-import { CommanderStatic } from "commander";
+import { Command } from "commander";
+
 import { ApiProvider } from "./api-provider";
 
 import { start } from "./commands/start";
 import { finish } from "./commands/finish";
 import { auth } from "./commands/auth";
-import { isValidDate } from "./utils/is-valid-date";
-import { getTodayDate } from "./utils/get-today-date";
-import { log } from "./utils/log";
-import { getPastDate } from "./utils/get-past-date";
 import { resume } from "./commands/resume";
 import { pause } from "./commands/pause";
 import { list } from "./commands/list";
 
-const getDateForCommand = (command) => {
+import { getTodaysDate, getDateInPast, isValidDate } from "./utils/dates";
+import { log } from "./utils/log";
+
+// Get date for a command - unfortunately the 'commander' package does not give a command type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getDateForCommand = (command: any) => {
     if (command.date == null && command.offset == null) {
-        return getTodayDate();
+        return getTodaysDate();
     }
 
     const offset = parseInt(command.offset, 10);
 
     if (isFinite(offset) && offset > 0) {
-        return getPastDate(offset);
+        return getDateInPast(offset);
     }
 
     if (isValidDate(command.date)) {
@@ -30,9 +32,9 @@ const getDateForCommand = (command) => {
     return null;
 };
 
-const getAllForCommand = (command) => command.all !== null && command.all !== undefined;
-
-const getTpForCommand = (command) => {
+// Get TP ID for a command - unfortunately the 'commander' package does not give a command type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getTpForCommand = (command: any) => {
     if (command.tp === undefined) {
         return undefined;
     }
@@ -66,7 +68,7 @@ const tpFlagConfig = {
     description: "Start a timer for a given TP id"
 };
 
-export const registerCommands = (commander: CommanderStatic, apiProvider: ApiProvider, packageVersion: string) => {
+export const registerCommands = (commander: Command, apiProvider: ApiProvider, packageVersion: string) => {
     commander
         .command("start")
         .description("start a timer")
@@ -83,7 +85,7 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
             }
 
             if (tp === null) {
-                log.error("Invalid Targetprocess id provided. Must be a number");
+                log.error("Invalid Targetprocess ID provided. Must be a number");
                 process.exit(1);
             }
 
@@ -104,8 +106,7 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
                 process.exit(1);
             }
 
-            const all = getAllForCommand(cmd);
-
+            const all = cmd.all !== null && cmd.all !== undefined;
             return finish(packageVersion, apiProvider, date, all);
         });
 
@@ -142,7 +143,7 @@ export const registerCommands = (commander: CommanderStatic, apiProvider: ApiPro
 
     commander
         .on("command:*", () => {
-            console.error("Invalid command: %s\nSee --help for a list of available commands.", commander.args.join(" "));
+            log.error(`Invalid command: ${commander.args.join(" ")}\nSee --help for a list of available commands.`);
             process.exit(1);
         });
 };

@@ -1,14 +1,15 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
-import { createNoteMetadata } from "../../src/harvest/notes/create-note-metadata";
-import { NoteMetadata, EntityType } from "../../src/harvest/notes/note-metadata";
+import { createNoteMetadata } from "../../src/harvest/helpers/create-notes";
+import { NoteMetadata } from "../../src/harvest/models/time-entry";
+import { EntityType, TpBookableEntity } from "../../src/target-process/models/tp-bookable-entity";
 
 @TestFixture()
 export class CreateNoteMetadataTests {
 
     @Test()
     public shouldCreateNoteMetadataCorrectlyForTask() {
-        const input = {
-            ResourceType: "Task",
+        const input: TpBookableEntity = {
+            ResourceType: EntityType.TASK,
             Id: 67890,
             Name: "Some Task Name",
             UserStory: {
@@ -19,15 +20,7 @@ export class CreateNoteMetadataTests {
         };
 
         const expected: NoteMetadata = {
-            userStory: {
-                id: 12345,
-                name: "Foo"
-            },
-            entity: {
-                type: EntityType.TASK,
-                id: 67890,
-                name: "Some Task Name"
-            },
+            tpBookableEntity: input,
             finished: false,
             version: "0.0.0"
         };
@@ -39,8 +32,8 @@ export class CreateNoteMetadataTests {
 
     @Test()
     public shouldCreateNoteMetadataCorrectlyForBug() {
-        const input = {
-            ResourceType: "Bug",
+        const input: TpBookableEntity = {
+            ResourceType: EntityType.BUG,
             Id: 94123,
             Name: "A very very horrible bug",
             UserStory: {
@@ -51,15 +44,7 @@ export class CreateNoteMetadataTests {
         };
 
         const expected: NoteMetadata = {
-            userStory: {
-                id: 17441,
-                name: "User should be able to eat cheese"
-            },
-            entity: {
-                type: EntityType.BUG,
-                id: 94123,
-                name: "A very very horrible bug"
-            },
+            tpBookableEntity: input,
             finished: false,
             version: "0.0.0"
         };
@@ -71,20 +56,15 @@ export class CreateNoteMetadataTests {
 
     @Test()
     public shouldCreateNoteMetadataCorrectlyWithoutUserStory() {
-        const input = {
-            ResourceType: "Bug",
+        const input: TpBookableEntity = {
+            ResourceType: EntityType.BUG,
             Id: 94123,
             Name: "A very very horrible bug",
-            UserStory: null
+            UserStory: undefined
         };
 
         const expected: NoteMetadata = {
-            userStory: null,
-            entity: {
-                type: EntityType.BUG,
-                id: 94123,
-                name: "A very very horrible bug"
-            },
+            tpBookableEntity: input,
             finished: false,
             version: "0.0.0"
         };
@@ -109,20 +89,15 @@ export class CreateNoteMetadataTests {
     @TestCase("0.5.0")
     @TestCase("2.7.3")
     public shouldCreateNoteMetadataWithCorrectVersion(version: string) {
-        const input = {
-            ResourceType: "Bug",
+        const input: TpBookableEntity = {
+            ResourceType: EntityType.BUG,
             Id: 94123,
             Name: "A very very horrible bug",
-            UserStory: null
+            UserStory: undefined
         };
 
         const expected: NoteMetadata = {
-            userStory: null,
-            entity: {
-                type: EntityType.BUG,
-                id: 94123,
-                name: "A very very horrible bug"
-            },
+            tpBookableEntity: input,
             finished: false,
             version
         };

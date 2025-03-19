@@ -1,25 +1,25 @@
 #!/usr/bin/env node
 
-import * as inquirer from "inquirer";
-import * as commander from "commander";
+import inquirer from "inquirer";
+import inquirerPrompt from 'inquirer-autocomplete-prompt';
+import { program } from 'commander';
+
+import * as packageInfo from "../package.json";
+
 import { ApiProvider } from "./api-provider";
+
 import { registerCommands } from "./register-commands";
 
-/* tslint:disable:no-var-requires */
-const autocompletePrompt = require("inquirer-autocomplete-prompt");
-const packageInfo = require("../package.json");
-/* tslint:enable:no-var-requires */
+inquirer.registerPrompt("autocomplete", inquirerPrompt);
 
-inquirer.registerPrompt("autocomplete", autocompletePrompt);
-
-commander
+program
     .name("twotime")
     .version(packageInfo.version, "-v, --version");
 
-registerCommands(commander, new ApiProvider(), packageInfo.version);
+registerCommands(program, new ApiProvider(), packageInfo.version);
 
-commander.parse(process.argv);
+program.parse(process.argv);
 
-if (commander.args.length === 0) {
-    commander.help();
+if (program.args.length === 0) {
+    program.help();
 }

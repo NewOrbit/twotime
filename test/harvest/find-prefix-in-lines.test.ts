@@ -1,5 +1,5 @@
 import { TestFixture, TestCase, Expect } from "alsatian";
-import { findPrefixInLines } from "../../src/harvest/notes/parse-prefix";
+import { findPrefixInLines } from "../../src/harvest/helpers/notes-utilities";
 
 @TestFixture()
 export class FindPrefixInLinesTests {

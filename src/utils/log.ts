@@ -1,12 +1,11 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 
 import chalk from "chalk";
 import { table, getBorderCharacters } from "table";
-import mapValues = require("lodash.mapvalues");
 
 export const log = {
     error: (message: string) => console.log(chalk.red("[ERROR] ") + message),
-    warn: (message: string) => console.log(chalk.yellow("[WARN] ") + message),
+    warn: (message: string) => console.log(chalk.yellow(`[WARN] ${message}`)),  // insufficient visual impact unless whole text is coloured
     info: (message: string) => console.log(chalk.cyan("[INFO] ") + message),
     table: (headers: string[], rows: string[][]) => {
         const data = [
@@ -14,7 +13,7 @@ export const log = {
             ...rows
         ];
 
-        const tableBorder = mapValues(getBorderCharacters("honeywell"), char => chalk.gray(char));
+        const tableBorder = mapValues(getBorderCharacters("honeywell"), (char) => chalk.gray(char || ""));
 
         const output = table(data, {
             border: tableBorder,
@@ -36,4 +35,11 @@ export const log = {
 
         console.log(output);
     }
+};
+
+// Replacement for lodash.mapvalues courtesy of Copilot
+const mapValues = <T, U>(obj: Record<string, T>, fn: (value: T, key: string) => U): Record<string, U> => {
+    return Object.fromEntries(
+        Object.entries(obj).map(([key, value]) => [key, fn(value, key)])
+    );
 };

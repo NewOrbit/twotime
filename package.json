@@ -1,15 +1,21 @@
 {
-  "name": "twotime",
-  "version": "2.0.0",
+  "name": "@neworbit/twotime",
+  "version": "3.0.1",
   "description": "Sync timesheets between Harvest and Targetprocess",
   "main": "index.js",
-  "bin": "bin/index.js",
+  "bin": {
+    "twotime": "bin/src/index.js"
+  },
   "scripts": {
     "prepublishOnly": "npm run build && npm run test && npm run lint",
     "build": "tsc",
     "build-test": "tsc -p ./tsconfig.test.json",
     "test": "npm run build-test && alsatian \"bin-test/**/*.test.js\"",
-    "lint": "tslint -c tslint.json \"{src,test}/**/*.ts\""
+    "lint": "eslint src/**/*.ts --max-warnings=0",
+    "lint:fix": "eslint src/**/*.ts --max-warnings=0 --quiet --fix --ignore-path ./.gitignore",
+    "start": "node bin/src/index.js start",
+    "list": "node bin/src/index.js list",
+    "finish": "node bin/src/index.js finish"
   },
   "files": [
     "bin"
@@ -25,30 +31,30 @@
   },
   "homepage": "https://github.com/NewOrbit/twotime#readme",
   "devDependencies": {
-    "@types/node": "^10.9.3",
-    "alsatian": "^2.3.0",
-    "neworbit-tslint-config": "^3.0.0",
-    "tslint": "^5.11.0",
-    "typescript": "^3.0.3"
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.19.0",
+    "@types/node": "^22.10.10",
+    "@typescript-eslint/eslint-plugin": "^8.22.0",
+    "@typescript-eslint/parser": "^8.22.0",
+    "alsatian": "^3.2.1",
+    "eslint": "^9.19.0",
+    "eslint-config-neworbit": "^10.0.0",
+    "globals": "^15.14.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.22.0"
   },
   "dependencies": {
-    "@types/btoa": "^1.2.0",
-    "@types/configstore": "^2.1.1",
-    "@types/inquirer": "0.0.43",
+    "@types/configstore": "^6.0.2",
+    "@types/inquirer": "7.3.3",
+    "@types/inquirer-autocomplete-prompt": "^1.3.2",
     "@types/lodash.mapvalues": "^4.6.4",
-    "@types/table": "^4.0.5",
-    "btoa": "^1.2.1",
-    "chalk": "^2.4.1",
-    "commander": "^2.18.0",
+    "chalk": "^4.1.2",
+    "commander": "^13.1.0",
     "configstore": "^4.0.0",
-    "entities": "^1.1.1",
-    "harvest": "^2.2.5",
-    "inquirer": "^6.2.0",
-    "inquirer-autocomplete-prompt": "^1.0.1",
-    "lodash.mapvalues": "^4.6.0",
-    "moment": "^2.22.2",
-    "request-promise-json": "^1.0.4",
-    "table": "^5.1.0",
-    "targetprocess-rest-api": "^1.0.0"
+    "inquirer": "^8.2.4",
+    "inquirer-autocomplete-prompt": "^2.0.1",
+    "table": "^6.9.0",
+    "targetprocess-rest-api": "^1.0.0",
+    "vsts-npm-auth": "^0.43.0"
   }
 }

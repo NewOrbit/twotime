@@ -1,9 +1,11 @@
-import { Entity, EntityType } from "../../src/harvest/notes/note-metadata";
+import { TpBookableEntity, EntityType } from "../../src/target-process/models/tp-bookable-entity";
+import { TpUserStory } from "../../src/target-process/models/tp-user-story";
 
 export class EntityBuilder {
     private type: EntityType = EntityType.BUG;
     private id: number = 123;
     private name: string = "Foo";
+    private userStory?: TpUserStory;
 
     public withType(type: EntityType) {
         this.type = type;
@@ -20,11 +22,17 @@ export class EntityBuilder {
         return this;
     }
 
-    public build(): Entity {
+    public withUserStory(userStory: TpUserStory) {
+        this.userStory = userStory;
+        return this;
+    }
+
+    public build(): TpBookableEntity {
         return {
-            type: this.type,
-            id: this.id,
-            name: this.name
+            Id: this.id,
+            Name: this.name,
+            ResourceType: this.type,
+            UserStory: this.userStory
         };
     }
 }

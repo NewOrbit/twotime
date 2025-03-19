@@ -1,20 +1,23 @@
-import { ApiProvider } from "../api-provider";
-import { log } from "../utils/log";
-import { HarvestTimeEntry } from "../harvest/api";
-import { getEntityTypeText } from "../utils/get-entity-type-text";
 import chalk from "chalk";
 
+import { ApiProvider } from "../api-provider";
+
+import { log } from "../utils/log";
+
+import { HarvestTimeEntry } from "../harvest/models/time-entry";
+
 const getTypeForEntry = (entry: HarvestTimeEntry) => {
+    let resType = "";
     if (entry.metadata) {
-        return getEntityTypeText(entry.metadata.entity.type);
+        resType = entry.metadata.tpBookableEntity?.ResourceType?.toString() || "";
     }
 
-    return chalk.gray("n/a");
+    return resType || chalk.gray("n/a");
 };
 
 const getTextForEntry = (entry: HarvestTimeEntry) => {
-    if (entry.metadata) {
-        return `${ entry.metadata.entity.name } (#${ entry.metadata.entity.id })`;
+    if (entry.metadata && entry.metadata.tpBookableEntity) {
+        return `${ entry.metadata.tpBookableEntity.Name } (#${ entry.metadata.tpBookableEntity.Id })`;
     }
 
     return entry.notes[0];
@@ -38,8 +41,8 @@ export const list = async (apiProvider: ApiProvider, date: string) => {
 
     const entries = await harvestApi.getTimeEntries(date);
 
-    // sort them in chronological
-    entries.sort((a, b) => (new Date(a.created) as any) - (new Date(b.created) as any));
+    // sort them into chronological order
+    entries.sort((a, b) => (new Date(a.created).getMilliseconds()) - (new Date(b.created).getMilliseconds()));
 
     const rows = entries.map(getTableRowForEntry);
     const total = entries.reduce((accumulator, entry) => accumulator + entry.hours, 0);

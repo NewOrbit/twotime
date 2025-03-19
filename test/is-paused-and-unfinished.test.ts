@@ -1,5 +1,5 @@
 import { TestFixture, Test, Expect } from "alsatian";
-import { HarvestTimeEntry } from "../src/harvest/api";
+import { HarvestTimeEntry } from "../src/harvest/models/time-entry";
 import { isPausedAndUnfinished } from "../src/utils/is-paused-and-unfinished";
 import { NoteMetadataBuilder } from "./_builders/note-metadata.builder";
 
