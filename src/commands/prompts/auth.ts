@@ -8,8 +8,7 @@ export const askAuthDetails = async () => {
     const promptResult = await inquirer.prompt<{
         harvestAccessToken: string,
         harvestAccountId: number,
-        targetprocessUsername: string,
-        targetprocessPassword: string,
+        targetprocessAccessToken: string,
         targetprocessSubdomain: string
     }>([{
         name: "harvestAccessToken",
@@ -21,14 +20,9 @@ export const askAuthDetails = async () => {
         validate: isNumeric,
         filter: input => parseInt(input, 10)
     }, {
-        name: "targetprocessUsername",
-        message: "What is your Targetprocess username?",
+        name: "targetprocessAccessToken",
+        message: "What is your Targetprocess access token?",
         validate: notEmpty
-    }, {
-        name: "targetprocessPassword",
-        message: "What is your Targetprocess password?",
-        validate: notEmpty,
-        type: "password"
     }, {
         name: "targetprocessSubdomain",
         message: "What is your Targetprocess subdomain (e.g. 'neworbit')?",
