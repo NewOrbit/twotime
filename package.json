@@ -55,7 +55,7 @@
     "inquirer": "^8.2.4",
     "inquirer-autocomplete-prompt": "^2.0.1",
     "table": "^6.9.0",
-    "targetprocess-rest-api": "^1.0.0",
+    "targetprocess-rest-api": "^1.1.0",
     "vsts-npm-auth": "^0.43.0"
   }
 }
