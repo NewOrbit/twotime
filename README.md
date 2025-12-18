@@ -48,7 +48,7 @@ Once installed, you need to authenticate against Harvest and Targetprocess.
 You will need:
 
 - Harvest [personal access token](https://id.getharvest.com/developers) and account ID
-- Targetprocess username and password
+- Targetprocess [personal access token](https://neworbit.tpondemand.com/RestUI/Board.aspx#page=settings/authAndSecurity/personalAccessTokensTab)
 
 ### Windows and WSL
 

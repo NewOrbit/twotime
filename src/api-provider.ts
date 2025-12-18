@@ -12,8 +12,7 @@ interface HarvestConfig {
 }
 
 export interface TargetprocessConfig {
-    username: string;
-    password: string;
+    accessToken: string;
     subdomain: string;
 }
 
@@ -63,14 +62,13 @@ export class ApiProvider {
         }
 
         const tpConfig = this.getTargetprocessConfig();
-        if (tpConfig === null || !tpConfig.username || !tpConfig.password || !tpConfig.subdomain) {
+        if (tpConfig === null || !tpConfig.accessToken || !tpConfig.subdomain) {
             log.error("Targetprocess authentication not configured correctly.");
             log.error("Use `twotime auth` to authenticate.");
             process.exit(1);
         }
 
-        const api = new Targetprocess(tpConfig.subdomain, tpConfig.username, tpConfig.password);
-
+        const api = new Targetprocess(tpConfig.subdomain, undefined, undefined, { accessToken: tpConfig.accessToken });
         this.targetprocessApi = api;
 
         return this.targetprocessApi;
