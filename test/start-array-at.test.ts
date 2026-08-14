@@ -1,17 +1,22 @@
-import { TestFixture, TestCase, Expect } from "alsatian";
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
 import { startArrayAt } from "../src/utils/start-array-at.ts";
 
-@TestFixture()
-export class StartArrayAtTests {
+describe("startArrayAt", () => {
 
-    @TestCase([0, 1, 2, 3], 2, [2, 3, 0, 1])
-    @TestCase([0, 1, 2, 3], 1, [1, 2, 3, 0])
-    @TestCase(["foo", "bar", "baz"], 1, ["bar", "baz", "foo"])
-    @TestCase([true, false, false, true], 1, [false, false, true, true])
-    public shouldOrderArrayCorrectly(input: any[], target: number, expected: any[]) {
-        const result = startArrayAt(input, target);
+    const cases: [input: unknown[], target: number, expected: unknown[]][] = [
+        [[0, 1, 2, 3], 2, [2, 3, 0, 1]],
+        [[0, 1, 2, 3], 1, [1, 2, 3, 0]],
+        [["foo", "bar", "baz"], 1, ["bar", "baz", "foo"]],
+        [[true, false, false, true], 1, [false, false, true, true]]
+    ];
 
-        Expect(result).toEqual(expected);
+    for (const [input, target, expected] of cases) {
+        it(`orders [${input}] from index ${target} correctly`, () => {
+            const result = startArrayAt(input, target);
+
+            assert.deepStrictEqual(result, expected);
+        });
     }
 
-}
+});

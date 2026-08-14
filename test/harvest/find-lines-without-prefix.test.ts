@@ -1,11 +1,10 @@
-import { TestFixture, Test, Expect } from "alsatian";
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
 import { findLinesWithoutPrefix } from "../../src/harvest/helpers/notes-utilities.ts";
 
-@TestFixture()
-export class FindLinesWithoutPrefixTests {
+describe("findLinesWithoutPrefix", () => {
 
-    @Test()
-    public shouldParseLinesWithoutPrefix() {
+    it("parses lines without a prefix", () => {
         const input = "> user_story #12345 foo\n"
             + "first line\n"
             + "> task #18491 bar\n"
@@ -15,11 +14,10 @@ export class FindLinesWithoutPrefixTests {
 
         const result = findLinesWithoutPrefix(lines, [ "> user_story #", "> task #"]);
 
-        Expect(result).toEqual(["first line", "second line"]);
-    }
+        assert.deepStrictEqual(result, ["first line", "second line"]);
+    });
 
-    @Test()
-    public shouldParseLinesWithoutPrefixWhenNoLines() {
+    it("parses lines without a prefix when there are no such lines", () => {
         const input = "> user_story #12345 foo\n"
             + "> task #18491 bar";
 
@@ -27,7 +25,7 @@ export class FindLinesWithoutPrefixTests {
 
         const result = findLinesWithoutPrefix(lines, [ "> user_story #", "> task #"]);
 
-        Expect(result).toEqual([]);
-    }
+        assert.deepStrictEqual(result, []);
+    });
 
-}
+});

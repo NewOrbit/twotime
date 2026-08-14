@@ -1,30 +1,35 @@
-import { TestFixture, TestCase, Expect } from "alsatian";
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
 import { isValidDate } from "../src/utils/dates.ts";
 
-const MOCK_TODAY_DATE_RESULT = "1996-01-01";
-const MOCK_GET_TODAY_DATE = () => MOCK_TODAY_DATE_RESULT;
+describe("isValidDate", () => {
 
-@TestFixture()
-export class IsValidDateTests {
+    for (const providedDate of ["2018-01-01", "2015-12-08"]) {
+        it(`returns true for the valid date "${providedDate}"`, () => {
+            const result = isValidDate(providedDate);
 
-    @TestCase("2018-01-01")
-    @TestCase("2015-12-08")
-    public shouldReturnTrueWhenValidDateProvided(providedDate: string) {
-        const result = isValidDate(providedDate);
-
-        Expect(result).toBe(true);
+            assert.strictEqual(result, true);
+        });
     }
 
-    @TestCase(undefined)
-    @TestCase(null)
-    @TestCase("2018-01")
-    @TestCase("07-01-2017")
-    @TestCase("2018/04/04")
-    @TestCase("2018-01-40")
-    public shouldReturnFalseWhenInvalidDateProvided(providedDate: string) {
-        const result = isValidDate(providedDate);
+    // undefined and null are deliberately included: these assert that the function is
+    // robust against non-string input, which its signature does not admit. The casts
+    // keep that intent explicit rather than widening the signature to suit the tests.
+    const invalidDates: (string | undefined | null)[] = [
+        undefined,
+        null,
+        "2018-01",
+        "07-01-2017",
+        "2018/04/04",
+        "2018-01-40"
+    ];
 
-        Expect(result).toBe(false);
+    for (const providedDate of invalidDates) {
+        it(`returns false for the invalid date ${JSON.stringify(providedDate) ?? "undefined"}`, () => {
+            const result = isValidDate(providedDate as string);
+
+            assert.strictEqual(result, false);
+        });
     }
 
-}
+});
