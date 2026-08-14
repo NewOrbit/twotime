@@ -1,5 +1,6 @@
 import type { TpBookableEntity } from "../../src/target-process/models/tp-bookable-entity.ts";
 import type { NoteMetadata } from "../../src/harvest/models/time-entry.ts";
+
 import { EntityBuilder } from "./entity.builder.ts";
 
 export class NoteMetadataBuilder {

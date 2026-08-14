@@ -16,7 +16,7 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ["**/node_modules", "**/bin", "**/bin-test", "node_modules/*"],
+    ignores: ["**/node_modules", "dist"],
   },
   ...compat.extends("eslint:recommended", "plugin:@typescript-eslint/recommended"),
   ...NewOrbitEslintConfig,
