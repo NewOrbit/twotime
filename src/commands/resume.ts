@@ -1,4 +1,4 @@
-import inquirer from "inquirer";
+import { select } from "@inquirer/prompts";
 
 import type { ApiProvider } from "../api-provider.ts";
 
@@ -24,10 +24,8 @@ export const resume = async (apiProvider: ApiProvider) => {
 
     const prompts = nonRunning.map(getTimeEntryPrompt);
 
-    const { timeEntry } = await inquirer.prompt<{ timeEntry: HarvestTimeEntry }>({
-        name: "timeEntry",
+    const timeEntry = await select<HarvestTimeEntry>({
         message: "Which timer would you like to resume?",
-        type: "list",
         choices: prompts
     });
 

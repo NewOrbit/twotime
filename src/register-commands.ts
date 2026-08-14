@@ -11,6 +11,7 @@ import { list } from "./commands/list.ts";
 
 import { getTodaysDate, getDateInPast, isValidDate } from "./utils/dates.ts";
 import { log } from "./utils/log.ts";
+import { runCommand } from "./utils/run-command.ts";
 
 // Get date for a command - unfortunately the 'commander' package does not give a command type
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -89,7 +90,7 @@ export const registerCommands = (commander: Command, apiProvider: ApiProvider, p
                 process.exit(1);
             }
 
-            return start(packageVersion, apiProvider, date, tp);
+            return runCommand(() => start(packageVersion, apiProvider, date, tp));
         });
 
     commander
@@ -107,18 +108,18 @@ export const registerCommands = (commander: Command, apiProvider: ApiProvider, p
             }
 
             const all = cmd.all !== null && cmd.all !== undefined;
-            return finish(packageVersion, apiProvider, date, all);
+            return runCommand(() => finish(packageVersion, apiProvider, date, all));
         });
 
     commander
         .command("resume")
         .description("resume a timer")
-        .action(() => resume(apiProvider));
+        .action(() => runCommand(() => resume(apiProvider)));
 
     commander
         .command("pause")
         .description("pause the currently running timer")
-        .action(() => pause(apiProvider));
+        .action(() => runCommand(() => pause(apiProvider)));
 
     commander
         .command("list")
@@ -133,13 +134,13 @@ export const registerCommands = (commander: Command, apiProvider: ApiProvider, p
                 process.exit(1);
             }
 
-            return list(apiProvider, date);
+            return runCommand(() => list(apiProvider, date));
         });
 
     commander
         .command("auth")
         .description("authenticate to harvest and targetprocess")
-        .action(() => auth(apiProvider));
+        .action(() => runCommand(() => auth(apiProvider)));
 
     commander
         .on("command:*", () => {

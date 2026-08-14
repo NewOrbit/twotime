@@ -62,7 +62,24 @@ them, so `npm run typecheck` is a separate gate and both run in CI.
 
 The published package is a single self-contained file, `dist/twotime.cjs`, produced by `npm run bundle`, which runs esbuild straight from `src/index.ts` with no `tsc` emit step. Type checking is a separate gate (`npm run typecheck`, i.e. `tsc --noEmit`), because Node's native type stripping erases types without checking them. Bundling means users installing the package get one file with no dependency tree, which makes both installation and cold start dramatically faster (an unbundled install was ~23,000 files, and on Windows every file paid a Defender scan on first run).
 
-Because of this, **all runtime dependencies deliberately live in `devDependencies`**. They are compiled into the bundle at build time and must not be moved back to `dependencies`, or users would download them for nothing. If you add a new runtime package, install it as a dev dependency and check `npm run bundle` completes without dynamic-require warnings.
+Because of this, **all runtime dependencies deliberately live in `devDependencies`**. They are compiled into the bundle at build time and must not be moved back to `dependencies`, or users would download them for nothing. If you add a new runtime package, install it as a dev dependency and then *run* the bundle (`node dist/twotime.cjs --help`). A successful esbuild run does not prove the bundle works. See below.
+
+### Why the bundle is CJS
+
+The `.cjs` extension looks like a leftover from before the package became ESM, but it is doing real work and should not be flipped to ESM without re-testing.
+
+esbuild converts a CommonJS dependency by wrapping it in a factory and rewriting every `require()` it can resolve statically. Anything it cannot resolve falls back to a `__require` helper. In CJS output that helper forwards to the real `require` and works. In ESM output there is no `require` to forward to, so it becomes a stub that throws `Dynamic require of "x" is not supported` at run time.
+
+Building this project with `--format=esm` produces a bundle that dies immediately:
+
+    Error: Dynamic require of "fs" is not supported
+        at node_modules/graceful-fs/graceful-fs.js
+
+`table` has no ESM release at all, and `configstore` pulls in `graceful-fs`, so the dependency graph will stay mixed for a while yet. CJS output can absorb both CJS and ESM inputs. ESM output can only absorb ESM.
+
+Note that esbuild gives no warning about any of this. It reports success and a plausible file size, and the failure only shows up when the bundle is run. That is why the check above is "run it" rather than "look for warnings".
+
+An ESM bundle can be made to work by injecting `createRequire` via `--banner:js`, and in this project every unresolved require happens to be a Node builtin, so it would stay self-contained. But that only buys the file extension. The CJS dependencies would still be working only because they were handed a `require` back, and if one of them ever reaches for a non-builtin at run time, the single-file property breaks silently. Not worth it until the graph is ESM-only.
 
 ## Running the code
 
@@ -119,21 +136,26 @@ The codebase was very old and most library dependencies were hugely behind curre
 
 There are currently no vulnerabilities reported by `npm audit`, or on packaging the utility.
 
-_However_, not all of the dependent packages could be upgraded to the latest versions due to run-time problems, specifically ERR_REQUIRE_ESM errors.  There was not enough time in the project to see if this can be addressed - none of these has any security vulnerabilities.  A `npm outdated` command gave the following output as of end Jan 2025:
+The Jan 2025 notes recorded that `chalk`, `configstore` and the `inquirer` family were stuck on old majors because upgrading produced `ERR_REQUIRE_ESM` at run time. That blocker has gone, for two separate reasons: this package is now `"type": "module"`, so its own sources import ESM natively, and `require()` of an ESM module has worked since Node 20.19 / 22.12 / 23 anyway, as long as the module graph has no top-level await. Those packages were all taken to their current majors in Aug 2026 with no interop workarounds.
 
-```
-Package                              Current  Wanted  Latest  Location                                          Depended by
---------                             -------  ------  ------  ------------------------------------------------  -----------
-@types/inquirer                        7.3.3   7.3.3   9.0.7  node_modules/@types/inquirer                      twotime
-@types/inquirer-autocomplete-prompt    1.3.5   1.3.5   3.0.3  node_modules/@types/inquirer-autocomplete-prompt  twotime
-chalk                                  4.1.2   4.1.2   5.4.1  node_modules/chalk                                twotime
-configstore                            4.0.0   4.0.0   7.0.0  node_modules/configstore                          twotime
-inquirer                               8.2.6   8.2.6  12.3.2  node_modules/inquirer                             twotime
-inquirer-autocomplete-prompt           2.0.1   2.0.1   3.0.1  node_modules/inquirer-autocomplete-prompt         twotime
-```
+The `inquirer` family was replaced rather than upgraded. `inquirer-autocomplete-prompt` deep-imports `inquirer/lib/*`, and inquirer stopped publishing those paths in its `exports` map at v10, so the autocomplete prompt cannot work on any modern inquirer. As `inquirer` v10+ is itself only a legacy-API wrapper over `@inquirer/prompts`, the package now depends on `@inquirer/prompts` directly and uses `search` in place of the autocomplete prompt. That removed four dependencies (`inquirer`, `inquirer-autocomplete-prompt` and both `@types/*` packages, as the new one ships its own types) and took the bundle from 2.1 MB to under 500 KB.
+
+Three prompt behaviours to be aware of before changing this code:
+
+- Interrupting a prompt with Ctrl+C does not kill the process. `@inquirer/core` rejects the prompt promise with an `ExitPromptError` and leaves it to the application, so an uncaught one reaches the user as an unhandled-rejection stack trace. Every command is therefore wrapped in `runCommand` (`src/utils/run-command.ts`), which treats that one error as a cancellation and rethrows everything else. Wrap any new command the same way.
+- `@inquirer/input` defaults to `validationFailureMode: 'keep'`, which leaves a rejected value in the buffer so the next attempt appends to it. The prompts that validate set it to `'clear'` instead. Removing that will produce inputs like `notanumber999`.
+- `search` resolves its `source` asynchronously, so the highlighted item lags slightly behind the typed term.
+
+Packages held back on purpose, as of Aug 2026:
+
+| Package | Held at | Why |
+| --- | --- | --- |
+| `eslint`, `@eslint/js` | 9.x | `eslint-config-neworbit@11` declares `peerDependencies: { eslint: "9.x" }` |
+| `typescript` | 6.x | `@typescript-eslint` 8.x declares `typescript: ">=4.8.4 <6.1.0"`, so TS 7 breaks `npm run lint` |
+| `@types/node` | 24.x | Should track the `engines.node` floor, not run ahead of it |
 
 ## To Do
 
 Delete the public package!  At the moment this isn't possible as there are several owners who have left the company.
 
-If possible, enable the use of the latest package versions as explained above.
+Revisit the three held packages above when their blockers clear: `eslint` 10 needs a new `eslint-config-neworbit`, and TypeScript 7 needs `typescript-eslint` 9.
