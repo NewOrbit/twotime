@@ -38,7 +38,7 @@ and run straight from the TypeScript sources with no build step:
 
 Fixtures are plain `describe` / `it` blocks. There is no `.each` helper in
 `node:test`, so table-driven cases are an array and a `for...of` loop that
-declares one `it()` per case — keep the loop *outside* `it()`, so every case is
+declares one `it()` per case. Keep the loop *outside* `it()`, so every case is
 an independent test and a failure in one does not mask the rest.
 
 Multi-column tables get a named, labelled-tuple array so each column is
@@ -55,14 +55,14 @@ Assertions use `node:assert/strict` (`deepStrictEqual` / `strictEqual`). Note
 this is deliberately strict about keys whose value is `undefined`, matching the
 behaviour of the alsatian suite this replaced.
 
-`npm run test` does **not** type-check — Node erases types without checking
-them — so `npm run typecheck` is a separate gate and both run in CI.
+`npm run test` does **not** type-check: Node erases types without checking
+them, so `npm run typecheck` is a separate gate and both run in CI.
 
 ## How the package is built
 
-The published package is a single self-contained file, `dist/twotime.cjs`, produced by `npm run bundle` — esbuild straight from `src/index.ts`, with no `tsc` emit step. Type checking is a separate gate (`npm run typecheck`, i.e. `tsc --noEmit`), because Node's native type stripping erases types without checking them. Bundling means users installing the package get one file with no dependency tree, which makes both installation and cold start dramatically faster (an unbundled install was ~23,000 files, and on Windows every file paid a Defender scan on first run).
+The published package is a single self-contained file, `dist/twotime.cjs`, produced by `npm run bundle`, which runs esbuild straight from `src/index.ts` with no `tsc` emit step. Type checking is a separate gate (`npm run typecheck`, i.e. `tsc --noEmit`), because Node's native type stripping erases types without checking them. Bundling means users installing the package get one file with no dependency tree, which makes both installation and cold start dramatically faster (an unbundled install was ~23,000 files, and on Windows every file paid a Defender scan on first run).
 
-Because of this, **all runtime dependencies deliberately live in `devDependencies`** — they are compiled into the bundle at build time and must not be moved back to `dependencies`, or users would download them for nothing. If you add a new runtime package, install it as a dev dependency and check `npm run bundle` completes without dynamic-require warnings.
+Because of this, **all runtime dependencies deliberately live in `devDependencies`**. They are compiled into the bundle at build time and must not be moved back to `dependencies`, or users would download them for nothing. If you add a new runtime package, install it as a dev dependency and check `npm run bundle` completes without dynamic-require warnings.
 
 ## Running the code
 
@@ -71,7 +71,7 @@ There are several new scripts added to `package.json` to enable running the util
     PS> npm run start
 
 Other features can be tested by running `node` directly against the TypeScript
-sources — Node 24 strips the types natively, so there is no build step:
+sources. Node 24 strips the types natively, so there is no build step:
 
     PS> node src/index.ts --help
     PS> node src/index.ts pause
@@ -93,7 +93,7 @@ export type EntityType = typeof EntityType[keyof typeof EntityType];
 type. Two consequences worth knowing: `@typescript-eslint/no-redeclare` is
 switched off in `eslint.config.mjs` because it flags this pattern (TypeScript
 itself still reports genuine redeclarations as TS2451), and unlike an `enum` the
-type is not nominal — a bare `"Bug"` is assignable to `EntityType`.
+type is not nominal: a bare `"Bug"` is assignable to `EntityType`.
 
 ## Publishing the code
 
@@ -111,7 +111,7 @@ This will be done manually when necessary, rather than tying it to a DevOps pipe
 4. Run vsts-npm-auth to get an Azure Artifacts token added:  `npx vsts-npm-auth -config .npmrc`.  Note:
     - You don't need to do this every time. npm will give a 401 unauthorized error when you need to run it again.
     - You should get an email entitled "Azure DevOps personal access token added".
-5. Publish the package with `npm publish`.  Check it exists in [NewOrbit internal artefacts](https://dev.azure.com/neworbit/NewOrbit%20Internal/_artifacts/feed/NewOrbit).  Publishing automatically rebuilds the bundle and runs the tests and linter first (see `prepublishOnly` in `package.json`); you can preview the tarball contents with `npm pack --dry-run` — it should contain little more than `dist/twotime.cjs`.
+5. Publish the package with `npm publish`.  Check it exists in [NewOrbit internal artefacts](https://dev.azure.com/neworbit/NewOrbit%20Internal/_artifacts/feed/NewOrbit).  Publishing automatically rebuilds the bundle and runs the tests and linter first (see `prepublishOnly` in `package.json`); you can preview the tarball contents with `npm pack --dry-run`.  It should contain little more than `dist/twotime.cjs`.
 
 ## Recent history
 
