@@ -1,14 +1,16 @@
-import { TestFixture, TestCase, Test, Expect } from "alsatian";
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
 import type { ParsedNotes } from "../../src/harvest/helpers/parse-notes.ts";
 import { parseNotes } from "../../src/harvest/helpers/parse-notes.ts";
 import { EntityType } from "../../src/target-process/models/tp-bookable-entity.ts";
 
-@TestFixture()
-export class ParseNotesTests {
+const USER_STORY_NAME = "4.1	System Automatically Deletes all Previously Archived – Single Use Process";
+const USER_STORY_LINE = `*User story:* #35858 ${USER_STORY_NAME}\n`;
 
-    @Test()
-    public shouldParseFinishedBugCorrectly() {
-        const input = "*User story:* #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
+describe("parseNotes", () => {
+
+    it("parses a finished bug correctly", () => {
+        const input = USER_STORY_LINE
             + "*Bug:* #40732 v8.13 - FK AdditionalApplicationAnswers\n"
             + "*Status:* finished\n"
             + "*Recorded by:* twotime 0.0.0";
@@ -21,7 +23,7 @@ export class ParseNotesTests {
                     Name: "v8.13 - FK AdditionalApplicationAnswers",
                     UserStory: {
                         Id: 35858,
-                        Name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process",
+                        Name: USER_STORY_NAME,
                         ResourceType: "UserStory"
                     }
                 },
@@ -33,12 +35,11 @@ export class ParseNotesTests {
 
         const res = parseNotes(input);
 
-        Expect(res).toEqual(expected);
-    }
+        assert.deepStrictEqual(res, expected);
+    });
 
-    @Test()
-    public shouldParseUnfinishedBugCorrectly() {
-        const input = "*User story:* #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
+    it("parses an unfinished bug correctly", () => {
+        const input = USER_STORY_LINE
             + "*Bug:* #40732 v8.13 - FK AdditionalApplicationAnswers\n"
             + "*Recorded by:* twotime 0.0.0";
 
@@ -50,7 +51,7 @@ export class ParseNotesTests {
                     Name: "v8.13 - FK AdditionalApplicationAnswers",
                     UserStory: {
                         Id: 35858,
-                        Name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process",
+                        Name: USER_STORY_NAME,
                         ResourceType: "UserStory"
                     }
                 },
@@ -62,12 +63,11 @@ export class ParseNotesTests {
 
         const res = parseNotes(input);
 
-        Expect(res).toEqual(expected);
-    }
+        assert.deepStrictEqual(res, expected);
+    });
 
-    @Test()
-    public shouldParseUnfinishedBugCorrectlyForBadFinishedNote() {
-        const input = "*User story:* #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
+    it("parses an unfinished bug correctly when the finished note is malformed", () => {
+        const input = USER_STORY_LINE
             + "*Bug:* #40732 v8.13 - FK AdditionalApplicationAnswers\n"
             + "*Status:* finished but it's not the correct format!\n"
             + "*Recorded by:* twotime 0.0.0";
@@ -80,7 +80,7 @@ export class ParseNotesTests {
                     Name: "v8.13 - FK AdditionalApplicationAnswers",
                     UserStory: {
                         Id: 35858,
-                        Name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process",
+                        Name: USER_STORY_NAME,
                         ResourceType: "UserStory"
                     }
                 },
@@ -92,12 +92,11 @@ export class ParseNotesTests {
 
         const res = parseNotes(input);
 
-        Expect(res).toEqual(expected);
-    }
+        assert.deepStrictEqual(res, expected);
+    });
 
-    @Test()
-    public shouldParseFinishedTaskCorrectly() {
-        const input = "*User story:* #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
+    it("parses a finished task correctly", () => {
+        const input = USER_STORY_LINE
             + "*Task:* #12345 Foo! Bar\n"
             + "*Status:* finished\n"
             + "*Recorded by:* twotime 0.0.0";
@@ -110,7 +109,7 @@ export class ParseNotesTests {
                     Name: "Foo! Bar",
                     UserStory: {
                         Id: 35858,
-                        Name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process",
+                        Name: USER_STORY_NAME,
                         ResourceType: "UserStory"
                     }
                 },
@@ -122,12 +121,11 @@ export class ParseNotesTests {
 
         const res = parseNotes(input);
 
-        Expect(res).toEqual(expected);
-    }
+        assert.deepStrictEqual(res, expected);
+    });
 
-    @Test()
-    public shouldParseCorrectlyForUnescapedSymbol() {
-        const input = "*User story:* #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
+    it("parses correctly for an unescaped symbol", () => {
+        const input = USER_STORY_LINE
             + "*Task:* #12345 Foo! Bar\n"
             + "*Status:* finished\n"
             + "*Recorded by:* twotime 0.0.0\n"
@@ -142,7 +140,7 @@ export class ParseNotesTests {
                     Name: "Foo! Bar",
                     UserStory: {
                         Id: 35858,
-                        Name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process",
+                        Name: USER_STORY_NAME,
                         ResourceType: "UserStory"
                     }
                 },
@@ -154,12 +152,11 @@ export class ParseNotesTests {
 
         const res = parseNotes(input);
 
-        Expect(res).toEqual(expected);
-    }
+        assert.deepStrictEqual(res, expected);
+    });
 
-    @Test()
-    public shouldParseUnfinishedTaskCorrectlyForBadFinishedNote() {
-        const input = "*User story:* #35858 4.1	System Automatically Deletes all Previously Archived – Single Use Process\n"
+    it("parses an unfinished task correctly when the finished note is malformed", () => {
+        const input = USER_STORY_LINE
             + "*Task:* #12345 Foo! Bar\n"
             + "*Status:* finished but it's not the correct format!\n"
             + "*Recorded by:* twotime 0.0.0";
@@ -172,7 +169,7 @@ export class ParseNotesTests {
                     Name: "Foo! Bar",
                     UserStory: {
                         Id: 35858,
-                        Name: "4.1	System Automatically Deletes all Previously Archived – Single Use Process",
+                        Name: USER_STORY_NAME,
                         ResourceType: "UserStory"
                     }
                 },
@@ -184,26 +181,24 @@ export class ParseNotesTests {
 
         const res = parseNotes(input);
 
-        Expect(res).toEqual(expected);
+        assert.deepStrictEqual(res, expected);
+    });
+
+    for (const additionalNotes of ["Some extra notes", "bla bla bla", "it's true!"]) {
+        it(`parses the additional note "${additionalNotes}" correctly`, () => {
+            const input = "*User story:* #12345 Foo\n"
+                + "*Task:* #67890 Bar\n"
+                + "*Status:* finished\n"
+                + "*Recorded by:* twotime 0.0.0\n"
+                + additionalNotes;
+
+            const res = parseNotes(input);
+
+            assert.deepStrictEqual(res.additionalNotes, [additionalNotes]);
+        });
     }
 
-    @TestCase("Some extra notes")
-    @TestCase("bla bla bla")
-    @TestCase("it's true!")
-    public shouldParseAdditionalNotesCorrectly(additionalNotes: string) {
-        const input = "*User story:* #12345 Foo\n"
-            + "*Task:* #67890 Bar\n"
-            + "*Status:* finished\n"
-            + "*Recorded by:* twotime 0.0.0\n"
-            + additionalNotes;
-
-        const res = parseNotes(input);
-
-        Expect(res.additionalNotes).toEqual([additionalNotes]);
-    }
-
-    @Test()
-    public shouldParseAdditionalNotesWhenSplit() {
+    it("parses additional notes when they are split", () => {
         const input = "*User story:* #12345 Foo\n"
             + "*Task:* #67890 Bar\n"
             + "this is the first initial part\n"
@@ -213,21 +208,20 @@ export class ParseNotesTests {
 
         const res = parseNotes(input);
 
-        Expect(res.additionalNotes).toEqual(["this is the first initial part", "second initial parts"]);
+        assert.deepStrictEqual(res.additionalNotes, ["this is the first initial part", "second initial parts"]);
+    });
+
+    for (const version of ["0.0.0", "1.2.3", "7.16.1"]) {
+        it(`parses the version ${version} correctly`, () => {
+            const input = "*User story:* #12345 Foo\n"
+                + "*Task:* #67890 Bar\n"
+                + "*Status:* finished\n"
+                + "*Recorded by:* twotime " + version;
+
+            const res = parseNotes(input);
+
+            assert.deepStrictEqual(res.metadata?.version, version);
+        });
     }
 
-    @TestCase("0.0.0")
-    @TestCase("1.2.3")
-    @TestCase("7.16.1")
-    public shouldParseVersionCorrectly(version: string) {
-        const input = "*User story:* #12345 Foo\n"
-            + "*Task:* #67890 Bar\n"
-            + "*Status:* finished\n"
-            + "*Recorded by:* twotime " + version;
-
-        const res = parseNotes(input);
-
-        Expect(res.metadata?.version).toEqual(version);
-    }
-
-}
+});
