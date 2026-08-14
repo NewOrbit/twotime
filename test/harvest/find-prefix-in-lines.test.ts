@@ -1,5 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+
 import { findPrefixInLines } from "../../src/harvest/helpers/notes-utilities.ts";
 
 describe("findPrefixInLines", () => {
