@@ -1,4 +1,4 @@
-import { Targetprocess } from "targetprocess-rest-api";
+import { Targetprocess } from "../target-process/api";
 
 import { ApiProvider } from "../api-provider";
 
@@ -51,7 +51,7 @@ const checkTargetprocessTimeEntity = async (targetprocessApi: Targetprocess, tpE
         return TimeIssueCheck.Error;
     }
 
-    const issueTimeTo: string = await targetprocessApi.getCustomValueForProject(tpEntity.Project.Id, "IssueTime to");
+    const issueTimeTo = await targetprocessApi.getCustomValueForProject<string>(tpEntity.Project.Id, "IssueTime to");
 
     if (issueTimeTo === "none") {
         log.info(`Project ${tpEntity.Project.Name} (${tpEntity.Project.Id}) is not configured to log issue time`);

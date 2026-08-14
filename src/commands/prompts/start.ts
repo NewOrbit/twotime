@@ -1,6 +1,6 @@
 import inquirer from "inquirer";
 
-import { Targetprocess } from "targetprocess-rest-api";
+import { Targetprocess } from "../../target-process/api";
 
 import { HarvestProject } from "../../harvest/models/projects";
 import { HarvestApi } from "../../harvest/api";

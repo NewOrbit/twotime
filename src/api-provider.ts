@@ -1,6 +1,6 @@
 import Configstore from "configstore";
 
-import { Targetprocess } from "targetprocess-rest-api";
+import { Targetprocess } from "./target-process/api";
 
 import { HarvestApi } from "./harvest/api";
 
@@ -68,7 +68,7 @@ export class ApiProvider {
             process.exit(1);
         }
 
-        const api = new Targetprocess(tpConfig.subdomain, undefined, undefined, { accessToken: tpConfig.accessToken });
+        const api = new Targetprocess(tpConfig.subdomain, tpConfig.accessToken);
         this.targetprocessApi = api;
 
         return this.targetprocessApi;
