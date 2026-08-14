@@ -4,7 +4,7 @@ This section has been added for the benefit of developers needing to do any work
 
 ## Go-to people
 
-Tom Hyde - repo administrator \
+Tom Hyde - repo administrator
 Ian French - latest developer to do any work on the utility
 
 ## Preparation
@@ -13,10 +13,10 @@ Clone the repo: `git clone https://github.com/NewOrbit/twotime.git`
 
 Change directory to the cloned repo, install dependencies and sanity-check the build, e.g. from PowerShell:
 
-```
-PS> cd twotime
-PS> npm install
-PS> npm run prepublishOnly
+```powershell
+cd twotime
+npm install
+npm run prepublishOnly
 ```
 
 ## Developing the code
@@ -33,8 +33,10 @@ between runs.
 Tests use Node's built-in test runner (`node:test`) with `node:assert/strict`,
 and run straight from the TypeScript sources with no build step:
 
-    PS> npm run test
-    PS> npm run test:watch
+```powershell
+npm run test
+npm run test:watch
+```
 
 Fixtures are plain `describe` / `it` blocks. There is no `.each` helper in
 `node:test`, so table-driven cases are an array and a `for...of` loop that
@@ -72,8 +74,10 @@ esbuild converts a CommonJS dependency by wrapping it in a factory and rewriting
 
 Building this project with `--format=esm` produces a bundle that dies immediately:
 
+```none
     Error: Dynamic require of "fs" is not supported
         at node_modules/graceful-fs/graceful-fs.js
+```
 
 `table` has no ESM release at all, and `configstore` pulls in `graceful-fs`, so the dependency graph will stay mixed for a while yet. CJS output can absorb both CJS and ESM inputs. ESM output can only absorb ESM.
 
@@ -85,13 +89,17 @@ An ESM bundle can be made to work by injecting `createRequire` via `--banner:js`
 
 There are several new scripts added to `package.json` to enable running the utility with one of the arguments, for example starting a timer:
 
-    PS> npm run start
+```powershell
+npm run start
+```
 
 Other features can be tested by running `node` directly against the TypeScript
 sources. Node 24 strips the types natively, so there is no build step:
 
-    PS> node src/index.ts --help
-    PS> node src/index.ts pause
+```powershell
+node src/index.ts --help
+node src/index.ts pause
+```
 
 This works because the sources are kept free of non-erasable TypeScript syntax
 (no `enum`, no namespaces, no parameter properties), enforced by the
@@ -119,12 +127,14 @@ This will be done manually when necessary, rather than tying it to a DevOps pipe
 1. Ensure you have enough privileges to add a package to the NewOrbit registry.
 2. The npm package `vsts-npm-auth` should already be installed as part of a general `npm install`.  Otherwise install it manually by using `npm install vsts-npm-auth`
 3. Unless you already have this all set up, add a `.npmrc` file to the project in the same directory as package.json with the following contents:
-    ```
-    registry=https://registry.npmjs.org/
-    @neworbit:registry=https://pkgs.dev.azure.com/neworbit/_packaging/NewOrbit/npm/registry/
-    always-auth=true
-    ```
-    (This file must be ignored by git as it will contain an unencrypted authentication token.)
+
+```none
+registry=https://registry.npmjs.org/
+@neworbit:registry=https://pkgs.dev.azure.com/neworbit/_packaging/NewOrbit/npm/registry/
+always-auth=true
+```
+
+(This file must be ignored by git as it will contain an unencrypted authentication token.)
 4. Run vsts-npm-auth to get an Azure Artifacts token added:  `npx vsts-npm-auth -config .npmrc`.  Note:
     - You don't need to do this every time. npm will give a 401 unauthorized error when you need to run it again.
     - You should get an email entitled "Azure DevOps personal access token added".
