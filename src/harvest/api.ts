@@ -3,10 +3,10 @@
  * Ian French, NewOrbit Ltd, Jan 2025.
  */
 
-import { parseNotes } from "./helpers/parse-notes";
-import { HarvestProject, RawHarvestMyProjectResponse } from "./models/projects";
-import { HarvestTimeEntry, HarvestTimer, RawHarvestTimeEntry, RawHarvestTimeEntryResponse } from "./models/time-entry";
-import { HarvestUserData } from "./models/userdata";
+import { parseNotes } from "./helpers/parse-notes.ts";
+import type { HarvestProject, RawHarvestMyProjectResponse } from "./models/projects.ts";
+import type { HarvestTimeEntry, HarvestTimer, RawHarvestTimeEntry, RawHarvestTimeEntryResponse } from "./models/time-entry.ts";
+import type { HarvestUserData } from "./models/userdata.ts";
 
 /**
  * Harvest API class

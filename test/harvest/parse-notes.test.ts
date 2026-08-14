@@ -1,6 +1,7 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
-import { parseNotes, ParsedNotes } from "../../src/harvest/helpers/parse-notes";
-import { EntityType } from "../../src/target-process/models/tp-bookable-entity";
+import type { ParsedNotes } from "../../src/harvest/helpers/parse-notes.ts";
+import { parseNotes } from "../../src/harvest/helpers/parse-notes.ts";
+import { EntityType } from "../../src/target-process/models/tp-bookable-entity.ts";
 
 @TestFixture()
 export class ParseNotesTests {

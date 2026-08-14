@@ -1,10 +1,10 @@
 import Configstore from "configstore";
 
-import { Targetprocess } from "./target-process/api";
+import { Targetprocess } from "./target-process/api.ts";
 
-import { HarvestApi } from "./harvest/api";
+import { HarvestApi } from "./harvest/api.ts";
 
-import { log } from "./utils/log";
+import { log } from "./utils/log.ts";
 
 interface HarvestConfig {
     accessToken: string;

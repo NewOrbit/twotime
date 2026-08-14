@@ -3,7 +3,7 @@
  * Ian French, NewOrbit Ltd, Jan 2025.
  */
 
-import { TpBookableEntity } from "../../target-process/models/tp-bookable-entity";
+import type { TpBookableEntity } from "../../target-process/models/tp-bookable-entity.ts";
 
 // Harvest timer model. The naming of this interface has been retained from the old code base.
 export interface HarvestTimer {

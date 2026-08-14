@@ -23,12 +23,14 @@ PS> npm run prepublishOnly
 
 1. From the root of the repo, i.e. the same folder as this README:
 1. Ensure the `package.json` file contains the correct name and version.
-1. Delete the `bin` folder if you've made significant changes or deleted _any_ source file.
-1. `npm run build`, then `npm run lint`, then `npm run test`.
+1. `npm run typecheck`, then `npm run lint`, then `npm run test`.
+
+The sources are no longer compiled to a `bin` folder as an intermediate step, so
+there is nothing to delete between runs.
 
 ## How the package is built
 
-The published package is a single self-contained file, `dist/twotime.cjs`, produced by `npm run bundle` (`tsc` followed by esbuild). Bundling means users installing the package get one file with no dependency tree, which makes both installation and cold start dramatically faster (an unbundled install was ~23,000 files, and on Windows every file paid a Defender scan on first run).
+The published package is a single self-contained file, `dist/twotime.cjs`, produced by `npm run bundle` — esbuild straight from `src/index.ts`, with no `tsc` emit step. Type checking is a separate gate (`npm run typecheck`, i.e. `tsc --noEmit`), because Node's native type stripping erases types without checking them. Bundling means users installing the package get one file with no dependency tree, which makes both installation and cold start dramatically faster (an unbundled install was ~23,000 files, and on Windows every file paid a Defender scan on first run).
 
 Because of this, **all runtime dependencies deliberately live in `devDependencies`** — they are compiled into the bundle at build time and must not be moved back to `dependencies`, or users would download them for nothing. If you add a new runtime package, install it as a dev dependency and check `npm run bundle` completes without dynamic-require warnings.
 
@@ -38,10 +40,15 @@ There are several new scripts added to `package.json` to enable running the util
 
     PS> npm run start
 
-Other features can be tested by running `node` directly, for example:
+Other features can be tested by running `node` directly against the TypeScript
+sources — Node 24 strips the types natively, so there is no build step:
 
-    PS> node bin/src/index.js --help
-    PS> node bin/src/index.js pause
+    PS> node src/index.ts --help
+    PS> node src/index.ts pause
+
+This works because the sources are kept free of non-erasable TypeScript syntax
+(no `enum`, no namespaces, no parameter properties), enforced by the
+`erasableSyntaxOnly` compiler option.
 
 ## Publishing the code
 

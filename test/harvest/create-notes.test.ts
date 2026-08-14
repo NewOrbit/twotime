@@ -1,9 +1,9 @@
 import { TestFixture, TestCase, Test, Expect } from "alsatian";
-import { createNotes } from "../../src/harvest/helpers/create-notes";
-import { EntityType } from "../../src/target-process/models/tp-bookable-entity";
-import { NoteMetadata } from "../../src/harvest/models/time-entry";
-import { NoteMetadataBuilder } from "../_builders/note-metadata.builder";
-import { EntityBuilder } from "../_builders/entity.builder";
+import { createNotes } from "../../src/harvest/helpers/create-notes.ts";
+import { EntityType } from "../../src/target-process/models/tp-bookable-entity.ts";
+import type { NoteMetadata } from "../../src/harvest/models/time-entry.ts";
+import { NoteMetadataBuilder } from "../_builders/note-metadata.builder.ts";
+import { EntityBuilder } from "../_builders/entity.builder.ts";
 
 @TestFixture()
 export class CreateNotesTests {

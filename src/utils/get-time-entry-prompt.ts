@@ -1,4 +1,4 @@
-import { HarvestTimeEntry } from "../harvest/models/time-entry";
+import type { HarvestTimeEntry } from "../harvest/models/time-entry.ts";
 
 const getPromptText = (hours: number, description: string, entity: string) => {
     return `${hours.toFixed(2)} hours - ${description} (${entity})`;

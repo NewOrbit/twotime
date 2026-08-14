@@ -26,8 +26,14 @@ export default [
     },
     languageOptions: {
         parser: tsParser,
-        ecmaVersion: 2020,
+        ecmaVersion: 2024,
         sourceType: "module",
+    },
+    rules: {
+        // Erasable enum replacements deliberately merge a `const` and a `type` of the
+        // same name, which live in separate declaration spaces. TypeScript itself
+        // reports genuine redeclarations (TS2451), so this rule is redundant here.
+        "@typescript-eslint/no-redeclare": "off",
     }
   }
 ];

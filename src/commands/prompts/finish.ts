@@ -1,21 +1,21 @@
 import inquirer from "inquirer";
 
-import { Targetprocess } from "../../target-process/api";
+import type { Targetprocess } from "../../target-process/api.ts";
 
-import { TpBookableEntity } from "../../target-process/models/tp-bookable-entity";
+import type { TpBookableEntity } from "../../target-process/models/tp-bookable-entity.ts";
 
-import { HarvestApi } from "../../harvest/api";
-import { HarvestTimeEntry } from "../../harvest/models/time-entry";
+import type { HarvestApi } from "../../harvest/api.ts";
+import type { HarvestTimeEntry } from "../../harvest/models/time-entry.ts";
 
-import { log } from "../../utils/log";
+import { log } from "../../utils/log.ts";
 
-import { getTargetprocessEntity } from "../../utils/get-tp-entity";
-import { getTimeEntryPrompt } from "../../utils/get-time-entry-prompt";
-import { isRunningOrUnfinished } from "../../utils/is-running-or-unfinished";
+import { getTargetprocessEntity } from "../../utils/get-tp-entity.ts";
+import { getTimeEntryPrompt } from "../../utils/get-time-entry-prompt.ts";
+import { isRunningOrUnfinished } from "../../utils/is-running-or-unfinished.ts";
 
-import { ApiProvider } from "../../api-provider";
+import type { ApiProvider } from "../../api-provider.ts";
 
-import { askHours } from "./hours";
+import { askHours } from "./hours.ts";
 
 export interface FinishTimerRequest {
     timeEntry: HarvestTimeEntry;

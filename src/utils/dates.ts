@@ -35,4 +35,6 @@ export const isValidDate = (inputDate: string) => {
   }
 };
 
-const formatDate = (rawDate: Date) => rawDate.toISOString().split("T")[0];
+// slice rather than split("T")[0]: an ISO string is always YYYY-MM-DDTHH:mm:ss.sssZ,
+// so this is equivalent but provably a string rather than string | undefined.
+const formatDate = (rawDate: Date) => rawDate.toISOString().slice(0, 10);

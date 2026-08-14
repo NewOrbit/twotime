@@ -1,22 +1,24 @@
-import { Targetprocess } from "../target-process/api";
+import type { Targetprocess } from "../target-process/api.ts";
 
-import { ApiProvider } from "../api-provider";
+import type { ApiProvider } from "../api-provider.ts";
 
-import { HarvestApi } from "../harvest/api";
-import { createNotes } from "../harvest/helpers/create-notes";
+import type { HarvestApi } from "../harvest/api.ts";
+import { createNotes } from "../harvest/helpers/create-notes.ts";
 
-import { log } from "../utils/log";
+import { log } from "../utils/log.ts";
 
-import { EntityType, TpBookableEntity } from "../target-process/models/tp-bookable-entity";
+import { EntityType, type TpBookableEntity } from "../target-process/models/tp-bookable-entity.ts";
 
-import { askFinishDetails, FinishTimerRequest } from "./prompts/finish";
+import { askFinishDetails, type FinishTimerRequest } from "./prompts/finish.ts";
 
-enum TimeIssueCheck {
-    Error,
-    LogTimeDirectly,
-    LogTimeToUserStory,
-    CantLogTime
-}
+const TimeIssueCheck = {
+    Error: "Error",
+    LogTimeDirectly: "LogTimeDirectly",
+    LogTimeToUserStory: "LogTimeToUserStory",
+    CantLogTime: "CantLogTime"
+} as const;
+
+type TimeIssueCheck = typeof TimeIssueCheck[keyof typeof TimeIssueCheck];
 
 const stopHarvestTimer = async (harvestApi: HarvestApi, request: FinishTimerRequest, packageVersion: string) => {
     log.info(`> Updating Harvest`);
