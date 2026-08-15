@@ -1,0 +1,7 @@
+# Both READMEs put each paragraph on one long line, which is how GitHub renders
+# them. Reflowing to 80 columns would churn every paragraph and help nobody.
+MD013: false
+
+# The Windows/WSL walkthrough in README.md is a <details> block. Markdown has no
+# equivalent for a collapsible section.
+MD033: false
