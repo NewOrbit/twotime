@@ -1,0 +1,26 @@
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
+
+# trustPolicy compares by publish date, not semver, so an old major with no
+# provenance reads as a downgrade from later, attested 7.x releases. semver@6.3.1
+# is an ordinary 2023 release, reached via eslint-config-neworbit.
+trustPolicyExclude:
+  - semver@6.3.1
+
+# TEMPORARY. The dependency bump in b0dabc2 (14 Aug 2026) pulled in versions
+# published 10-12 Aug, inside the 7-day window above, so no policy-clean
+# resolution satisfies the floors in package.json.
+#
+# Keep `typescript-eslint` and `@typescript-eslint/*` together. Held at 8.66.0,
+# the former nests its own copy of @typescript-eslint/eslint-plugin next to the
+# project's 8.67.0, and ESLint refuses to load the plugin twice.
+#
+# Everything here ages out on 17-19 Aug 2026. Delete the block then; no resolved
+# version should change.
+minimumReleaseAgeExclude:
+  - rolldown
+  - "@rolldown/*"
+  - "@oxc-project/*"
+  - globals
+  - typescript-eslint
+  - "@typescript-eslint/*"
