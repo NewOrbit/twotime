@@ -12,7 +12,7 @@
   "scripts": {
     "prepublishOnly": "npm run build && npm run test && npm run lint",
     "typecheck": "tsc --noEmit",
-    "bundle": "esbuild src/index.ts --bundle --platform=node --format=cjs --target=node24 --outfile=dist/twotime.cjs",
+    "bundle": "rolldown src/index.ts -o dist/twotime.cjs --format cjs --platform node --transform.target node24",
     "build": "npm run typecheck && npm run bundle",
     "test": "node --test \"test/**/*.test.ts\"",
     "test:watch": "node --test --watch \"test/**/*.test.ts\"",
@@ -46,10 +46,10 @@
     "chalk": "^6.0.0",
     "commander": "^15.0.0",
     "configstore": "^8.0.0",
-    "esbuild": "^0.28.2",
     "eslint": "^9.19.0",
     "eslint-config-neworbit": "^11.0.0",
     "globals": "^17.11.0",
+    "rolldown": "^1.2.4",
     "table": "^6.9.0",
     "typescript": "^6.0.3",
     "vsts-npm-auth": "^0.43.0"
