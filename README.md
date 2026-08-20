@@ -7,33 +7,45 @@ Sync timesheets between Harvest and Targetprocess
 Note that the old, public package (v2.0.0) is deprecated and will be removed at some point. _Do not use this version_.
 
 ### Setting up .npmrc
+
 If necessary, set up access to the NewOrbit DevOps artefacts by following the `Connect to a feed` procedure in [Get started with npm packages in Azure Artifacts](https://learn.microsoft.com/en-us/azure/devops/artifacts/get-started-npm?view=azure-devops).  A few things in addition to that page:
 
-1. Make sure you have installed the npm package `vsts-npm-auth` first, by using `npm install vsts-npm-auth`.
-2. Your `.npmrc` file needs to have these entries:
-   ```
+1. Make sure you have installed the package `vsts-npm-auth` first, by using `pnpm add -g vsts-npm-auth`.
+2. Your `.npmrc` file needs to have these entries. pnpm reads registry and authentication settings from `.npmrc`, the same as npm does:
+
+   ```ini
    registry=https://registry.npmjs.org/
    @neworbit:registry=https://pkgs.dev.azure.com/neworbit/_packaging/NewOrbit/npm/registry/
-   always-auth=true
-   ````
-3. If `vsts-npm-auth -config .npmrc` doesn't work, try `npx vsts-npm-auth -config .npmrc`.
+   ```
+
+3. If `vsts-npm-auth -config .npmrc` doesn't work, try `pnpm dlx vsts-npm-auth -config .npmrc`.
 4. If that command fails with a "Couldn't get an authentication token" message, try adding `-F` to the end of the command to force it.
-    - This can also happen if you already have an expired auth token in `.npmrc`. You can try clearing the contents of the file down to just the above three lines and then retrying the `vsts-npm-auth` command.
+    - This can also happen if you already have an expired auth token in `.npmrc`. You can try clearing the contents of the file down to just the two lines above and then retrying the `vsts-npm-auth` command.
 
 ### Installing the correct version
+
+twotime requires Node.js 24 or later, and is installed with
+[pnpm](https://pnpm.io/installation).
 
 **Note:** _You can't finish timers from previous days that were started with the old twotime. Either finish those timers first, or
 fix up manually in Harvest and TP afterwards._
 
-_Uninstall_ the old version 2.0.0:
+_Uninstall_ the old version 2.0.0. This step still needs npm: v2.0.0 predates
+the move to pnpm, so it was installed globally by npm, and pnpm cannot remove
+it.
 
-    npm uninstall -g twotime
+```bash
+npm uninstall -g twotime
+```
 
 Then install the latest twotime from our own feed:
 
-    npm install -g @neworbit/twotime
+```bash
+pnpm add -g @neworbit/twotime
+```
 
 If this command fails:
+
 1. Ensure you have the correct `.npmrc` file set up as described above.
 1. If the installation process cannot get rid of old files, please report this. As a last resort, use `--force`.
 
@@ -43,7 +55,9 @@ If you are upgrading from version 2.0.0 there should be no need to reauthenticat
 
 Once installed, you need to authenticate against Harvest and Targetprocess.
 
-    twotime auth
+```bash
+twotime auth
+```
 
 You will need:
 
@@ -60,11 +74,13 @@ If you're using Windows and WSL, you may wish to be able to use twotime in eithe
     Assuming you've already installed and authenticated your Windows installation of twotime, then head to WSL:
 
 1. Install `twotime` in WSL
+
     ```bash
-    $ npm -g i twotime
+    pnpm add -g @neworbit/twotime
     ```
 
 2. symlink the configs, substituting `USER_NAME` with the value from `%USERNAME%` in your Windows environment
+
     ```bash
     $ mkdir -p ~/.config/configstore
     $ ln -s /mnt/c/Users/USER_NAME/.config/configstore/twotime.json ~/.config/configstore/twotime.json
@@ -73,6 +89,7 @@ If you're using Windows and WSL, you may wish to be able to use twotime in eithe
     ╔═══════════════╤══════════════════════════╤═════════════╤════════╗
     ║  Entity Type  │  Title                   │    Hours    │ Status ║
     ```
+
 </details>
 
 ## Usage
@@ -88,17 +105,21 @@ Please ensure you've authenticated (see [Setup](#setup)) before using `twotime`.
 
 ### List your timesheet
 
-Use `twotime list` to see a summary of a days timesheet.
+Use `twotime list` to see a summary of a day's timesheet.
 
 ### Past timers
 
 Most commands can be used with past timesheets. You can provide a `--date` option (or `-d` for short):
 
-    twotime start --date 2018-10-20
+```bash
+twotime start --date 2018-10-20
+```
 
 Also you can use an offset with `--offset` (or `-o` for short) for the number of days in the past. For example an offset of 1 is yesterday:
 
-    twotime start -o 1
+```bash
+twotime start -o 1
+```
 
 ### Finish all
 
@@ -108,7 +129,9 @@ Provide the `--all` option to finish all of a day's timers at once.
 
 Use the `--tp` option to start a timer without prompting for a Targetprocess ID:
 
-    twotime start --tp 12345
+```bash
+twotime start --tp 12345
+```
 
 ### Issue time entries
 
@@ -124,4 +147,4 @@ When a time entry for a TargetProcess `Task` is finished, if the time remaining 
 
 ## License
 
-(Original public package: Made with :sparkling_heart: by [NewOrbit](https://www.neworbit.co.uk/) in Oxfordshire, and licensed under the [MIT Licence](LICENCE))
+(Original public package: Made with :sparkling_heart: by [NewOrbit](https://www.neworbit.co.uk/) in Oxfordshire, and licensed under the [MIT Licence](LICENSE))
