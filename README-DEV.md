@@ -26,6 +26,12 @@ PS> npm run prepublishOnly
 1. Delete the `bin` folder if you've made significant changes or deleted _any_ source file.
 1. `npm run build`, then `npm run lint`, then `npm run test`.
 
+## How the package is built
+
+The published package is a single self-contained file, `dist/twotime.cjs`, produced by `npm run bundle` (`tsc` followed by esbuild). Bundling means users installing the package get one file with no dependency tree, which makes both installation and cold start dramatically faster (an unbundled install was ~23,000 files, and on Windows every file paid a Defender scan on first run).
+
+Because of this, **all runtime dependencies deliberately live in `devDependencies`** — they are compiled into the bundle at build time and must not be moved back to `dependencies`, or users would download them for nothing. If you add a new runtime package, install it as a dev dependency and check `npm run bundle` completes without dynamic-require warnings.
+
 ## Running the code
 
 There are several new scripts added to `package.json` to enable running the utility with one of the arguments, for example starting a timer:
@@ -53,7 +59,7 @@ This will be done manually when necessary, rather than tying it to a DevOps pipe
 4. Run vsts-npm-auth to get an Azure Artifacts token added:  `npx vsts-npm-auth -config .npmrc`.  Note:
     - You don't need to do this every time. npm will give a 401 unauthorized error when you need to run it again.
     - You should get an email entitled "Azure DevOps personal access token added".
-5. Publish the package with `npm publish`.  Check it exists in [NewOrbit internal artefacts](https://dev.azure.com/neworbit/NewOrbit%20Internal/_artifacts/feed/NewOrbit).
+5. Publish the package with `npm publish`.  Check it exists in [NewOrbit internal artefacts](https://dev.azure.com/neworbit/NewOrbit%20Internal/_artifacts/feed/NewOrbit).  Publishing automatically rebuilds the bundle and runs the tests and linter first (see `prepublishOnly` in `package.json`); you can preview the tarball contents with `npm pack --dry-run` — it should contain little more than `dist/twotime.cjs`.
 
 ## Recent history
 

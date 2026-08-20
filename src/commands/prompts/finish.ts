@@ -1,6 +1,6 @@
 import inquirer from "inquirer";
 
-import { Targetprocess } from "targetprocess-rest-api";
+import { Targetprocess } from "../../target-process/api";
 
 import { TpBookableEntity } from "../../target-process/models/tp-bookable-entity";
 

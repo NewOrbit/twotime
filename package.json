@@ -2,13 +2,16 @@
   "name": "@neworbit/twotime",
   "version": "3.1.1",
   "description": "Sync timesheets between Harvest and Targetprocess",
-  "main": "index.js",
   "bin": {
-    "twotime": "bin/src/index.js"
+    "twotime": "dist/twotime.cjs"
+  },
+  "engines": {
+    "node": ">=24"
   },
   "scripts": {
-    "prepublishOnly": "npm run build && npm run test && npm run lint",
+    "prepublishOnly": "npm run bundle && npm run test && npm run lint",
     "build": "tsc",
+    "bundle": "npm run build && esbuild bin/src/index.js --bundle --platform=node --format=cjs --target=node24 --outfile=dist/twotime.cjs",
     "build-test": "tsc -p ./tsconfig.test.json",
     "test": "npm run build-test && alsatian \"bin-test/**/*.test.js\"",
     "lint": "eslint src/**/*.ts --max-warnings=0",
@@ -19,7 +22,7 @@
     "finish": "node bin/src/index.js finish"
   },
   "files": [
-    "bin"
+    "dist"
   ],
   "author": "NewOrbit Ltd",
   "license": "MIT",
@@ -34,28 +37,26 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.19.0",
-    "@types/node": "^22.10.10",
-    "@typescript-eslint/eslint-plugin": "^8.22.0",
-    "@typescript-eslint/parser": "^8.22.0",
-    "alsatian": "^3.2.1",
-    "eslint": "^9.19.0",
-    "eslint-config-neworbit": "^10.0.0",
-    "globals": "^15.14.0",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.22.0"
-  },
-  "dependencies": {
     "@types/configstore": "^6.0.2",
     "@types/inquirer": "7.3.3",
     "@types/inquirer-autocomplete-prompt": "^1.3.2",
     "@types/lodash.mapvalues": "^4.6.4",
+    "@types/node": "^22.10.10",
+    "@typescript-eslint/eslint-plugin": "^8.22.0",
+    "@typescript-eslint/parser": "^8.22.0",
+    "alsatian": "^3.2.1",
     "chalk": "^4.1.2",
     "commander": "^13.1.0",
     "configstore": "^4.0.0",
+    "esbuild": "^0.28.2",
+    "eslint": "^9.19.0",
+    "eslint-config-neworbit": "^10.0.0",
+    "globals": "^15.14.0",
     "inquirer": "^8.2.7",
     "inquirer-autocomplete-prompt": "^2.0.1",
     "table": "^6.9.0",
-    "targetprocess-rest-api": "^1.1.1",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.22.0",
     "vsts-npm-auth": "^0.43.0"
   }
 }
