@@ -1,15 +1,14 @@
-import { TestFixture, TestCase, Test, Expect } from "alsatian";
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
 import { createNotes } from "../../src/harvest/helpers/create-notes.ts";
 import { EntityType } from "../../src/target-process/models/tp-bookable-entity.ts";
 import type { NoteMetadata } from "../../src/harvest/models/time-entry.ts";
 import { NoteMetadataBuilder } from "../_builders/note-metadata.builder.ts";
 import { EntityBuilder } from "../_builders/entity.builder.ts";
 
-@TestFixture()
-export class CreateNotesTests {
+describe("createNotes", () => {
 
-    @Test()
-    public shouldCreateNotesCorrectlyForTask() {
+    it("creates notes correctly for a task", () => {
         const input: NoteMetadata = {
             tpBookableEntity: {
                 ResourceType: EntityType.TASK,
@@ -31,11 +30,10 @@ export class CreateNotesTests {
 
         const res = createNotes(input);
 
-        Expect(res).toEqual(expected);
-    }
+        assert.deepStrictEqual(res, expected);
+    });
 
-    @Test()
-    public shouldCreateNotesCorrectlyForBug() {
+    it("creates notes correctly for a bug", () => {
         const input: NoteMetadata = {
             tpBookableEntity: {
                 ResourceType: EntityType.BUG,
@@ -57,11 +55,10 @@ export class CreateNotesTests {
 
         const res = createNotes(input);
 
-        Expect(res).toEqual(expected);
-    }
+        assert.deepStrictEqual(res, expected);
+    });
 
-    @Test()
-    public shouldCreateNotesCorrectlyWithoutUserStory() {
+    it("creates notes correctly without a user story", () => {
         const input: NoteMetadata = {
             tpBookableEntity: {
                 ResourceType: EntityType.BUG,
@@ -77,11 +74,10 @@ export class CreateNotesTests {
 
         const res = createNotes(input);
 
-        Expect(res).toEqual(expected);
-    }
+        assert.deepStrictEqual(res, expected);
+    });
 
-    @Test()
-    public shouldCreateNotesCorrectlyForFinished() {
+    it("creates notes correctly for a finished entry", () => {
         const entity = new EntityBuilder()
             .withType(EntityType.BUG)
             .withId(94123)
@@ -99,39 +95,49 @@ export class CreateNotesTests {
 
         const res = createNotes(input);
 
-        Expect(res).toEqual(expected);
+        assert.deepStrictEqual(res, expected);
+    });
+
+    const additionalNotesCases: string[][] = [
+        ["bla bla additional"],
+        ["some additional notes", "more"]
+    ];
+
+    for (const additional of additionalNotesCases) {
+        it(`displays additional notes correctly: ${JSON.stringify(additional)}`, () => {
+            const input: NoteMetadata = {
+                tpBookableEntity: {
+                    ResourceType: EntityType.BUG,
+                    Id: 94123,
+                    Name: "A very very horrible bug"
+                },
+                finished: false,
+                version: "0.0.0"
+            };
+
+            const expected = "*Bug:* #94123 A very very horrible bug\n"
+                + "*Recorded by:* twotime 0.0.0\n"
+                + additional.join("\n");
+
+            const res = createNotes(input, additional);
+
+            assert.deepStrictEqual(res, expected);
+        });
     }
 
-    @TestCase(["bla bla additional"])
-    @TestCase(["some additional notes", "more"])
-    public shouldDisplayAdditionalNotesCorrectly(additional: string[]) {
-        const input: NoteMetadata = {
-            tpBookableEntity: {
-                ResourceType: EntityType.BUG,
-                Id: 94123,
-                Name: "A very very horrible bug"
-            },
-            finished: false,
-            version: "0.0.0"
-        };
+    const noMetadataCases: string[][] = [
+        ["Some note here"],
+        ["this is", "a note", "i like it"]
+    ];
 
-        const expected = "*Bug:* #94123 A very very horrible bug\n"
-            + "*Recorded by:* twotime 0.0.0\n"
-            + additional.join("\n");
+    for (const notes of noMetadataCases) {
+        it(`displays notes correctly if there is no metadata: ${JSON.stringify(notes)}`, () => {
+            const expected = notes.join("\n");
 
-        const res = createNotes(input, additional);
+            const res = createNotes(null, notes);
 
-        Expect(res).toEqual(expected);
+            assert.deepStrictEqual(res, expected);
+        });
     }
 
-    @TestCase(["Some note here"])
-    @TestCase(["this is", "a note", "i like it"])
-    public shouldDisplayNotesCorrectlyIfNoMetadata(notes: string[]) {
-        const expected = notes.join("\n");
-
-        const res = createNotes(null, notes);
-
-        Expect(res).toEqual(expected);
-    }
-
-}
+});

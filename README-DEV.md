@@ -25,8 +25,28 @@ PS> npm run prepublishOnly
 1. Ensure the `package.json` file contains the correct name and version.
 1. `npm run typecheck`, then `npm run lint`, then `npm run test`.
 
-The sources are no longer compiled to a `bin` folder as an intermediate step, so
-there is nothing to delete between runs.
+Nothing is compiled to an intermediate folder, so there is nothing to delete
+between runs.
+
+## Testing
+
+Tests use Node's built-in test runner (`node:test`) with `node:assert/strict`,
+and run straight from the TypeScript sources with no build step:
+
+    PS> npm run test
+    PS> npm run test:watch
+
+Fixtures are plain `describe` / `it` blocks. There is no `.each` helper in
+`node:test`, so table-driven cases are a typed array and a `for...of` loop that
+declares one `it()` per case — keep the loop *outside* `it()`, so every case is
+an independent test and a failure in one does not mask the rest.
+
+Assertions use `node:assert/strict` (`deepStrictEqual` / `strictEqual`). Note
+this is deliberately strict about keys whose value is `undefined`, matching the
+behaviour of the alsatian suite this replaced.
+
+`npm run test` does **not** type-check — Node erases types without checking
+them — so `npm run typecheck` is a separate gate and both run in CI.
 
 ## How the package is built
 
