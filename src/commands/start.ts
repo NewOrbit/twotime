@@ -1,12 +1,12 @@
-import { createNoteMetadata, createNotes } from "../harvest/helpers/create-notes";
+import { createNoteMetadata, createNotes } from "../harvest/helpers/create-notes.ts";
 
-import { ApiProvider } from "../api-provider";
+import type { ApiProvider } from "../api-provider.ts";
 
-import { log } from "../utils/log";
+import { log } from "../utils/log.ts";
 
-import { EntityType } from "../target-process/models/tp-bookable-entity";
+import { EntityType } from "../target-process/models/tp-bookable-entity.ts";
 
-import { askStartDetails } from "./prompts/start";
+import { askStartDetails } from "./prompts/start.ts";
 
 export const start = async (packageVersion: string, apiProvider: ApiProvider, date: string, tpId?: number) => {
     const details = await askStartDetails(apiProvider, tpId);

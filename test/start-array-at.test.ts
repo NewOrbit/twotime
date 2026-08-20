@@ -1,5 +1,5 @@
 import { TestFixture, TestCase, Expect } from "alsatian";
-import { startArrayAt } from "../src/utils/start-array-at";
+import { startArrayAt } from "../src/utils/start-array-at.ts";
 
 @TestFixture()
 export class StartArrayAtTests {

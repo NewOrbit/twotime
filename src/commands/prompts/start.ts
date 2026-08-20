@@ -1,20 +1,20 @@
 import inquirer from "inquirer";
 
-import { Targetprocess } from "../../target-process/api";
+import type { Targetprocess } from "../../target-process/api.ts";
 
-import { HarvestProject } from "../../harvest/models/projects";
-import { HarvestApi } from "../../harvest/api";
+import type { HarvestProject } from "../../harvest/models/projects.ts";
+import type { HarvestApi } from "../../harvest/api.ts";
 
-import { getTargetprocessEntity } from "../../utils/get-tp-entity";
-import { log } from "../../utils/log";
-import { ApiProvider } from "../../api-provider";
+import { getTargetprocessEntity } from "../../utils/get-tp-entity.ts";
+import { log } from "../../utils/log.ts";
+import type { ApiProvider } from "../../api-provider.ts";
 
-import { startArrayAt } from "../../utils/start-array-at";
+import { startArrayAt } from "../../utils/start-array-at.ts";
 
-import { EntityType, TpBookableEntity } from "../../target-process/models/tp-bookable-entity";
+import { EntityType, type TpBookableEntity } from "../../target-process/models/tp-bookable-entity.ts";
 
-import { askConfirm } from "./confirm";
-import { askHours } from "./hours";
+import { askConfirm } from "./confirm.ts";
+import { askHours } from "./hours.ts";
 
 // --- Define internal interfaces  ---
 interface ValueNamePair {

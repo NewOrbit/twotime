@@ -7,11 +7,15 @@ export const parseDuration = (input: string) => {
         return null;
     }
 
+    // both groups always participate in a successful match; defaults are here only
+    // to satisfy noUncheckedIndexedAccess without changing behaviour
+    const [, hoursPart = "", minutesPart = ""] = parsed;
+
     // hours are optional so default to 0
-    const parsedHours = parseInt(parsed[1], 10) || 0;
+    const parsedHours = parseInt(hoursPart, 10) || 0;
 
     return {
         hours: parsedHours,
-        minutes: parseInt(parsed[2], 10)
+        minutes: parseInt(minutesPart, 10)
     };
 };

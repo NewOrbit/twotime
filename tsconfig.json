@@ -1,17 +1,34 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "ES2022",
-        "outDir": "bin",
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
+        /* Modern Node ESM. `nodenext` is TS7-safe; the old `node`/`node10`
+           resolution modes are removed in TypeScript 7. */
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "target": "es2024",
+        "types": ["node"],
+
+        /* Every construct must be erasable, so Node can run .ts sources
+           directly via its native type stripping (no build step for tests). */
+        "erasableSyntaxOnly": true,
+        "verbatimModuleSyntax": true,
+        "isolatedModules": true,
+
+        /* Import with explicit .ts extensions in source; rewritten to .js on emit. */
+        "allowImportingTsExtensions": true,
+        "rewriteRelativeImportExtensions": true,
         "resolveJsonModule": true,
+        "esModuleInterop": true,
+
         "strict": true,
-        "skipLibCheck": true
+        "noUncheckedIndexedAccess": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+
+        /* The shipped artefact is bundled from source by esbuild, and Node runs
+           these sources directly in dev, so tsc is purely a type-check gate. */
+        "noEmit": true
     },
     "include": [
         "src/**/*"
     ]
-  }
+}

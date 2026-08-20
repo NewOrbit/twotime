@@ -3,13 +3,13 @@
  * Ian French, NewOrbit Ltd, Jan 2025 - adapted from the old code base.
  */
 
-import { NoteMetadata } from "../models/time-entry";
-import { NotePrefixes } from "../models/note-prefixes";
+import type { NoteMetadata } from "../models/time-entry.ts";
+import { NotePrefixes } from "../models/note-prefixes.ts";
 
-import { EntityType } from "../../target-process/models/tp-bookable-entity";
-import { constructTpEntity } from "../../target-process/helpers/tp-utilities";
+import { EntityType } from "../../target-process/models/tp-bookable-entity.ts";
+import { constructTpEntity } from "../../target-process/helpers/tp-utilities.ts";
 
-import { findLinesWithoutPrefix, findPrefixInLines, splitLines } from "./notes-utilities";
+import { findLinesWithoutPrefix, findPrefixInLines, splitLines } from "./notes-utilities.ts";
 
 // --- Declare internal interfaces ---
 
@@ -60,7 +60,9 @@ const getMetadata = (lines: string[]) => {
 
   // Extract the TP entity information from the notes lines, trying for task first, then bug
   let entityLine = findPrefixInLines(lines, NotePrefixes.task);
-  let entityType = EntityType.TASK;
+  // Annotated explicitly: EntityType is a const object, so the initialiser would
+  // otherwise infer the literal type "Task" and reject the reassignment below.
+  let entityType: EntityType = EntityType.TASK;
   // Check if entityLine is falsy rather than explicitly null, as there won't be valid info in an empty string.
   if (!entityLine) {
     entityLine = findPrefixInLines(lines, NotePrefixes.bug);
@@ -107,7 +109,7 @@ const getAdditionalNotes = (lines: string[]) => {
 const splitIdAndName = (line: string) => {
   const parts = line.split(" ");
   const result: ParsedLine = {
-    id: parseInt(parts[0], 10),  // decimal
+    id: parseInt(parts[0] ?? "", 10),  // decimal
     name: parts.slice(1).join(" ")  // rejoin the rest of the parts after the initial ID
   };
 

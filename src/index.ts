@@ -4,11 +4,11 @@ import inquirer from "inquirer";
 import inquirerPrompt from 'inquirer-autocomplete-prompt';
 import { program } from 'commander';
 
-import * as packageInfo from "../package.json";
+import packageInfo from "../package.json" with { type: "json" };
 
-import { ApiProvider } from "./api-provider";
+import { ApiProvider } from "./api-provider.ts";
 
-import { registerCommands } from "./register-commands";
+import { registerCommands } from "./register-commands.ts";
 
 inquirer.registerPrompt("autocomplete", inquirerPrompt);
 
