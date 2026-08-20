@@ -1,11 +1,5 @@
-import inquirer from "inquirer";
+import { confirm } from "@inquirer/prompts";
 
 export const askConfirm = async () => {
-    const { confirm } = await inquirer.prompt<{ confirm: boolean }>({
-        name: "confirm",
-        type: "confirm",
-        message: "Are you happy with your selection?"
-    });
-
-    return confirm;
+    return confirm({ message: "Are you happy with your selection?" });
 };

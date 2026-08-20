@@ -83,18 +83,18 @@ export class ApiProvider {
     }
 
     private getHarvestConfig() {
-        const config = this.store.get(CONFIG_KEYS.HARVEST);
+        const config = this.store.get<HarvestConfig>(CONFIG_KEYS.HARVEST);
 
         if (!config) {
             return null;
         }
 
-        return config as HarvestConfig;
+        return config;
     }
 
     private getTargetprocessConfig() {
         const defaultSubdomain = "neworbit";
-        const config = this.store.get(CONFIG_KEYS.TARGETPROCESS);
+        const config = this.store.get<TargetprocessConfig>(CONFIG_KEYS.TARGETPROCESS);
         if (!config) {
             return null;
         }
@@ -110,6 +110,6 @@ export class ApiProvider {
             log.warn(`twotime is currently configured for non-NewOrbit TP subdomain, '${config.subdomain}'`);
         }
 
-        return config as TargetprocessConfig;
+        return config;
     }
 }
