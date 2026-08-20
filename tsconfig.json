@@ -13,7 +13,10 @@
         "verbatimModuleSyntax": true,
         "isolatedModules": true,
 
-        /* Import with explicit .ts extensions in source; rewritten to .js on emit. */
+        /* Relative imports carry explicit .ts extensions, so Node can resolve the
+           sources directly. Nothing is emitted today (see noEmit below), so the
+           rewrite is inert — it is kept so that enabling emit cannot silently
+           produce output with unresolvable .ts specifiers. */
         "allowImportingTsExtensions": true,
         "rewriteRelativeImportExtensions": true,
         "resolveJsonModule": true,

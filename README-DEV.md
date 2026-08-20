@@ -37,9 +37,19 @@ and run straight from the TypeScript sources with no build step:
     PS> npm run test:watch
 
 Fixtures are plain `describe` / `it` blocks. There is no `.each` helper in
-`node:test`, so table-driven cases are a typed array and a `for...of` loop that
+`node:test`, so table-driven cases are an array and a `for...of` loop that
 declares one `it()` per case — keep the loop *outside* `it()`, so every case is
 an independent test and a failure in one does not mask the rest.
+
+Multi-column tables get a named, labelled-tuple array so each column is
+self-documenting; single-value tables inline the array in the `for` header:
+
+```ts
+const cases: [input: string, hours: number, minutes: number][] = [ /* ... */ ];
+for (const [input, hours, minutes] of cases) { /* it(...) */ }
+
+for (const version of ["1.0.0", "0.5.0"]) { /* it(...) */ }
+```
 
 Assertions use `node:assert/strict` (`deepStrictEqual` / `strictEqual`). Note
 this is deliberately strict about keys whose value is `undefined`, matching the
@@ -69,6 +79,21 @@ sources — Node 24 strips the types natively, so there is no build step:
 This works because the sources are kept free of non-erasable TypeScript syntax
 (no `enum`, no namespaces, no parameter properties), enforced by the
 `erasableSyntaxOnly` compiler option.
+
+Where an enum would previously have been used, the repo idiom is a const object
+paired with a type of the same name, which keeps call sites identical while
+erasing cleanly:
+
+```ts
+export const EntityType = { BUG: "Bug", TASK: "Task" } as const;
+export type EntityType = typeof EntityType[keyof typeof EntityType];
+```
+
+`EntityType.BUG` still works as a value and `: EntityType` still works as a
+type. Two consequences worth knowing: `@typescript-eslint/no-redeclare` is
+switched off in `eslint.config.mjs` because it flags this pattern (TypeScript
+itself still reports genuine redeclarations as TS2451), and unlike an `enum` the
+type is not nominal — a bare `"Bug"` is assignable to `EntityType`.
 
 ## Publishing the code
 

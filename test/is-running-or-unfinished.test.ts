@@ -1,7 +1,9 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+
 import type { HarvestTimeEntry } from "../src/harvest/models/time-entry.ts";
 import { isRunningOrUnfinished } from "../src/utils/is-running-or-unfinished.ts";
+
 import { NoteMetadataBuilder } from "./_builders/note-metadata.builder.ts";
 
 describe("isRunningOrUnfinished", () => {
