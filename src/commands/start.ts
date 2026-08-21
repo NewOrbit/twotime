@@ -17,7 +17,7 @@ export const start = async (packageVersion: string, apiProvider: ApiProvider, da
     }
 
     const noteInformation = createNoteMetadata(details.entity, packageVersion);
-    const notes = createNotes(noteInformation, [ details.notes ]);
+    const notes = createNotes(noteInformation, [details.notes]);
 
     const harvestApi = apiProvider.getHarvestApi();
     const targetprocessApi = apiProvider.getTargetprocessApi();
@@ -26,14 +26,15 @@ export const start = async (packageVersion: string, apiProvider: ApiProvider, da
     try {
         await harvestApi.startTimeEntry(details.projectId, details.taskId, date, notes, details.hours, details.running);
 
-        if (details.entity &&
+        if (
+            details.entity &&
             details.entity.Id &&
             details.entity.ResourceType === EntityType.TASK &&
             details.entity.EntityState?.Name &&
             (details.entity.EntityState.Name.toUpperCase() === "OPEN" ||
-            details.entity.EntityState.Name.toUpperCase() === "DEV READY") &&
-            details.entity.Project?.Process.Id) {
-
+                details.entity.EntityState.Name.toUpperCase() === "DEV READY") &&
+            details.entity.Project?.Process.Id
+        ) {
             await targetprocessApi.setTaskState(details.entity.Id, "In Progress", details.entity.Project.Process.Id);
         }
     } catch (e) {

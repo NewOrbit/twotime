@@ -31,8 +31,5 @@
            these sources directly in dev, so tsc is purely a type-check gate. */
         "noEmit": true
     },
-    "include": [
-        "src/**/*",
-        "test/**/*"
-    ]
+    "include": ["src/**/*", "test/**/*"]
 }

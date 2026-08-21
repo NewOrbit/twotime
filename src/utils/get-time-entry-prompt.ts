@@ -22,6 +22,6 @@ export const getTimeEntryPrompt = (entry: HarvestTimeEntry) => {
 
     return {
         value: entry,
-        name: text
+        name: text,
     };
 };

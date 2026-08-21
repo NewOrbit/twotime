@@ -15,9 +15,9 @@ export const getTodaysDate = () => formatDate(new Date());
  * @returns {string} the date in the past
  */
 export const getDateInPast = (offset: number) => {
-  const d = new Date();
-  d.setDate(d.getDate() - Math.round(offset));
-  return formatDate(d);
+    const d = new Date();
+    d.setDate(d.getDate() - Math.round(offset));
+    return formatDate(d);
 };
 
 /**
@@ -28,19 +28,19 @@ export const getDateInPast = (offset: number) => {
  * @returns {boolean} true if the date is valid, false otherwise
  */
 export const isValidDate = (inputDate: string | undefined | null) => {
-  // Guard explicitly rather than letting new Date(undefined) produce an Invalid Date
-  // and relying on formatDate's toISOString to throw. Same outcome, stated plainly.
-  if (typeof inputDate !== "string") {
-    return false;
-  }
+    // Guard explicitly rather than letting new Date(undefined) produce an Invalid Date
+    // and relying on formatDate's toISOString to throw. Same outcome, stated plainly.
+    if (typeof inputDate !== "string") {
+        return false;
+    }
 
-  try {
-    const testDate = new Date(inputDate);
-    // It's a valid date, now check there was no shift e.g. 30 Feb -> 2 Mar
-    return formatDate(testDate) === inputDate;
-  } catch {
-    return false;
-  }
+    try {
+        const testDate = new Date(inputDate);
+        // It's a valid date, now check there was no shift e.g. 30 Feb -> 2 Mar
+        return formatDate(testDate) === inputDate;
+    } catch {
+        return false;
+    }
 };
 
 // slice rather than split("T")[0]: an ISO string is always YYYY-MM-DDTHH:mm:ss.sssZ,

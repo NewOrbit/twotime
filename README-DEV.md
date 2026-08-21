@@ -45,17 +45,21 @@ pnpm run test:watch
 
 Fixtures are plain `describe` / `it` blocks. There is no `.each` helper in
 `node:test`, so table-driven cases are an array and a `for...of` loop that
-declares one `it()` per case. Keep the loop *outside* `it()`, so every case is
+declares one `it()` per case. Keep the loop _outside_ `it()`, so every case is
 an independent test and a failure in one does not mask the rest.
 
 Multi-column tables get a named, labelled-tuple array so each column is
 self-documenting; single-value tables inline the array in the `for` header:
 
 ```ts
-const cases: [input: string, hours: number, minutes: number][] = [ /* ... */ ];
-for (const [input, hours, minutes] of cases) { /* it(...) */ }
+const cases: [input: string, hours: number, minutes: number][] = [/* ... */];
+for (const [input, hours, minutes] of cases) {
+    /* it(...) */
+}
 
-for (const version of ["1.0.0", "0.5.0"]) { /* it(...) */ }
+for (const version of ["1.0.0", "0.5.0"]) {
+    /* it(...) */
+}
 ```
 
 Assertions use `node:assert/strict` (`deepStrictEqual` / `strictEqual`). Note
@@ -69,7 +73,7 @@ them, so `pnpm run typecheck` is a separate gate and both run in CI.
 
 The published package is a single self-contained file, `dist/twotime.cjs`, produced by `pnpm run bundle`, which runs rolldown straight from `src/index.ts` with no `tsc` emit step. Type checking is a separate gate (`pnpm run typecheck`, i.e. `tsc --noEmit`), because Node's native type stripping erases types without checking them. Bundling means users installing the package get one file with no dependency tree, which makes both installation and cold start dramatically faster (an unbundled install was ~23,000 files, and on Windows every file paid a Defender scan on first run).
 
-Because of this, **all runtime dependencies deliberately live in `devDependencies`**. They are compiled into the bundle at build time and must not be moved back to `dependencies`, or users would download them for nothing. If you add a new runtime package, install it as a dev dependency and then *run* the bundle (`node dist/twotime.cjs --help`). A clean build is not evidence that it works: several dependencies are still CommonJS, interop problems with them surface only when the file is executed, and no bundler warns about it.
+Because of this, **all runtime dependencies deliberately live in `devDependencies`**. They are compiled into the bundle at build time and must not be moved back to `dependencies`, or users would download them for nothing. If you add a new runtime package, install it as a dev dependency and then _run_ the bundle (`node dist/twotime.cjs --help`). A clean build is not evidence that it works: several dependencies are still CommonJS, interop problems with them surface only when the file is executed, and no bundler warns about it.
 
 The output is CommonJS because it starts faster. rolldown, esbuild and rollup were all built and timed against each other in Aug 2026. rolldown produced the smallest bundle, and its CommonJS output reached the first prompt about 5 ms sooner than its ESM output, because Node's ESM loader costs more at startup than `require` even for one self-contained file. So `.cjs` is deliberate but not load-bearing, and `--format esm` remains a supported switch if there is ever a reason. esbuild is the obvious fallback if rolldown disappoints, but note its ESM output needs a `createRequire` banner to survive this dependency graph.
 
@@ -99,7 +103,7 @@ erasing cleanly:
 
 ```ts
 export const EntityType = { BUG: "Bug", TASK: "Task" } as const;
-export type EntityType = typeof EntityType[keyof typeof EntityType];
+export type EntityType = (typeof EntityType)[keyof typeof EntityType];
 ```
 
 `EntityType.BUG` still works as a value and `: EntityType` still works as a
@@ -113,7 +117,7 @@ type is not nominal: a bare `"Bug"` is assignable to `EntityType`.
 This will be done manually when necessary, rather than tying it to a DevOps pipeline.
 
 1. Ensure you have enough privileges to add a package to the NewOrbit registry.
-2. The npm package `vsts-npm-auth` should already be installed as part of a general `pnpm install`.  Otherwise install it manually by using `pnpm add -D vsts-npm-auth`
+2. The npm package `vsts-npm-auth` should already be installed as part of a general `pnpm install`. Otherwise install it manually by using `pnpm add -D vsts-npm-auth`
 3. Unless you already have this all set up, add a `.npmrc` file to the project in the same directory as package.json with the following contents:
 
 ```none
@@ -122,15 +126,11 @@ registry=https://registry.npmjs.org/
 always-auth=true
 ```
 
-(This file must be ignored by git as it will contain an unencrypted authentication token.)
-4. Run vsts-npm-auth to get an Azure Artifacts token added:  `pnpm exec vsts-npm-auth -config .npmrc`.  Note:
-    - You don't need to do this every time. npm will give a 401 unauthorized error when you need to run it again.
-    - You should get an email entitled "Azure DevOps personal access token added".
-5. Publish the package with `pnpm publish`.  Check it exists in [NewOrbit internal artefacts](https://dev.azure.com/neworbit/NewOrbit%20Internal/_artifacts/feed/NewOrbit).  Publishing automatically rebuilds the bundle and runs the tests and linter first (see `prepublishOnly` in `package.json`); you can preview the tarball contents with `pnpm pack --dry-run`.  It should contain little more than `dist/twotime.cjs`.  `pnpm publish` refuses to publish from a dirty working tree unless you pass `--no-git-checks`.
+(This file must be ignored by git as it will contain an unencrypted authentication token.) 4. Run vsts-npm-auth to get an Azure Artifacts token added: `pnpm exec vsts-npm-auth -config .npmrc`. Note: - You don't need to do this every time. npm will give a 401 unauthorized error when you need to run it again. - You should get an email entitled "Azure DevOps personal access token added". 5. Publish the package with `pnpm publish`. Check it exists in [NewOrbit internal artefacts](https://dev.azure.com/neworbit/NewOrbit%20Internal/_artifacts/feed/NewOrbit). Publishing automatically rebuilds the bundle and runs the tests and linter first (see `prepublishOnly` in `package.json`); you can preview the tarball contents with `pnpm pack --dry-run`. It should contain little more than `dist/twotime.cjs`. `pnpm publish` refuses to publish from a dirty working tree unless you pass `--no-git-checks`.
 
 ## Recent history
 
-The codebase was very old and most library dependencies were hugely behind current versions.  In January 2025, a `npm audit` reported 85 vulnerabilities (1 low, 22 moderate, 50 high, 12 critical). Most were centred on the `harvest` package which looks like it's been abandoned.  Ian F updated everything to more modern versions as part of a piece of work to tighten up the reporting of task time-remaining.  Several old libraries such as moment were factored out.
+The codebase was very old and most library dependencies were hugely behind current versions. In January 2025, a `npm audit` reported 85 vulnerabilities (1 low, 22 moderate, 50 high, 12 critical). Most were centred on the `harvest` package which looks like it's been abandoned. Ian F updated everything to more modern versions as part of a piece of work to tighten up the reporting of task time-remaining. Several old libraries such as moment were factored out.
 
 In Aug 2026 the packages that had been left behind, `chalk`, `configstore` and `commander`, were taken to their current majors. The `inquirer` family was replaced rather than upgraded: `inquirer-autocomplete-prompt` deep-imports paths that inquirer stopped publishing at v10, and inquirer v10+ is itself only a legacy-API wrapper over `@inquirer/prompts`. Depending on `@inquirer/prompts` directly, and using its `search` prompt in place of the autocomplete one, removed four packages and took the bundle from 2.1 MB to under 500 KB.
 
@@ -148,14 +148,14 @@ Three prompt behaviours to be aware of before changing this code:
 
 Packages held back on purpose, as of Aug 2026:
 
-| Package | Held at | Why |
-| --- | --- | --- |
-| `eslint`, `@eslint/js` | 9.x | `eslint-config-neworbit@11` declares `peerDependencies: { eslint: "9.x" }` |
-| `typescript` | 6.x | `@typescript-eslint` 8.x declares `typescript: ">=4.8.4 <6.1.0"`, so TS 7 breaks `pnpm run lint` |
-| `@types/node` | 24.x | Should track the `engines.node` floor, not run ahead of it |
+| Package                | Held at | Why                                                                                              |
+| ---------------------- | ------- | ------------------------------------------------------------------------------------------------ |
+| `eslint`, `@eslint/js` | 9.x     | `eslint-config-neworbit@11` declares `peerDependencies: { eslint: "9.x" }`                       |
+| `typescript`           | 6.x     | `@typescript-eslint` 8.x declares `typescript: ">=4.8.4 <6.1.0"`, so TS 7 breaks `pnpm run lint` |
+| `@types/node`          | 24.x    | Should track the `engines.node` floor, not run ahead of it                                       |
 
 ## To Do
 
-Delete the public package!  At the moment this isn't possible as there are several owners who have left the company.
+Delete the public package! At the moment this isn't possible as there are several owners who have left the company.
 
 Revisit the three held packages above when their blockers clear: `eslint` 10 needs a new `eslint-config-neworbit`, and TypeScript 7 needs `typescript-eslint` 9.
