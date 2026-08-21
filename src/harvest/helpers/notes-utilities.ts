@@ -17,11 +17,11 @@ export const splitLines = (multiLineString: string): RegExpMatchArray | [] => mu
  * @returns {string | null} the line without the prefix, or null if the prefix is not found.
  */
 export const parsePrefix = (line: string, prefix: string) => {
-  let withoutPrefix = null;
-  if (line.indexOf(prefix) === 0) {
-    withoutPrefix = line.substring(prefix.length);
-  }
-  return withoutPrefix;
+    let withoutPrefix = null;
+    if (line.indexOf(prefix) === 0) {
+        withoutPrefix = line.substring(prefix.length);
+    }
+    return withoutPrefix;
 };
 
 /**
@@ -33,8 +33,8 @@ export const parsePrefix = (line: string, prefix: string) => {
  * @returns {string} the found line minus prefix or null if not found.
  */
 export const findPrefixInLines = (lines: string[], prefix: string) => {
-  const matching = lines.map(line => parsePrefix(line, prefix)).filter(mappedLine => mappedLine !== null);
-  return matching[0] ?? null;
+    const matching = lines.map((line) => parsePrefix(line, prefix)).filter((mappedLine) => mappedLine !== null);
+    return matching[0] ?? null;
 };
 
 /**
@@ -44,8 +44,8 @@ export const findPrefixInLines = (lines: string[], prefix: string) => {
  * @returns {string[]} a list of lines that do not contain any of the given prefixes.
  */
 export const findLinesWithoutPrefix = (lines: string[], prefixes: string[]) => {
-  return lines.filter(line => noPrefixesInLine(line, prefixes));
+    return lines.filter((line) => noPrefixesInLine(line, prefixes));
 };
 
 // Internal function to check whether a single line contains any of the given prefixes.
-const noPrefixesInLine = (line: string, prefixes: string[]) => prefixes.every(p => parsePrefix(line, p) === null);
+const noPrefixesInLine = (line: string, prefixes: string[]) => prefixes.every((p) => parsePrefix(line, p) === null);

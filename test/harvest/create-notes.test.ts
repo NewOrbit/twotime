@@ -8,7 +8,6 @@ import { NoteMetadataBuilder } from "../_builders/note-metadata.builder.ts";
 import { EntityBuilder } from "../_builders/entity.builder.ts";
 
 describe("createNotes", () => {
-
     it("creates notes correctly for a task", () => {
         const input: NoteMetadata = {
             tpBookableEntity: {
@@ -18,16 +17,14 @@ describe("createNotes", () => {
                 UserStory: {
                     Id: 12345,
                     Name: "Foo",
-                    ResourceType: "UserStory"
+                    ResourceType: "UserStory",
                 },
             },
             finished: false,
-            version: "0.0.0"
+            version: "0.0.0",
         };
 
-        const expected = "*User story:* #12345 Foo\n"
-            + "*Task:* #67890 Some Task Name\n"
-            + "*Recorded by:* twotime 0.0.0";
+        const expected = ["*User story:* #12345 Foo", "*Task:* #67890 Some Task Name", "*Recorded by:* twotime 0.0.0"].join("\n");
 
         const res = createNotes(input);
 
@@ -43,16 +40,18 @@ describe("createNotes", () => {
                 UserStory: {
                     Id: 17441,
                     Name: "User should be able to eat cheese",
-                    ResourceType: "UserStory"
+                    ResourceType: "UserStory",
                 },
             },
             finished: false,
-            version: "0.0.0"
+            version: "0.0.0",
         };
 
-        const expected = "*User story:* #17441 User should be able to eat cheese\n"
-            + "*Bug:* #94123 A very very horrible bug\n"
-            + "*Recorded by:* twotime 0.0.0";
+        const expected = [
+            "*User story:* #17441 User should be able to eat cheese",
+            "*Bug:* #94123 A very very horrible bug",
+            "*Recorded by:* twotime 0.0.0",
+        ].join("\n");
 
         const res = createNotes(input);
 
@@ -64,14 +63,13 @@ describe("createNotes", () => {
             tpBookableEntity: {
                 ResourceType: EntityType.BUG,
                 Id: 94123,
-                Name: "A very very horrible bug"
+                Name: "A very very horrible bug",
             },
             finished: false,
-            version: "0.0.0"
+            version: "0.0.0",
         };
 
-        const expected = "*Bug:* #94123 A very very horrible bug\n"
-            + "*Recorded by:* twotime 0.0.0";
+        const expected = ["*Bug:* #94123 A very very horrible bug", "*Recorded by:* twotime 0.0.0"].join("\n");
 
         const res = createNotes(input);
 
@@ -79,30 +77,20 @@ describe("createNotes", () => {
     });
 
     it("creates notes correctly for a finished entry", () => {
-        const entity = new EntityBuilder()
-            .withType(EntityType.BUG)
-            .withId(94123)
-            .withName("A very very horrible bug")
-            .build();
+        const entity = new EntityBuilder().withType(EntityType.BUG).withId(94123).withName("A very very horrible bug").build();
 
-        const input = new NoteMetadataBuilder()
-            .withEntity(entity)
-            .withFinished(true)
-            .build();
+        const input = new NoteMetadataBuilder().withEntity(entity).withFinished(true).build();
 
-        const expected = "*Bug:* #94123 A very very horrible bug\n"
-            + "*Status:* finished\n"
-            + "*Recorded by:* twotime 0.0.0";
+        const expected = ["*Bug:* #94123 A very very horrible bug", "*Status:* finished", "*Recorded by:* twotime 0.0.0"].join(
+            "\n"
+        );
 
         const res = createNotes(input);
 
         assert.deepStrictEqual(res, expected);
     });
 
-    const additionalNotesCases: string[][] = [
-        ["bla bla additional"],
-        ["some additional notes", "more"]
-    ];
+    const additionalNotesCases: string[][] = [["bla bla additional"], ["some additional notes", "more"]];
 
     for (const additional of additionalNotesCases) {
         it(`displays additional notes correctly: ${JSON.stringify(additional)}`, () => {
@@ -110,15 +98,13 @@ describe("createNotes", () => {
                 tpBookableEntity: {
                     ResourceType: EntityType.BUG,
                     Id: 94123,
-                    Name: "A very very horrible bug"
+                    Name: "A very very horrible bug",
                 },
                 finished: false,
-                version: "0.0.0"
+                version: "0.0.0",
             };
 
-            const expected = "*Bug:* #94123 A very very horrible bug\n"
-                + "*Recorded by:* twotime 0.0.0\n"
-                + additional.join("\n");
+            const expected = ["*Bug:* #94123 A very very horrible bug", "*Recorded by:* twotime 0.0.0", ...additional].join("\n");
 
             const res = createNotes(input, additional);
 
@@ -126,10 +112,7 @@ describe("createNotes", () => {
         });
     }
 
-    const noMetadataCases: string[][] = [
-        ["Some note here"],
-        ["this is", "a note", "i like it"]
-    ];
+    const noMetadataCases: string[][] = [["Some note here"], ["this is", "a note", "i like it"]];
 
     for (const notes of noMetadataCases) {
         it(`displays notes correctly if there is no metadata: ${JSON.stringify(notes)}`, () => {
@@ -140,5 +123,4 @@ describe("createNotes", () => {
             assert.deepStrictEqual(res, expected);
         });
     }
-
 });
