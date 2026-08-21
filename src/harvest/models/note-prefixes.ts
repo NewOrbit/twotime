@@ -4,9 +4,9 @@
  */
 
 export const NotePrefixes = {
-  userStory: "*User story:* #",
-  task: "*Task:* #",
-  bug: "*Bug:* #",
-  finished: "*Status:* finished",
-  twotime: "*Recorded by:* twotime "
+    userStory: "*User story:* #",
+    task: "*Task:* #",
+    bug: "*Bug:* #",
+    finished: "*Status:* finished",
+    twotime: "*Recorded by:* twotime ",
 };

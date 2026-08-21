@@ -8,7 +8,7 @@ export const pause = async (apiProvider: ApiProvider) => {
 
     const entries = await harvestApi.getTimeEntries(date);
 
-    const runningTimeEntry = entries.find(e => e.running);
+    const runningTimeEntry = entries.find((e) => e.running);
 
     if (!runningTimeEntry) {
         log.info("You do not have a running timer");

@@ -7,15 +7,14 @@ import { isPausedAndUnfinished } from "../src/utils/is-paused-and-unfinished.ts"
 import { NoteMetadataBuilder } from "./_builders/note-metadata.builder.ts";
 
 describe("isPausedAndUnfinished", () => {
-
     it("returns false for a running entry", () => {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
             metadata: null,
-            hours: 0.00,
+            hours: 0.0,
             created: "2017-06-26T22:32:52Z",
-            running: true
+            running: true,
         };
 
         const result = isPausedAndUnfinished(entry);
@@ -28,9 +27,9 @@ describe("isPausedAndUnfinished", () => {
             id: 0,
             notes: [],
             metadata: new NoteMetadataBuilder().withFinished(false).build(),
-            hours: 0.00,
+            hours: 0.0,
             created: "2017-06-26T22:32:52Z",
-            running: false
+            running: false,
         };
 
         const result = isPausedAndUnfinished(entry);
@@ -43,9 +42,9 @@ describe("isPausedAndUnfinished", () => {
             id: 0,
             notes: [],
             metadata: null,
-            hours: 0.00,
+            hours: 0.0,
             created: "2017-06-26T22:32:52Z",
-            running: false
+            running: false,
         };
 
         const result = isPausedAndUnfinished(entry);
@@ -58,9 +57,9 @@ describe("isPausedAndUnfinished", () => {
             id: 0,
             notes: [],
             metadata: new NoteMetadataBuilder().withFinished(true).build(),
-            hours: 0.00,
+            hours: 0.0,
             created: "2017-06-26T22:32:52Z",
-            running: false
+            running: false,
         };
 
         const result = isPausedAndUnfinished(entry);
@@ -73,14 +72,13 @@ describe("isPausedAndUnfinished", () => {
             id: 0,
             notes: [],
             metadata: new NoteMetadataBuilder().withFinished(true).build(),
-            hours: 0.00,
+            hours: 0.0,
             created: "2017-06-26T22:32:52Z",
-            running: true
+            running: true,
         };
 
         const result = isPausedAndUnfinished(entry);
 
         assert.strictEqual(result, false);
     });
-
 });

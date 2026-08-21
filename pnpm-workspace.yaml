@@ -5,4 +5,4 @@ trustPolicy: no-downgrade
 # provenance reads as a downgrade from later, attested 7.x releases. semver@6.3.1
 # is an ordinary 2023 release, reached via eslint-config-neworbit.
 trustPolicyExclude:
-  - semver@6.3.1
+    - semver@6.3.1
