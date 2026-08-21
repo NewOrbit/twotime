@@ -1,64 +1,64 @@
 {
-  "name": "@neworbit/twotime",
-  "version": "3.2.0",
-  "description": "Sync timesheets between Harvest and Targetprocess",
-  "type": "module",
-  "bin": {
-    "twotime": "dist/twotime.cjs"
-  },
-  "engines": {
-    "node": ">=24"
-  },
-  "packageManager": "pnpm@11.21.0",
-  "scripts": {
-    "prepublishOnly": "pnpm run build && pnpm run test && pnpm run lint",
-    "typecheck": "tsc --noEmit",
-    "bundle": "rolldown src/index.ts -o dist/twotime.cjs --format cjs --platform node --transform.target node24",
-    "build": "pnpm run typecheck && pnpm run bundle",
-    "test": "node --test \"test/**/*.test.ts\"",
-    "test:watch": "node --test --watch \"test/**/*.test.ts\"",
-    "lint": "eslint src/**/*.ts test/**/*.ts --max-warnings=0",
-    "lint:fix": "eslint src/**/*.ts test/**/*.ts --max-warnings=0 --quiet --fix",
-    "oxlint": "oxlint",
-    "oxlint:fix": "oxlint --fix",
-    "format": "oxfmt",
-    "format:check": "oxfmt --check",
-    "start": "node src/index.ts start",
-    "auth": "node src/index.ts auth",
-    "list": "node src/index.ts list",
-    "finish": "node src/index.ts finish"
-  },
-  "files": [
-    "dist"
-  ],
-  "author": "NewOrbit Ltd",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/NewOrbit/twotime.git"
-  },
-  "bugs": {
-    "url": "https://github.com/NewOrbit/twotime/issues"
-  },
-  "homepage": "https://github.com/NewOrbit/twotime#readme",
-  "devDependencies": {
-    "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "^9.19.0",
-    "@inquirer/prompts": "^8.5.2",
-    "@types/node": "^24.3.0",
-    "@typescript-eslint/eslint-plugin": "^8.67.0",
-    "@typescript-eslint/parser": "^8.67.0",
-    "chalk": "^6.0.0",
-    "commander": "^15.0.0",
-    "configstore": "^8.0.0",
-    "eslint": "^9.19.0",
-    "eslint-config-neworbit": "^11.0.0",
-    "globals": "^17.11.0",
-    "oxfmt": "^0.63.0",
-    "oxlint": "^1.78.0",
-    "rolldown": "^1.2.4",
-    "table": "^6.9.0",
-    "typescript": "^6.0.3",
-    "vsts-npm-auth": "^0.43.0"
-  }
+    "name": "@neworbit/twotime",
+    "version": "3.2.0",
+    "description": "Sync timesheets between Harvest and Targetprocess",
+    "homepage": "https://github.com/NewOrbit/twotime#readme",
+    "bugs": {
+        "url": "https://github.com/NewOrbit/twotime/issues"
+    },
+    "license": "MIT",
+    "author": "NewOrbit Ltd",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/NewOrbit/twotime.git"
+    },
+    "bin": {
+        "twotime": "dist/twotime.cjs"
+    },
+    "files": [
+        "dist"
+    ],
+    "type": "module",
+    "scripts": {
+        "prepublishOnly": "pnpm run build && pnpm run test && pnpm run lint",
+        "typecheck": "tsc --noEmit",
+        "bundle": "rolldown src/index.ts -o dist/twotime.cjs --format cjs --platform node --transform.target node24",
+        "build": "pnpm run typecheck && pnpm run bundle",
+        "test": "node --test \"test/**/*.test.ts\"",
+        "test:watch": "node --test --watch \"test/**/*.test.ts\"",
+        "lint": "eslint src/**/*.ts test/**/*.ts --max-warnings=0",
+        "lint:fix": "eslint src/**/*.ts test/**/*.ts --max-warnings=0 --quiet --fix",
+        "oxlint": "oxlint",
+        "oxlint:fix": "oxlint --fix",
+        "format": "oxfmt",
+        "format:check": "oxfmt --check",
+        "start": "node src/index.ts start",
+        "auth": "node src/index.ts auth",
+        "list": "node src/index.ts list",
+        "finish": "node src/index.ts finish"
+    },
+    "devDependencies": {
+        "@eslint/eslintrc": "^3.2.0",
+        "@eslint/js": "^9.19.0",
+        "@inquirer/prompts": "^8.5.2",
+        "@types/node": "^24.3.0",
+        "@typescript-eslint/eslint-plugin": "^8.67.0",
+        "@typescript-eslint/parser": "^8.67.0",
+        "chalk": "^6.0.0",
+        "commander": "^15.0.0",
+        "configstore": "^8.0.0",
+        "eslint": "^9.19.0",
+        "eslint-config-neworbit": "^11.0.0",
+        "globals": "^17.11.0",
+        "oxfmt": "^0.63.0",
+        "oxlint": "^1.78.0",
+        "rolldown": "^1.2.4",
+        "table": "^6.9.0",
+        "typescript": "^6.0.3",
+        "vsts-npm-auth": "^0.43.0"
+    },
+    "engines": {
+        "node": ">=24"
+    },
+    "packageManager": "pnpm@11.21.0"
 }

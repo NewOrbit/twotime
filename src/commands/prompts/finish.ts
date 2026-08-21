@@ -44,7 +44,7 @@ export const askFinishDetails = async (apiProvider: ApiProvider, date: string, a
         finishDetails.push({
             tpEntity,
             timeEntry,
-            timeRemaining
+            timeRemaining,
         });
     }
 
@@ -52,25 +52,31 @@ export const askFinishDetails = async (apiProvider: ApiProvider, date: string, a
 };
 
 const askTimeRemaining = async (tpEntity: TpBookableEntity | null, timeEntry: HarvestTimeEntry) => {
-    if (tpEntity === null || timeEntry.metadata === null || tpEntity.TimeRemain === undefined ) {
+    if (tpEntity === null || timeEntry.metadata === null || tpEntity.TimeRemain === undefined) {
         return null;
     }
 
-    log.info(`${ timeEntry.metadata.tpBookableEntity?.Name } (#${ timeEntry.metadata.tpBookableEntity?.Id })`);
+    log.info(`${timeEntry.metadata.tpBookableEntity?.Name} (#${timeEntry.metadata.tpBookableEntity?.Id})`);
 
     let hoursRemaining = 0.0;
     const projectedTimeRemaining = tpEntity.TimeRemain - timeEntry.hours;
     if (projectedTimeRemaining < -0.016) {
         // The projected time remaining is more than a minute over (allows for rounding error and time taken to go through this process)
-        log.warn(`The time entered exceeds that remaining in TP by ${-projectedTimeRemaining.toFixed(2)} hours.` +
-          " Please ensure your tech lead (or PM) is aware.");
-        hoursRemaining = await askHours("How much time remaining? [no default]");  // no default passed in, so user has to type something
+        log.warn(
+            `The time entered exceeds that remaining in TP by ${-projectedTimeRemaining.toFixed(2)} hours.` +
+                " Please ensure your tech lead (or PM) is aware."
+        );
+        hoursRemaining = await askHours("How much time remaining? [no default]"); // no default passed in, so user has to type something
     } else {
         // Normal case of no overrun at this point
-        hoursRemaining = await askHours(`How much time remaining? (No default; TP says ${projectedTimeRemaining.toFixed(2)} hours)`);
+        hoursRemaining = await askHours(
+            `How much time remaining? (No default; TP says ${projectedTimeRemaining.toFixed(2)} hours)`
+        );
         const excess = hoursRemaining - projectedTimeRemaining;
         if (excess > 0.016) {
-            log.warn(`The time entered will exceed that remaining in TP by ${excess.toFixed(2)} hours. Please ensure your tech lead (or PM) is aware.`);
+            log.warn(
+                `The time entered will exceed that remaining in TP by ${excess.toFixed(2)} hours. Please ensure your tech lead (or PM) is aware.`
+            );
         }
     }
 
@@ -95,10 +101,10 @@ const getTimeEntries = async (harvestApi: HarvestApi, date: string, all: boolean
 
     const timeEntry = await select<HarvestTimeEntry>({
         message: "Which timer would you like to finish?",
-        choices: prompts
+        choices: prompts,
     });
 
-    return [ timeEntry ];
+    return [timeEntry];
 };
 
 const getTargetprocessEntityForEntry = async (targetprocessApi: Targetprocess, timeEntry: HarvestTimeEntry) => {
