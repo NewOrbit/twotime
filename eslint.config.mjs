@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
 import NewOrbitEslintConfig from "eslint-config-neworbit";
+import oxlint from "eslint-plugin-oxlint";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,4 +37,7 @@ export default [
             "@typescript-eslint/no-redeclare": "off",
         },
     },
+    // Last so it wins: turns off every ESLint rule that oxlint already
+    // enforces (oxlint runs first in the lint script).
+    ...oxlint.buildFromOxlintConfigFile("./.oxlintrc.json"),
 ];
