@@ -63,14 +63,14 @@ jobs:
         steps:
             - uses: actions/checkout@v7
 
-            - uses: pnpm/action-setup@v6
-
-            - uses: actions/setup-node@v7
+            # No dependency install: pack only reads package.json and the
+            # files list, and the notes script uses node built-ins.
+            - uses: pnpm/setup@v2
               with:
-                  node-version: 24
+                  runtime: node@24
+                  install: false
 
-            # The bundle that verify built and tested. No install is needed:
-            # pack only reads package.json and the files list.
+            # The bundle that verify built and tested.
             - uses: actions/download-artifact@v8
               with:
                   name: dist
