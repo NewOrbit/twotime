@@ -114,7 +114,7 @@ type is not nominal: a bare `"Bug"` is assignable to `EntityType`.
 
 ## Continuous integration
 
-CI is GitHub Actions, in `.github/workflows`. `pr.yml` runs the reusable `verify.yml` job on every pull request to master: install, build, test, lint. The release workflow calls the same job, so the checks on a pull request and the checks behind a release cannot drift apart. The Azure Pipelines build is gone.
+CI is GitHub Actions, in `.github/workflows`. `pr.yml` runs the reusable `verify.yml` job on every pull request, whatever branch it targets: install, build, test, lint. The release workflow calls the same job, so the checks on a pull request and the checks behind a release cannot drift apart. The Azure Pipelines build is gone.
 
 The repository is public on purpose: twotime has been MIT-licensed with public source since 2020, and the GitHub release asset is now the primary way people install it. Do not make the repository private without first putting another distribution channel in its place.
 
@@ -126,9 +126,11 @@ The draft carries one asset, `neworbit-twotime-<version>.tgz`, packed from the b
 
 The draft is regenerated on every push to master until someone publishes it, so there is no point editing it by hand. Change the notes in `CHANGELOG.md` and push; the next run replaces the draft.
 
-Publishing the draft is a manual step. It creates the `v<version>` tag and triggers `publish-feed.yml`, which downloads the asset from the release, verifies its provenance and publishes it to the NewOrbit Azure Artifacts feed. Pre-releases are not published to the feed.
+A version with a pre-release part, such as `4.1.0-beta.1`, is drafted as a GitHub pre-release. GitHub does not work that out from the version itself, so the workflow sets the flag.
 
-If a job fails, re-run it. A version that is already on the feed is left alone and the job still succeeds, so re-running is safe and is the normal way to recover.
+Publishing the draft is a manual step. It creates the `v<version>` tag and triggers `publish-feed.yml`, which downloads the asset from the release, verifies its provenance and publishes it to the NewOrbit Azure Artifacts feed. The provenance check accepts only an asset attested by `draft-release.yml` in this repository from the commit the tag points to, so a tarball uploaded by hand, or one kept from an earlier build of the same version, is refused. Pre-releases are not published to the feed.
+
+If a job fails, re-run it. A version that is already on the feed with the same bytes is left alone and the job still succeeds, so re-running is safe and is the normal way to recover. If the feed already has that version with different content, for example from a manual publish, the job fails and says so; the feed cannot be overwritten, so bump the version and release again.
 
 To check an asset you have downloaded:
 
