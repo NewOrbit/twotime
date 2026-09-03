@@ -50,6 +50,8 @@ Upgrade later with `pnpm update -g @neworbit/twotime`.
 
 Versions before 4.0.0 were installed with npm, and pnpm cannot remove those. Run `npm uninstall -g @neworbit/twotime` (v3) or `npm uninstall -g twotime` (v2) before you install, or you will end up with two `twotime` commands on your PATH.
 
+Coming from v2, finish any timers started with it first: newer versions cannot finish timers from previous days that v2 started, and you would have to fix them up by hand in Harvest and Targetprocess.
+
 ## Setup
 
 Once installed, you need to authenticate against Harvest and Targetprocess.
