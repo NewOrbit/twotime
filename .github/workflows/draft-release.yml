@@ -1,0 +1,126 @@
+# Creates a draft GitHub release when a commit on master carries a version that
+# has not been tagged yet. Publishing the draft is a manual step; that creates
+# the tag and triggers publish-feed.yml.
+#
+# The draft is regenerated on every push to master until it is published, so
+# release notes belong in CHANGELOG.md, not in the draft.
+name: draft-release
+
+on:
+    push:
+        branches:
+            - master
+
+concurrency:
+    group: draft-release
+    cancel-in-progress: false
+
+permissions:
+    contents: read
+
+jobs:
+    version:
+        runs-on: ubuntu-latest
+        outputs:
+            version: ${{ steps.version.outputs.version }}
+            release: ${{ steps.version.outputs.release }}
+        steps:
+            - uses: actions/checkout@v7
+
+            - id: version
+              run: |
+                  set -euo pipefail
+                  version=$(node -p "require('./package.json').version")
+                  echo "version=$version" >> "$GITHUB_OUTPUT"
+                  if git ls-remote --exit-code --tags origin "refs/tags/v$version" > /dev/null; then
+                      echo "v$version is already tagged, nothing to release."
+                      echo "release=false" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "v$version is not tagged yet, drafting a release."
+                      echo "release=true" >> "$GITHUB_OUTPUT"
+                  fi
+
+    verify:
+        needs: version
+        if: needs.version.outputs.release == 'true'
+        uses: ./.github/workflows/verify.yml
+
+    draft:
+        needs:
+            - version
+            - verify
+        if: needs.version.outputs.release == 'true'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            id-token: write
+            attestations: write
+        env:
+            VERSION: ${{ needs.version.outputs.version }}
+            TAG: v${{ needs.version.outputs.version }}
+            ASSET: neworbit-twotime-${{ needs.version.outputs.version }}.tgz
+            GH_TOKEN: ${{ github.token }}
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: pnpm/action-setup@v6
+
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: 24
+
+            # The bundle that verify built and tested. No install is needed:
+            # pack only reads package.json and the files list.
+            - uses: actions/download-artifact@v8
+              with:
+                  name: dist
+                  path: dist
+
+            - run: pnpm pack --out "$ASSET"
+
+            - name: Sanity-check the tarball
+              run: |
+                  set -euo pipefail
+                  tar -tzf "$ASSET"
+                  packed=$(tar -xOzf "$ASSET" package/package.json | node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).version")
+                  test "$packed" = "$VERSION"
+
+            - uses: actions/attest-build-provenance@v4
+              with:
+                  subject-path: ${{ env.ASSET }}
+
+            # The body comes from the matching CHANGELOG.md section. When there
+            # is none, GitHub's generated notes are used instead. Either way the
+            # exact install command for this version is appended.
+            - name: Release notes
+              env:
+                  URL: ${{ github.server_url }}/${{ github.repository }}/releases/download/v${{ needs.version.outputs.version }}/neworbit-twotime-${{ needs.version.outputs.version }}.tgz
+              run: |
+                  set -euo pipefail
+                  if ! node scripts/release-notes.ts "$VERSION" > notes.md || ! [ -s notes.md ]; then
+                      echo "Using GitHub's generated notes."
+                      gh api "repos/$GITHUB_REPOSITORY/releases/generate-notes" \
+                          --field tag_name="$TAG" \
+                          --field target_commitish="$GITHUB_SHA" \
+                          --jq .body > notes.md
+                  fi
+                  printf '\n## Install or upgrade\n\n```bash\npnpm add -g %s\n```\n' "$URL" >> notes.md
+                  cat notes.md
+
+            # A draft for this tag left over from an earlier push is replaced,
+            # so the draft always reflects the current master.
+            - name: Replace any existing draft
+              run: |
+                  set -euo pipefail
+                  if [ "$(gh release view "$TAG" --json isDraft --jq .isDraft 2> /dev/null || true)" = "true" ]; then
+                      gh release delete "$TAG" --yes
+                  fi
+
+            - name: Create draft release
+              run: |
+                  set -euo pipefail
+                  gh release create "$TAG" "$ASSET" \
+                      --draft \
+                      --target "$GITHUB_SHA" \
+                      --title "$TAG" \
+                      --notes-file notes.md

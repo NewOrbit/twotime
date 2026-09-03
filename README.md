@@ -4,13 +4,29 @@ Sync timesheets between Harvest and Targetprocess
 
 ## Installation
 
+twotime requires Node.js 24 or later, and is installed with [pnpm](https://pnpm.io/installation).
+
 Note that the old, public package (v2.0.0) is deprecated and will be removed at some point. _Do not use this version_.
 
-### Setting up .npmrc
+### Install from a GitHub release
+
+Every release has the package attached to it as a tarball, and pnpm can install straight from its URL:
+
+```bash
+pnpm add -g https://github.com/NewOrbit/twotime/releases/download/v<version>/neworbit-twotime-<version>.tgz
+```
+
+Rather than filling in the version yourself, copy the exact command from the `Install or upgrade` section of the [latest release](https://github.com/NewOrbit/twotime/releases/latest). This is the simplest route: it needs no access to the NewOrbit feed and no `.npmrc`.
+
+To upgrade, run the same command again with the URL of the newer version. It replaces the version you have installed.
+
+### Install from the NewOrbit feed
+
+twotime is also published to the NewOrbit Azure Artifacts feed, so you can install it by package name instead. This needs access to that feed and an `.npmrc` that points `@neworbit` at it.
 
 If necessary, set up access to the NewOrbit DevOps artefacts by following the `Connect to a feed` procedure in [Get started with npm packages in Azure Artifacts](https://learn.microsoft.com/en-us/azure/devops/artifacts/get-started-npm?view=azure-devops). A few things in addition to that page:
 
-1. Make sure you have installed the package `vsts-npm-auth` first, by using `pnpm add -g vsts-npm-auth`.
+1. Install the package `vsts-npm-auth` first, by using `pnpm add -g vsts-npm-auth`.
 2. Your `.npmrc` file needs to have these entries. pnpm reads registry and authentication settings from `.npmrc`, the same as npm does:
 
     ```ini
@@ -20,36 +36,19 @@ If necessary, set up access to the NewOrbit DevOps artefacts by following the `C
 
 3. If `vsts-npm-auth -config .npmrc` doesn't work, try `pnpm dlx vsts-npm-auth -config .npmrc`.
 4. If that command fails with a "Couldn't get an authentication token" message, try adding `-F` to the end of the command to force it.
-    - This can also happen if you already have an expired auth token in `.npmrc`. You can try clearing the contents of the file down to just the two lines above and then retrying the `vsts-npm-auth` command.
+    - This can also happen if you already have an expired auth token in `.npmrc`. Clear the contents of the file down to just the two lines above, then run the `vsts-npm-auth` command again.
 
-### Installing the correct version
-
-twotime requires Node.js 24 or later, and is installed with
-[pnpm](https://pnpm.io/installation).
-
-**Note:** _You can't finish timers from previous days that were started with the old twotime. Either finish those timers first, or
-fix up manually in Harvest and TP afterwards._
-
-_Uninstall_ the old version 2.0.0. This step still needs npm: v2.0.0 predates
-the move to pnpm, so it was installed globally by npm, and pnpm cannot remove
-it.
-
-```bash
-npm uninstall -g twotime
-```
-
-Then install the latest twotime from our own feed:
+With that in place, install with:
 
 ```bash
 pnpm add -g @neworbit/twotime
 ```
 
-If this command fails:
+Upgrade later with `pnpm update -g @neworbit/twotime`.
 
-1. Ensure you have the correct `.npmrc` file set up as described above.
-1. If the installation process cannot get rid of old files, please report this. As a last resort, use `--force`.
+### Coming from v2
 
-If you are upgrading from version 2.0.0 there should be no need to reauthenticate as v3.x uses the same mechanism and files.
+v2.0.0 was installed globally by npm, so remove it with `npm uninstall -g twotime` before you install v3.
 
 ## Setup
 
@@ -73,11 +72,7 @@ If you're using Windows and WSL, you may wish to be able to use twotime in eithe
 <br/>
     Assuming you've already installed and authenticated your Windows installation of twotime, then head to WSL:
 
-1. Install `twotime` in WSL
-
-    ```bash
-    pnpm add -g @neworbit/twotime
-    ```
+1. Install `twotime` in WSL, with the same command you used on Windows. Copy it from the `Install or upgrade` section of the [latest release](https://github.com/NewOrbit/twotime/releases/latest).
 
 2. symlink the configs, substituting `USER_NAME` with the value from `%USERNAME%` in your Windows environment
 
