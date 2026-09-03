@@ -15,15 +15,13 @@ jobs:
         steps:
             - uses: actions/checkout@v7
 
-            # Reads the version from the packageManager field in package.json.
-            - uses: pnpm/action-setup@v6
-
-            - uses: actions/setup-node@v7
+            # Installs the pnpm pinned by packageManager in package.json, plus
+            # Node, then runs pnpm install --frozen-lockfile (require-lockfile).
+            - uses: pnpm/setup@v2
               with:
-                  node-version: 24
-                  cache: pnpm
-
-            - run: pnpm install --frozen-lockfile
+                  runtime: node@24
+                  cache: true
+                  require-lockfile: true
 
             # Same order as prepublishOnly. build includes the type check.
             - run: pnpm run build
