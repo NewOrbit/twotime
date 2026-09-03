@@ -15,10 +15,10 @@ const TimeIssueCheck = {
     Error: "Error",
     LogTimeDirectly: "LogTimeDirectly",
     LogTimeToUserStory: "LogTimeToUserStory",
-    CantLogTime: "CantLogTime"
+    CantLogTime: "CantLogTime",
 } as const;
 
-type TimeIssueCheck = typeof TimeIssueCheck[keyof typeof TimeIssueCheck];
+type TimeIssueCheck = (typeof TimeIssueCheck)[keyof typeof TimeIssueCheck];
 
 const stopHarvestTimer = async (harvestApi: HarvestApi, request: FinishTimerRequest, packageVersion: string) => {
     log.info(`> Updating Harvest`);
@@ -99,10 +99,16 @@ const updateTargetprocess = async (targetprocessApi: Targetprocess, request: Fin
     const notes = getTargetprocessNotes(request, timeEntity, timeIssueDirective === TimeIssueCheck.LogTimeToUserStory);
 
     if (timeEntity.ResourceType === EntityType.TASK && request.timeRemaining === 0 && timeEntity.Project?.Process?.Id) {
-      await targetprocessApi.setTaskState(timeEntity.Id, "Done", timeEntity.Project.Process.Id);
+        await targetprocessApi.setTaskState(timeEntity.Id, "Done", timeEntity.Project.Process.Id);
     }
 
-    targetprocessApi.addTime(timeEntity.Id, request.timeEntry.hours, request.timeRemaining || 0, new Date(request.timeEntry.created), notes);
+    targetprocessApi.addTime(
+        timeEntity.Id,
+        request.timeEntry.hours,
+        request.timeRemaining || 0,
+        new Date(request.timeEntry.created),
+        notes
+    );
 };
 
 const getTimerDisplayName = (request: FinishTimerRequest) => {
@@ -120,7 +126,7 @@ export const finish = async (packageVersion: string, apiProvider: ApiProvider, d
     const targetprocessApi = apiProvider.getTargetprocessApi();
 
     for (const request of finishTimerRequests) {
-        log.info(`Finishing timer for ${ getTimerDisplayName(request) }`);
+        log.info(`Finishing timer for ${getTimerDisplayName(request)}`);
 
         await updateTargetprocess(targetprocessApi, request);
 

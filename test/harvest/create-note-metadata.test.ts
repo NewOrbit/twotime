@@ -7,7 +7,6 @@ import type { TpBookableEntity } from "../../src/target-process/models/tp-bookab
 import { EntityType } from "../../src/target-process/models/tp-bookable-entity.ts";
 
 describe("createNoteMetadata", () => {
-
     it("creates note metadata correctly for a task", () => {
         const input: TpBookableEntity = {
             ResourceType: EntityType.TASK,
@@ -16,14 +15,14 @@ describe("createNoteMetadata", () => {
             UserStory: {
                 ResourceType: "UserStory",
                 Id: 12345,
-                Name: "Foo"
-            }
+                Name: "Foo",
+            },
         };
 
         const expected: NoteMetadata = {
             tpBookableEntity: input,
             finished: false,
-            version: "0.0.0"
+            version: "0.0.0",
         };
 
         const res = createNoteMetadata(input, "0.0.0");
@@ -39,14 +38,14 @@ describe("createNoteMetadata", () => {
             UserStory: {
                 ResourceType: "UserStory",
                 Id: 17441,
-                Name: "User should be able to eat cheese"
-            }
+                Name: "User should be able to eat cheese",
+            },
         };
 
         const expected: NoteMetadata = {
             tpBookableEntity: input,
             finished: false,
-            version: "0.0.0"
+            version: "0.0.0",
         };
 
         const res = createNoteMetadata(input, "0.0.0");
@@ -59,13 +58,13 @@ describe("createNoteMetadata", () => {
             ResourceType: EntityType.BUG,
             Id: 94123,
             Name: "A very very horrible bug",
-            UserStory: undefined
+            UserStory: undefined,
         };
 
         const expected: NoteMetadata = {
             tpBookableEntity: input,
             finished: false,
-            version: "0.0.0"
+            version: "0.0.0",
         };
 
         const res = createNoteMetadata(input, "0.0.0");
@@ -85,13 +84,13 @@ describe("createNoteMetadata", () => {
                 ResourceType: EntityType.BUG,
                 Id: 94123,
                 Name: "A very very horrible bug",
-                UserStory: undefined
+                UserStory: undefined,
             };
 
             const expected: NoteMetadata = {
                 tpBookableEntity: input,
                 finished: false,
-                version
+                version,
             };
 
             const res = createNoteMetadata(input, version);
@@ -99,5 +98,4 @@ describe("createNoteMetadata", () => {
             assert.deepStrictEqual(res, expected);
         });
     }
-
 });

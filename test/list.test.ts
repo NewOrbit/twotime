@@ -12,7 +12,7 @@ const makeEntry = (overrides: Partial<HarvestTimeEntry>): HarvestTimeEntry => ({
     hours: 1,
     created: "2017-06-26T22:32:52Z",
     running: false,
-    ...overrides
+    ...overrides,
 });
 
 // list() only ever reaches for getHarvestApi().getTimeEntries(), so a structural stub
@@ -22,7 +22,9 @@ const providerReturning = (entries: HarvestTimeEntry[]) =>
 
 const renderList = async (entries: HarvestTimeEntry[]) => {
     const lines: string[] = [];
-    const spy = mock.method(console, "log", (message: string) => { lines.push(message); });
+    const spy = mock.method(console, "log", (message: string) => {
+        lines.push(message);
+    });
 
     try {
         await list(providerReturning(entries), "2017-06-26");
@@ -38,7 +40,6 @@ const renderList = async (entries: HarvestTimeEntry[]) => {
 const countNotAvailable = (output: string) => output.split("n/a").length - 1;
 
 describe("list", () => {
-
     it("falls back for an entry with no notes at all", async () => {
         const output = await renderList([makeEntry({ notes: [] })]);
 
@@ -62,10 +63,7 @@ describe("list", () => {
     });
 
     it("renders hours to two decimal places and a total", async () => {
-        const output = await renderList([
-            makeEntry({ notes: ["a"], hours: 1.748 }),
-            makeEntry({ notes: ["b"], hours: 2 })
-        ]);
+        const output = await renderList([makeEntry({ notes: ["a"], hours: 1.748 }), makeEntry({ notes: ["b"], hours: 2 })]);
 
         assert.match(output, /1\.75/);
         assert.match(output, /2\.00/);
@@ -73,13 +71,9 @@ describe("list", () => {
     });
 
     it("renders the running state per entry", async () => {
-        const output = await renderList([
-            makeEntry({ notes: ["a"], running: true }),
-            makeEntry({ notes: ["b"], running: false })
-        ]);
+        const output = await renderList([makeEntry({ notes: ["a"], running: true }), makeEntry({ notes: ["b"], running: false })]);
 
         assert.match(output, /running/);
         assert.match(output, /paused/);
     });
-
 });
