@@ -23,7 +23,7 @@ jobs:
         runs-on: ubuntu-latest
         outputs:
             version: ${{ steps.version.outputs.version }}
-            release: ${{ steps.version.outputs.release }}
+            untagged: ${{ steps.version.outputs.untagged }}
         steps:
             - uses: actions/checkout@v7
 
@@ -34,22 +34,22 @@ jobs:
                   echo "version=$version" >> "$GITHUB_OUTPUT"
                   if git ls-remote --exit-code --tags origin "refs/tags/v$version" > /dev/null; then
                       echo "v$version is already tagged, nothing to release."
-                      echo "release=false" >> "$GITHUB_OUTPUT"
+                      echo "untagged=false" >> "$GITHUB_OUTPUT"
                   else
                       echo "v$version is not tagged yet, drafting a release."
-                      echo "release=true" >> "$GITHUB_OUTPUT"
+                      echo "untagged=true" >> "$GITHUB_OUTPUT"
                   fi
 
     verify:
         needs: version
-        if: needs.version.outputs.release == 'true'
+        if: needs.version.outputs.untagged == 'true'
         uses: ./.github/workflows/verify.yml
 
     draft:
         needs:
             - version
             - verify
-        if: needs.version.outputs.release == 'true'
+        if: needs.version.outputs.untagged == 'true'
         runs-on: ubuntu-latest
         permissions:
             contents: write
@@ -78,6 +78,8 @@ jobs:
 
             - run: pnpm pack --out "$ASSET"
 
+            # publish-feed.yml repeats this version check on the downloaded
+            # asset; it cannot share a script because it has no checkout.
             - name: Sanity-check the tarball
               run: |
                   set -euo pipefail
@@ -94,7 +96,7 @@ jobs:
             # exact install command for this version is appended.
             - name: Release notes
               env:
-                  URL: ${{ github.server_url }}/${{ github.repository }}/releases/download/v${{ needs.version.outputs.version }}/neworbit-twotime-${{ needs.version.outputs.version }}.tgz
+                  ASSET_URL: ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ env.TAG }}/${{ env.ASSET }}
               run: |
                   set -euo pipefail
                   if ! node scripts/release-notes.ts "$VERSION" > notes.md || ! [ -s notes.md ]; then
@@ -104,7 +106,7 @@ jobs:
                           --field target_commitish="$GITHUB_SHA" \
                           --jq .body > notes.md
                   fi
-                  printf '\n## Install or upgrade\n\n```bash\npnpm add -g %s\n```\n' "$URL" >> notes.md
+                  printf '\n## Install or upgrade\n\n```bash\npnpm add -g %s\n```\n' "$ASSET_URL" >> notes.md
                   cat notes.md
 
             # A draft for this tag left over from an earlier push is replaced,
