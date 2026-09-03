@@ -116,10 +116,17 @@ jobs:
                       gh release delete "$TAG" --yes
                   fi
 
+            # GitHub does not read SemVer, so a version with a pre-release part
+            # (4.1.0-beta.1) has to be marked as a pre-release explicitly.
+            # publish-feed.yml skips pre-releases.
             - name: Create draft release
               run: |
                   set -euo pipefail
-                  gh release create "$TAG" "$ASSET" \
+                  flags=()
+                  case "$VERSION" in
+                      *-*) flags+=(--prerelease) ;;
+                  esac
+                  gh release create "$TAG" "$ASSET" "${flags[@]}" \
                       --draft \
                       --target "$GITHUB_SHA" \
                       --title "$TAG" \

@@ -54,9 +54,18 @@ jobs:
                   echo "file=release/$file" >> "$GITHUB_OUTPUT"
 
             # Refuses anything that was not built by draft-release.yml in this
-            # repository, such as a tarball uploaded to the draft by hand.
+            # repository from the commit the release tag points to: a tarball
+            # uploaded to the draft by hand, or one kept back from an earlier
+            # master build of the same version.
             - name: Verify provenance
-              run: gh attestation verify "${{ steps.asset.outputs.file }}" --repo "$GITHUB_REPOSITORY"
+              env:
+                  FILE: ${{ steps.asset.outputs.file }}
+              run: |
+                  set -euo pipefail
+                  commit=$(gh api "repos/$GITHUB_REPOSITORY/commits/$TAG" --jq .sha)
+                  gh attestation verify "$FILE" --repo "$GITHUB_REPOSITORY" \
+                      --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/draft-release.yml" \
+                      --source-digest "$commit"
 
             - name: Check the tarball version matches the tag
               env:
@@ -77,9 +86,16 @@ jobs:
             # access token lives only in this step's shell: npm reads
             # ${ADO_TOKEN} from the environment when it parses .npmrc.
             #
-            # Re-runs are safe: a version that is already on the feed is left
-            # alone and the job still succeeds. Any other failure to query the
-            # feed (401, network) fails the job rather than risking a publish.
+            # Azure Artifacts wants the token on both the registry path and its
+            # parent /npm/ path; that is what its own "Connect to feed" .npmrc
+            # snippet contains, and publish can hit the parent.
+            #
+            # Re-runs are safe: a version that is already on the feed with the
+            # same bytes as this asset is left alone and the job still succeeds.
+            # The same version with different bytes (a manual publish) fails the
+            # job, because the feed and the release would disagree. Any other
+            # failure to query the feed (401, network) fails the job rather than
+            # risking a publish.
             - name: Publish unless already on the feed
               env:
                   FILE: ${{ steps.asset.outputs.file }}
@@ -92,13 +108,20 @@ jobs:
                   {
                       echo "@neworbit:registry=https://$FEED_HOST_PATH"
                       echo "//$FEED_HOST_PATH:_authToken=\${ADO_TOKEN}"
+                      echo "//${FEED_HOST_PATH%registry/}:_authToken=\${ADO_TOKEN}"
                       echo "always-auth=true"
                   } > "$HOME/.npmrc"
 
-                  if published=$(npm view "$PACKAGE@$VERSION" version 2> view.err); then
-                      if [ "$published" = "$VERSION" ]; then
-                          echo "$PACKAGE@$VERSION is already on the feed, nothing to do."
+                  if published=$(npm view "$PACKAGE@$VERSION" dist.integrity 2> view.err); then
+                      asset="sha512-$(openssl dgst -sha512 -binary "$FILE" | base64 -w0)"
+                      if [ "$published" = "$asset" ]; then
+                          echo "$PACKAGE@$VERSION is already on the feed with these exact bytes, nothing to do."
                           exit 0
+                      elif [ -n "$published" ]; then
+                          echo "$PACKAGE@$VERSION is already on the feed, but with different content."
+                          echo "  feed:  $published"
+                          echo "  asset: $asset"
+                          exit 1
                       fi
                   elif ! grep -q E404 view.err; then
                       cat view.err
