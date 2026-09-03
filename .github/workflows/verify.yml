@@ -16,12 +16,14 @@ jobs:
             - uses: actions/checkout@v7
 
             # Installs the pnpm pinned by packageManager in package.json, plus
-            # Node, then runs pnpm install --frozen-lockfile (require-lockfile).
+            # Node, then runs pnpm install. Actions sets CI, so pnpm refuses to
+            # change pnpm-lock.yaml and the install is effectively frozen.
+            # (require-lockfile exists from v2.1.0, but the v2 tag still points
+            # at v2.0.2 and warns about it; add it once the tag moves.)
             - uses: pnpm/setup@v2
               with:
                   runtime: node@24
                   cache: true
-                  require-lockfile: true
 
             # Same order as prepublishOnly. build includes the type check.
             - run: pnpm run build
