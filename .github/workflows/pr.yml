@@ -1,9 +1,9 @@
 name: pr
 
+# No branch filter: stacked pull requests target each other, and every one of
+# them should be gated.
 on:
     pull_request:
-        branches:
-            - master
 
 concurrency:
     group: pr-${{ github.event.pull_request.number }}

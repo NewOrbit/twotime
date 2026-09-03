@@ -46,9 +46,9 @@ pnpm add -g @neworbit/twotime
 
 Upgrade later with `pnpm update -g @neworbit/twotime`.
 
-### Coming from v2
+### Upgrading from an npm install
 
-v2.0.0 was installed globally by npm, so remove it with `npm uninstall -g twotime` before you install v3.
+Versions before 4.0.0 were installed with npm, and pnpm cannot remove those. Run `npm uninstall -g @neworbit/twotime` (v3) or `npm uninstall -g twotime` (v2) before you install, or you will end up with two `twotime` commands on your PATH.
 
 ## Setup
 
