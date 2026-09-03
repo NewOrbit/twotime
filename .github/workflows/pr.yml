@@ -1,0 +1,17 @@
+name: pr
+
+# No branch filter: stacked pull requests target each other, and every one of
+# them should be gated.
+on:
+    pull_request:
+
+concurrency:
+    group: pr-${{ github.event.pull_request.number }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+jobs:
+    verify:
+        uses: ./.github/workflows/verify.yml
