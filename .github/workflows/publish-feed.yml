@@ -67,6 +67,8 @@ jobs:
                       --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/draft-release.yml" \
                       --source-digest "$commit"
 
+            # Same check as the sanity check in draft-release.yml, repeated here
+            # because this workflow has no checkout to share a script from.
             - name: Check the tarball version matches the tag
               env:
                   FILE: ${{ steps.asset.outputs.file }}
