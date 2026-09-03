@@ -1,0 +1,109 @@
+# Publishes the tarball attached to a published GitHub release to the NewOrbit
+# Azure Artifacts feed. Authentication is a Microsoft Entra federated credential
+# for the "feed" environment; the two values below are plain environment
+# variables on that environment, not secrets:
+#
+#   AZURE_CLIENT_ID   app registration (client) id
+#   AZURE_TENANT_ID   directory (tenant) id
+#
+# Nothing here needs the repository or its dependencies, so there is no
+# checkout: the asset is downloaded from the release and published with npm.
+name: publish-feed
+
+on:
+    release:
+        types:
+            - published
+
+concurrency:
+    group: publish-feed-${{ github.event.release.tag_name }}
+    cancel-in-progress: false
+
+permissions:
+    contents: read
+
+jobs:
+    publish:
+        if: ${{ !github.event.release.prerelease }}
+        runs-on: ubuntu-latest
+        environment: feed
+        permissions:
+            contents: read
+            id-token: write
+        env:
+            TAG: ${{ github.event.release.tag_name }}
+            PACKAGE: "@neworbit/twotime"
+            FEED_HOST_PATH: pkgs.dev.azure.com/neworbit/_packaging/NewOrbit/npm/registry/
+            GH_TOKEN: ${{ github.token }}
+        steps:
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: 24
+
+            # The asset name is fixed by draft-release.yml, so only that file
+            # is downloaded, whatever else may have been attached by hand.
+            - name: Download the release asset
+              id: asset
+              run: |
+                  set -euo pipefail
+                  version=${TAG#v}
+                  file=neworbit-twotime-$version.tgz
+                  gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern "$file" --dir release
+                  test -f "release/$file"
+                  echo "version=$version" >> "$GITHUB_OUTPUT"
+                  echo "file=release/$file" >> "$GITHUB_OUTPUT"
+
+            # Refuses anything that was not built by draft-release.yml in this
+            # repository, such as a tarball uploaded to the draft by hand.
+            - name: Verify provenance
+              run: gh attestation verify "${{ steps.asset.outputs.file }}" --repo "$GITHUB_REPOSITORY"
+
+            - name: Check the tarball version matches the tag
+              env:
+                  FILE: ${{ steps.asset.outputs.file }}
+                  VERSION: ${{ steps.asset.outputs.version }}
+              run: |
+                  set -euo pipefail
+                  packed=$(tar -xOzf "$FILE" package/package.json | node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).version")
+                  test "$packed" = "$VERSION"
+
+            - uses: azure/login@v3
+              with:
+                  client-id: ${{ vars.AZURE_CLIENT_ID }}
+                  tenant-id: ${{ vars.AZURE_TENANT_ID }}
+                  allow-no-subscriptions: true
+
+            # 499b84ac-... is the fixed application id of Azure DevOps. The
+            # access token lives only in this step's shell: npm reads
+            # ${ADO_TOKEN} from the environment when it parses .npmrc.
+            #
+            # Re-runs are safe: a version that is already on the feed is left
+            # alone and the job still succeeds. Any other failure to query the
+            # feed (401, network) fails the job rather than risking a publish.
+            - name: Publish unless already on the feed
+              env:
+                  FILE: ${{ steps.asset.outputs.file }}
+                  VERSION: ${{ steps.asset.outputs.version }}
+              run: |
+                  set -euo pipefail
+                  ADO_TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 --query accessToken --output tsv)
+                  export ADO_TOKEN
+                  echo "::add-mask::$ADO_TOKEN"
+                  {
+                      echo "@neworbit:registry=https://$FEED_HOST_PATH"
+                      echo "//$FEED_HOST_PATH:_authToken=\${ADO_TOKEN}"
+                      echo "always-auth=true"
+                  } > "$HOME/.npmrc"
+
+                  if published=$(npm view "$PACKAGE@$VERSION" version 2> view.err); then
+                      if [ "$published" = "$VERSION" ]; then
+                          echo "$PACKAGE@$VERSION is already on the feed, nothing to do."
+                          exit 0
+                      fi
+                  elif ! grep -q E404 view.err; then
+                      cat view.err
+                      echo "Could not query the feed for $PACKAGE@$VERSION."
+                      exit 1
+                  fi
+
+                  npm publish "$FILE"
