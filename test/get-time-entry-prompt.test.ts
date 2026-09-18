@@ -1,8 +1,10 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+
 import type { HarvestTimeEntry } from "../src/harvest/models/time-entry.ts";
 import { EntityType } from "../src/target-process/models/tp-bookable-entity.ts";
 import { getTimeEntryPrompt } from "../src/utils/get-time-entry-prompt.ts";
+
 import { EntityBuilder } from "./_builders/entity.builder.ts";
 import { NoteMetadataBuilder } from "./_builders/note-metadata.builder.ts";
 

@@ -22,10 +22,18 @@ export const getDateInPast = (offset: number) => {
 
 /**
  * Check whether a date is valid.
- * @param {string} inputDate the input date, expected as a string in ISO format e.g. '2024-01-14'
+ * Accepts null/undefined because the only caller passes an untyped commander option
+ * (see getDateForCommand in register-commands.ts), which is absent when --date is omitted.
+ * @param {string | undefined | null} inputDate the input date, expected as a string in ISO format e.g. '2024-01-14'
  * @returns {boolean} true if the date is valid, false otherwise
  */
-export const isValidDate = (inputDate: string) => {
+export const isValidDate = (inputDate: string | undefined | null) => {
+  // Guard explicitly rather than letting new Date(undefined) produce an Invalid Date
+  // and relying on formatDate's toISOString to throw. Same outcome, stated plainly.
+  if (typeof inputDate !== "string") {
+    return false;
+  }
+
   try {
     const testDate = new Date(inputDate);
     // It's a valid date, now check there was no shift e.g. 30 Feb -> 2 Mar

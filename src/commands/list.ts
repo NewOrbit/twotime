@@ -21,8 +21,9 @@ const getTextForEntry = (entry: HarvestTimeEntry) => {
     }
 
     // an entry can have no notes at all; fall back rather than passing undefined
-    // into log.table, which the `table` package rejects
-    return entry.notes[0] || chalk.gray("n/a");
+    // into log.table, which the `table` package rejects. Deliberately ?? and not ||,
+    // so a note that is legitimately the empty string still renders as an empty cell.
+    return entry.notes[0] ?? chalk.gray("n/a");
 };
 
 const getStatusForEntry = (entry: HarvestTimeEntry) => {
