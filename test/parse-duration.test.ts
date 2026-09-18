@@ -1,31 +1,35 @@
-import { TestFixture, TestCase, Expect } from "alsatian";
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
 import { parseDuration } from "../src/utils/parse-duration.ts";
 
-@TestFixture()
-export class ParseDurationTests {
+describe("parseDuration", () => {
 
-    @TestCase(":10", 0, 10)
-    @TestCase("1:06", 1, 6)
-    @TestCase("4:22", 4, 22)
-    @TestCase("17:08", 17, 8)
-    public shouldParseDurationCorrectly(input: string, expectedHours: number, expectedMinutes: number) {
-        const expected = {
-            hours: expectedHours,
-            minutes: expectedMinutes
-        };
+    const validCases: [input: string, expectedHours: number, expectedMinutes: number][] = [
+        [":10", 0, 10],
+        ["1:06", 1, 6],
+        ["4:22", 4, 22],
+        ["17:08", 17, 8]
+    ];
 
-        const result = parseDuration(input);
+    for (const [input, expectedHours, expectedMinutes] of validCases) {
+        it(`parses "${input}" as ${expectedHours}h ${expectedMinutes}m`, () => {
+            const expected = {
+                hours: expectedHours,
+                minutes: expectedMinutes
+            };
 
-        Expect(result).toEqual(expected);
+            const result = parseDuration(input);
+
+            assert.deepStrictEqual(result, expected);
+        });
     }
 
-    @TestCase("01:")
-    @TestCase("14")
-    @TestCase("xx")
-    public shouldReturnNullForBadInput(input: string) {
-        const result = parseDuration(input);
+    for (const input of ["01:", "14", "xx"]) {
+        it(`returns null for bad input "${input}"`, () => {
+            const result = parseDuration(input);
 
-        Expect(result).toEqual(null);
+            assert.deepStrictEqual(result, null);
+        });
     }
 
-}
+});

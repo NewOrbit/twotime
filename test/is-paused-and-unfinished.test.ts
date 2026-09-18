@@ -1,13 +1,12 @@
-import { TestFixture, Test, Expect } from "alsatian";
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
 import type { HarvestTimeEntry } from "../src/harvest/models/time-entry.ts";
 import { isPausedAndUnfinished } from "../src/utils/is-paused-and-unfinished.ts";
 import { NoteMetadataBuilder } from "./_builders/note-metadata.builder.ts";
 
-@TestFixture()
-export class IsPausedAndUnfinishedTests {
+describe("isPausedAndUnfinished", () => {
 
-    @Test()
-    public shouldReturnFalseforRunningEntry() {
+    it("returns false for a running entry", () => {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
@@ -19,11 +18,10 @@ export class IsPausedAndUnfinishedTests {
 
         const result = isPausedAndUnfinished(entry);
 
-        Expect(result).toBe(false);
-    }
+        assert.strictEqual(result, false);
+    });
 
-    @Test()
-    public shouldReturnTrueforUnfinishedNonRunningEntry() {
+    it("returns true for an unfinished, non-running entry", () => {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
@@ -35,11 +33,10 @@ export class IsPausedAndUnfinishedTests {
 
         const result = isPausedAndUnfinished(entry);
 
-        Expect(result).toBe(true);
-    }
+        assert.strictEqual(result, true);
+    });
 
-    @Test()
-    public shouldReturnTrueforNonRunningEntryWithoutMetadata() {
+    it("returns true for a non-running entry without metadata", () => {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
@@ -51,11 +48,10 @@ export class IsPausedAndUnfinishedTests {
 
         const result = isPausedAndUnfinished(entry);
 
-        Expect(result).toBe(true);
-    }
+        assert.strictEqual(result, true);
+    });
 
-    @Test()
-    public shouldReturnFalseforFinishedNonRunningEntry() {
+    it("returns false for a finished, non-running entry", () => {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
@@ -67,11 +63,13 @@ export class IsPausedAndUnfinishedTests {
 
         const result = isPausedAndUnfinished(entry);
 
-        Expect(result).toBe(false);
-    }
+        assert.strictEqual(result, false);
+    });
 
-    @Test()
-    public shouldReturnFalseforFinishedEntry() {
+    // NOTE: identical to the case above — carried over from the alsatian suite, where
+    // shouldReturnFalseforFinishedNonRunningEntry and shouldReturnFalseforFinishedEntry
+    // asserted exactly the same thing. Kept to preserve the original test count.
+    it("returns false for a finished entry", () => {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
@@ -83,11 +81,10 @@ export class IsPausedAndUnfinishedTests {
 
         const result = isPausedAndUnfinished(entry);
 
-        Expect(result).toBe(false);
-    }
+        assert.strictEqual(result, false);
+    });
 
-    @Test()
-    public shouldReturnFalseforRunningFinishedEntry() {
+    it("returns false for a running, finished entry", () => {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
@@ -99,7 +96,7 @@ export class IsPausedAndUnfinishedTests {
 
         const result = isPausedAndUnfinished(entry);
 
-        Expect(result).toBe(false);
-    }
+        assert.strictEqual(result, false);
+    });
 
-}
+});
