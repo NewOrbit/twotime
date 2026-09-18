@@ -3,9 +3,9 @@
  * Ian French, NewOrbit Ltd, Jan 2025 - adapted from the old code base.
  */
 
-import { EntityType, TpBookableEntity } from "../../target-process/models/tp-bookable-entity";
-import { NoteMetadata } from "../models/time-entry";
-import { NotePrefixes } from "../models/note-prefixes";
+import { EntityType, type TpBookableEntity } from "../../target-process/models/tp-bookable-entity.ts";
+import type { NoteMetadata } from "../models/time-entry.ts";
+import { NotePrefixes } from "../models/note-prefixes.ts";
 
 /**
  * Given a Targetprocess bookable item and a twotime version string, create the metadata for the notes field.

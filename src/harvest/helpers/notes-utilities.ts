@@ -34,7 +34,7 @@ export const parsePrefix = (line: string, prefix: string) => {
  */
 export const findPrefixInLines = (lines: string[], prefix: string) => {
   const matching = lines.map(line => parsePrefix(line, prefix)).filter(mappedLine => mappedLine !== null);
-  return matching.length > 0 ? matching[0] : null;
+  return matching[0] ?? null;
 };
 
 /**

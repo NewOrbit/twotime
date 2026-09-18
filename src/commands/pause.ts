@@ -1,6 +1,6 @@
-import { ApiProvider } from "../api-provider";
-import { getTodaysDate } from "../utils/dates";
-import { log } from "../utils/log";
+import type { ApiProvider } from "../api-provider.ts";
+import { getTodaysDate } from "../utils/dates.ts";
+import { log } from "../utils/log.ts";
 
 export const pause = async (apiProvider: ApiProvider) => {
     const date = getTodaysDate();

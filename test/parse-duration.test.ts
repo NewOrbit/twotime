@@ -1,5 +1,5 @@
 import { TestFixture, TestCase, Expect } from "alsatian";
-import { parseDuration } from "../src/utils/parse-duration";
+import { parseDuration } from "../src/utils/parse-duration.ts";
 
 @TestFixture()
 export class ParseDurationTests {

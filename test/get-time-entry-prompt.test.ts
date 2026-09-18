@@ -1,9 +1,9 @@
 import { TestCase, TestFixture, Expect } from "alsatian";
-import { HarvestTimeEntry } from "../src/harvest/models/time-entry";
-import { EntityType } from "../src/target-process/models/tp-bookable-entity";
-import { getTimeEntryPrompt } from "../src/utils/get-time-entry-prompt";
-import { EntityBuilder } from "./_builders/entity.builder";
-import { NoteMetadataBuilder } from "./_builders/note-metadata.builder";
+import type { HarvestTimeEntry } from "../src/harvest/models/time-entry.ts";
+import { EntityType } from "../src/target-process/models/tp-bookable-entity.ts";
+import { getTimeEntryPrompt } from "../src/utils/get-time-entry-prompt.ts";
+import { EntityBuilder } from "./_builders/entity.builder.ts";
+import { NoteMetadataBuilder } from "./_builders/note-metadata.builder.ts";
 
 @TestFixture()
 export class GetTimeEntryPromptTests {

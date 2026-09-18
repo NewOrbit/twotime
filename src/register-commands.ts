@@ -1,16 +1,16 @@
-import { Command } from "commander";
+import type { Command } from "commander";
 
-import { ApiProvider } from "./api-provider";
+import type { ApiProvider } from "./api-provider.ts";
 
-import { start } from "./commands/start";
-import { finish } from "./commands/finish";
-import { auth } from "./commands/auth";
-import { resume } from "./commands/resume";
-import { pause } from "./commands/pause";
-import { list } from "./commands/list";
+import { start } from "./commands/start.ts";
+import { finish } from "./commands/finish.ts";
+import { auth } from "./commands/auth.ts";
+import { resume } from "./commands/resume.ts";
+import { pause } from "./commands/pause.ts";
+import { list } from "./commands/list.ts";
 
-import { getTodaysDate, getDateInPast, isValidDate } from "./utils/dates";
-import { log } from "./utils/log";
+import { getTodaysDate, getDateInPast, isValidDate } from "./utils/dates.ts";
+import { log } from "./utils/log.ts";
 
 // Get date for a command - unfortunately the 'commander' package does not give a command type
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

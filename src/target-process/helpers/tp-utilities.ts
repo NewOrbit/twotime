@@ -3,7 +3,7 @@
  * Ian French, NewOrbit Ltd, Jan 2025.
  */
 
-import { EntityType, TpBookableEntity } from "../models/tp-bookable-entity";
+import type { EntityType, TpBookableEntity } from "../models/tp-bookable-entity.ts";
 
 /**
  * Construct a TP bookable item (entity) from the incoming user story and entity values.

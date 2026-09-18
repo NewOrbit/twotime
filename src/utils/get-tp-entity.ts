@@ -1,8 +1,8 @@
-import { Targetprocess } from "../target-process/api";
+import type { Targetprocess } from "../target-process/api.ts";
 
-import { TpBookableEntity } from "../target-process/models/tp-bookable-entity";
+import type { TpBookableEntity } from "../target-process/models/tp-bookable-entity.ts";
 
-import { log } from "../utils/log";
+import { log } from "../utils/log.ts";
 
 interface TpException {
     statusCode: number;

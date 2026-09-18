@@ -1,5 +1,6 @@
-import { TpBookableEntity, EntityType } from "../../src/target-process/models/tp-bookable-entity";
-import { TpUserStory } from "../../src/target-process/models/tp-user-story";
+import type { TpBookableEntity} from "../../src/target-process/models/tp-bookable-entity.ts";
+import { EntityType } from "../../src/target-process/models/tp-bookable-entity.ts";
+import type { TpUserStory } from "../../src/target-process/models/tp-user-story.ts";
 
 export class EntityBuilder {
     private type: EntityType = EntityType.BUG;

@@ -1,7 +1,7 @@
 import { TestFixture, Test, Expect } from "alsatian";
-import { HarvestTimeEntry } from "../src/harvest/models/time-entry";
-import { isRunningOrUnfinished } from "../src/utils/is-running-or-unfinished";
-import { NoteMetadataBuilder } from "./_builders/note-metadata.builder";
+import type { HarvestTimeEntry } from "../src/harvest/models/time-entry.ts";
+import { isRunningOrUnfinished } from "../src/utils/is-running-or-unfinished.ts";
+import { NoteMetadataBuilder } from "./_builders/note-metadata.builder.ts";
 
 @TestFixture()
 export class IsRunningOrUnfinishedTests {

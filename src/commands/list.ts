@@ -1,10 +1,10 @@
 import chalk from "chalk";
 
-import { ApiProvider } from "../api-provider";
+import type { ApiProvider } from "../api-provider.ts";
 
-import { log } from "../utils/log";
+import { log } from "../utils/log.ts";
 
-import { HarvestTimeEntry } from "../harvest/models/time-entry";
+import type { HarvestTimeEntry } from "../harvest/models/time-entry.ts";
 
 const getTypeForEntry = (entry: HarvestTimeEntry) => {
     let resType = "";
@@ -20,7 +20,9 @@ const getTextForEntry = (entry: HarvestTimeEntry) => {
         return `${ entry.metadata.tpBookableEntity.Name } (#${ entry.metadata.tpBookableEntity.Id })`;
     }
 
-    return entry.notes[0];
+    // an entry can have no notes at all; fall back rather than passing undefined
+    // into log.table, which the `table` package rejects
+    return entry.notes[0] || chalk.gray("n/a");
 };
 
 const getStatusForEntry = (entry: HarvestTimeEntry) => {

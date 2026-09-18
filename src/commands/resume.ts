@@ -1,13 +1,13 @@
 import inquirer from "inquirer";
 
-import { ApiProvider } from "../api-provider";
+import type { ApiProvider } from "../api-provider.ts";
 
-import { HarvestTimeEntry } from "../harvest/models/time-entry";
+import type { HarvestTimeEntry } from "../harvest/models/time-entry.ts";
 
-import { getTodaysDate } from "../utils/dates";
-import { getTimeEntryPrompt } from "../utils/get-time-entry-prompt";
-import { log } from "../utils/log";
-import { isPausedAndUnfinished } from "../utils/is-paused-and-unfinished";
+import { getTodaysDate } from "../utils/dates.ts";
+import { getTimeEntryPrompt } from "../utils/get-time-entry-prompt.ts";
+import { log } from "../utils/log.ts";
+import { isPausedAndUnfinished } from "../utils/is-paused-and-unfinished.ts";
 
 export const resume = async (apiProvider: ApiProvider) => {
     const date = getTodaysDate();

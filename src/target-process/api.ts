@@ -6,14 +6,16 @@
  * { statusCode, message } shape that callers match on.
  */
 
-import { log } from "../utils/log";
+import { log } from "../utils/log.ts";
 
-import { TargetprocessApiError } from "./api-error";
+import { TargetprocessApiError } from "./api-error.ts";
 
-enum APIVersion {
-    V1,
-    V2
-}
+const APIVersion = {
+    V1: "V1",
+    V2: "V2"
+} as const;
+
+type APIVersion = typeof APIVersion[keyof typeof APIVersion];
 
 export class Targetprocess {
     private subdomain: string;

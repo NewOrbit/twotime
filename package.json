@@ -2,6 +2,7 @@
   "name": "@neworbit/twotime",
   "version": "3.1.1",
   "description": "Sync timesheets between Harvest and Targetprocess",
+  "type": "module",
   "bin": {
     "twotime": "dist/twotime.cjs"
   },
@@ -9,17 +10,18 @@
     "node": ">=24"
   },
   "scripts": {
-    "prepublishOnly": "npm run bundle && npm run test && npm run lint",
-    "build": "tsc",
-    "bundle": "npm run build && esbuild bin/src/index.js --bundle --platform=node --format=cjs --target=node24 --outfile=dist/twotime.cjs",
+    "prepublishOnly": "npm run build && npm run test && npm run lint",
+    "typecheck": "tsc --noEmit",
+    "bundle": "esbuild src/index.ts --bundle --platform=node --format=cjs --target=node24 --outfile=dist/twotime.cjs",
+    "build": "npm run typecheck && npm run bundle",
     "build-test": "tsc -p ./tsconfig.test.json",
     "test": "npm run build-test && alsatian \"bin-test/**/*.test.js\"",
     "lint": "eslint src/**/*.ts --max-warnings=0",
     "lint:fix": "eslint src/**/*.ts --max-warnings=0 --quiet --fix --ignore-path ./.gitignore",
-    "start": "node bin/src/index.js start",
-    "auth": "node bin/src/index.js auth",
-    "list": "node bin/src/index.js list",
-    "finish": "node bin/src/index.js finish"
+    "start": "node src/index.ts start",
+    "auth": "node src/index.ts auth",
+    "list": "node src/index.ts list",
+    "finish": "node src/index.ts finish"
   },
   "files": [
     "dist"
@@ -41,9 +43,9 @@
     "@types/inquirer": "7.3.3",
     "@types/inquirer-autocomplete-prompt": "^1.3.2",
     "@types/lodash.mapvalues": "^4.6.4",
-    "@types/node": "^22.10.10",
-    "@typescript-eslint/eslint-plugin": "^8.22.0",
-    "@typescript-eslint/parser": "^8.22.0",
+    "@types/node": "^24.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.67.0",
+    "@typescript-eslint/parser": "^8.67.0",
     "alsatian": "^3.2.1",
     "chalk": "^4.1.2",
     "commander": "^13.1.0",
@@ -55,8 +57,8 @@
     "inquirer": "^8.2.7",
     "inquirer-autocomplete-prompt": "^2.0.1",
     "table": "^6.9.0",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.22.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.67.0",
     "vsts-npm-auth": "^0.43.0"
   }
 }

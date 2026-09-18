@@ -1,8 +1,8 @@
-import { ApiProvider } from "../api-provider";
+import type { ApiProvider } from "../api-provider.ts";
 
-import { log } from "../utils/log";
+import { log } from "../utils/log.ts";
 
-import { askAuthDetails } from "./prompts/auth";
+import { askAuthDetails } from "./prompts/auth.ts";
 
 export const auth = async (apiProvider: ApiProvider) => {
     const {

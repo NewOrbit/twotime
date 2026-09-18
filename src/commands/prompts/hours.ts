@@ -1,6 +1,6 @@
-import inquirer, { QuestionCollection } from 'inquirer';
+import inquirer, { type QuestionCollection } from 'inquirer';
 
-import { parseDuration } from "../../utils/parse-duration";
+import { parseDuration } from "../../utils/parse-duration.ts";
 
 export const askHours = async (message: string, defaultValue?: number) => {
     const questions: QuestionCollection = {
