@@ -1,4 +1,4 @@
-import inquirer from "inquirer";
+import { confirm, input, search } from "@inquirer/prompts";
 
 import type { Targetprocess } from "../../target-process/api.ts";
 
@@ -64,9 +64,9 @@ export const askStartDetails = async (apiProvider: ApiProvider, tpId?: number) =
     const { projectId, taskId } = await askHarvestDetails(harvest, entity);
     const notes = await askNotes();
     const { hours, running } = await askTimeSpent();
-    const confirm = await askConfirm();
+    const confirmed = await askConfirm();
 
-    if (!confirm) {
+    if (!confirmed) {
         return null;
     }
 
@@ -85,13 +85,10 @@ export const askStartDetails = async (apiProvider: ApiProvider, tpId?: number) =
 // --- Define internal functions ---
 
 const promptTargetprocessId = async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { tpEntityId } = await inquirer.prompt<{ tpEntityId: any }>({  // 'any' is valid here as they might type anything
-        name: "tpEntityId",
-        message: "Enter a Targetprocess task or bug ID"
-    });
+    // The user might type anything, so check the value here rather than in the prompt
+    const tpEntityId = await input({ message: "Enter a Targetprocess task or bug ID" });
 
-    if (tpEntityId === null || tpEntityId.length === 0 || isNaN(tpEntityId)) {
+    if (tpEntityId.length === 0 || isNaN(Number(tpEntityId))) {
         return null;
     }
 
@@ -149,17 +146,14 @@ const askTargetprocessEntity = async (targetprocessApi: Targetprocess) => {
     }
 };
 
-const filterChoices = (choices: { name: string }[], input: string) => {
-    return new Promise(resolve => {
-        if (!input) {
-            return resolve(choices);
-        }
+const filterChoices = <T extends { name: string }>(choices: T[], term: string | undefined) => {
+    if (!term) {
+        return choices;
+    }
 
-        const uppercaseInput = input.toUpperCase();
-        const matching = choices.filter(p => p.name.toUpperCase().indexOf(uppercaseInput) !== -1);
+    const uppercaseTerm = term.toUpperCase();
 
-        return resolve(matching);
-    });
+    return choices.filter(c => c.name.toUpperCase().includes(uppercaseTerm));
 };
 
 const getChoiceIndexForName = (choices: ValueNamePair[], name: string) => {
@@ -193,24 +187,20 @@ const askHarvestDetails = async (harvest: HarvestApi, tpEntity: TpBookableEntity
 
     const projectChoices = projects.map(p => ({ value: p, name: p.name }));
 
-    const { project } = await inquirer.prompt<{ project: HarvestProject, taskId: number }>([{
-        name: "project",
+    const project = await search<HarvestProject>({
         message: "Which project?",
-        type: "autocomplete",
-        source: (answers: string, input: string) => filterChoices(projectChoices, input)
-    }]);
+        source: term => filterChoices(projectChoices, term)
+    });
 
     const taskChoices = project.tasks.map(t => ({ value: t.id, name: t.name } as ValueNamePair));
 
     const targetTaskName = tpEntity === null ? "Dev Management Time" : "Development";
     const orderedChoices = reorderChoices(taskChoices, targetTaskName);
 
-    const { taskId } = await inquirer.prompt<{ taskId: number }>([{
-        name: "taskId",
+    const taskId = await search<number>({
         message: "What kind of task?",
-        type: "autocomplete",
-        source: (answers: string, input: string) => filterChoices(orderedChoices, input)
-    }]);
+        source: term => filterChoices(orderedChoices, term)
+    });
 
     const projectAndTaskId: HarvestIdPair = {
         projectId: project.id,
@@ -221,12 +211,7 @@ const askHarvestDetails = async (harvest: HarvestApi, tpEntity: TpBookableEntity
 };
 
 const askNotes = async () => {
-    const { notes } = await inquirer.prompt<{ notes: string }>({
-        name: "notes",
-        message: "Notes:"
-    });
-
-    return notes;
+    return input({ message: "Notes:" });
 };
 
 const askTimeSpent = async () => {
@@ -241,11 +226,7 @@ const askTimeSpent = async () => {
         return timeSpent;
     }
 
-    const { running } = await inquirer.prompt<{ running: boolean }>([{
-        name: "running",
-        type: "confirm",
-        message: "Are you still doing this?"
-    }]);
+    const running = await confirm({ message: "Are you still doing this?" });
 
     timeSpent = {
         hours,
