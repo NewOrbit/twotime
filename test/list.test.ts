@@ -16,7 +16,7 @@ const makeEntry = (overrides: Partial<HarvestTimeEntry>): HarvestTimeEntry => ({
 });
 
 // list() only ever reaches for getHarvestApi().getTimeEntries(), so a structural stub
-// is enough — and avoids constructing a real Configstore and HarvestApi.
+// is enough, and avoids constructing a real Configstore and HarvestApi.
 const providerReturning = (entries: HarvestTimeEntry[]) =>
     ({ getHarvestApi: () => ({ getTimeEntries: async () => entries }) }) as unknown as ApiProvider;
 

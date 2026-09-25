@@ -15,7 +15,7 @@
 
         /* Relative imports carry explicit .ts extensions, so Node can resolve the
            sources directly. Nothing is emitted today (see noEmit below), so the
-           rewrite is inert — it is kept so that enabling emit cannot silently
+           rewrite is inert, but it is kept so that enabling emit cannot silently
            produce output with unresolvable .ts specifiers. */
         "allowImportingTsExtensions": true,
         "rewriteRelativeImportExtensions": true,
