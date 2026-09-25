@@ -26,7 +26,7 @@ export const resume = async (apiProvider: ApiProvider) => {
 
     const timeEntry = await select<HarvestTimeEntry>({
         message: "Which timer would you like to resume?",
-        choices: prompts
+        choices: prompts,
     });
 
     log.info("Resuming Harvest timer");
