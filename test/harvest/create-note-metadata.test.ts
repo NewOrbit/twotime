@@ -1,5 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+
 import { createNoteMetadata } from "../../src/harvest/helpers/create-notes.ts";
 import type { NoteMetadata } from "../../src/harvest/models/time-entry.ts";
 import type { TpBookableEntity } from "../../src/target-process/models/tp-bookable-entity.ts";
