@@ -1,13 +1,12 @@
-import { TestFixture, Test, Expect } from "alsatian";
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
 import type { HarvestTimeEntry } from "../src/harvest/models/time-entry.ts";
 import { isRunningOrUnfinished } from "../src/utils/is-running-or-unfinished.ts";
 import { NoteMetadataBuilder } from "./_builders/note-metadata.builder.ts";
 
-@TestFixture()
-export class IsRunningOrUnfinishedTests {
+describe("isRunningOrUnfinished", () => {
 
-    @Test()
-    public shouldReturnTrueforRunningEntry() {
+    it("returns true for a running entry", () => {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
@@ -19,11 +18,10 @@ export class IsRunningOrUnfinishedTests {
 
         const result = isRunningOrUnfinished(entry);
 
-        Expect(result).toBe(true);
-    }
+        assert.strictEqual(result, true);
+    });
 
-    @Test()
-    public shouldReturnTrueforUnfinishedEntry() {
+    it("returns true for an unfinished entry", () => {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
@@ -35,11 +33,10 @@ export class IsRunningOrUnfinishedTests {
 
         const result = isRunningOrUnfinished(entry);
 
-        Expect(result).toBe(true);
-    }
+        assert.strictEqual(result, true);
+    });
 
-    @Test()
-    public shouldReturnFalseforFinishedEntry() {
+    it("returns false for a finished entry", () => {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
@@ -51,11 +48,10 @@ export class IsRunningOrUnfinishedTests {
 
         const result = isRunningOrUnfinished(entry);
 
-        Expect(result).toBe(false);
-    }
+        assert.strictEqual(result, false);
+    });
 
-    @Test()
-    public shouldReturnTrueforRunningFinishedEntry() {
+    it("returns true for a running, finished entry", () => {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
@@ -67,7 +63,7 @@ export class IsRunningOrUnfinishedTests {
 
         const result = isRunningOrUnfinished(entry);
 
-        Expect(result).toBe(true);
-    }
+        assert.strictEqual(result, true);
+    });
 
-}
+});

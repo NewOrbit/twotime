@@ -1,14 +1,13 @@
-import { TestFixture, TestCase, Test, Expect } from "alsatian";
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
 import { createNoteMetadata } from "../../src/harvest/helpers/create-notes.ts";
 import type { NoteMetadata } from "../../src/harvest/models/time-entry.ts";
 import type { TpBookableEntity } from "../../src/target-process/models/tp-bookable-entity.ts";
 import { EntityType } from "../../src/target-process/models/tp-bookable-entity.ts";
 
-@TestFixture()
-export class CreateNoteMetadataTests {
+describe("createNoteMetadata", () => {
 
-    @Test()
-    public shouldCreateNoteMetadataCorrectlyForTask() {
+    it("creates note metadata correctly for a task", () => {
         const input: TpBookableEntity = {
             ResourceType: EntityType.TASK,
             Id: 67890,
@@ -28,11 +27,10 @@ export class CreateNoteMetadataTests {
 
         const res = createNoteMetadata(input, "0.0.0");
 
-        Expect(res).toEqual(expected);
-    }
+        assert.deepStrictEqual(res, expected);
+    });
 
-    @Test()
-    public shouldCreateNoteMetadataCorrectlyForBug() {
+    it("creates note metadata correctly for a bug", () => {
         const input: TpBookableEntity = {
             ResourceType: EntityType.BUG,
             Id: 94123,
@@ -52,11 +50,10 @@ export class CreateNoteMetadataTests {
 
         const res = createNoteMetadata(input, "0.0.0");
 
-        Expect(res).toEqual(expected);
-    }
+        assert.deepStrictEqual(res, expected);
+    });
 
-    @Test()
-    public shouldCreateNoteMetadataCorrectlyWithoutUserStory() {
+    it("creates note metadata correctly without a user story", () => {
         const input: TpBookableEntity = {
             ResourceType: EntityType.BUG,
             Id: 94123,
@@ -72,39 +69,34 @@ export class CreateNoteMetadataTests {
 
         const res = createNoteMetadata(input, "0.0.0");
 
-        Expect(res).toEqual(expected);
+        assert.deepStrictEqual(res, expected);
+    });
+
+    it("creates note metadata correctly for a null entity", () => {
+        const res = createNoteMetadata(null, "0.0.0");
+
+        assert.deepStrictEqual(res, null);
+    });
+
+    for (const version of ["1.0.0", "0.5.0", "2.7.3"]) {
+        it(`creates note metadata with version ${version}`, () => {
+            const input: TpBookableEntity = {
+                ResourceType: EntityType.BUG,
+                Id: 94123,
+                Name: "A very very horrible bug",
+                UserStory: undefined
+            };
+
+            const expected: NoteMetadata = {
+                tpBookableEntity: input,
+                finished: false,
+                version
+            };
+
+            const res = createNoteMetadata(input, version);
+
+            assert.deepStrictEqual(res, expected);
+        });
     }
 
-    @Test()
-    public shouldCreateNoteMetadataCorrectlyForNullEntity() {
-        const input = null;
-
-        const expected = null;
-
-        const res = createNoteMetadata(input, "0.0.0");
-
-        Expect(res).toEqual(expected);
-    }
-
-    @TestCase("1.0.0")
-    @TestCase("0.5.0")
-    @TestCase("2.7.3")
-    public shouldCreateNoteMetadataWithCorrectVersion(version: string) {
-        const input: TpBookableEntity = {
-            ResourceType: EntityType.BUG,
-            Id: 94123,
-            Name: "A very very horrible bug",
-            UserStory: undefined
-        };
-
-        const expected: NoteMetadata = {
-            tpBookableEntity: input,
-            finished: false,
-            version
-        };
-
-        const res = createNoteMetadata(input, version);
-
-        Expect(res).toEqual(expected);
-    }
-}
+});
