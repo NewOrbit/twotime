@@ -1,4 +1,4 @@
-import inquirer from "inquirer";
+import { select } from "@inquirer/prompts";
 
 import type { Targetprocess } from "../../target-process/api.ts";
 
@@ -93,10 +93,8 @@ const getTimeEntries = async (harvestApi: HarvestApi, date: string, all: boolean
 
     const prompts = unfinished.map(getTimeEntryPrompt);
 
-    const { timeEntry } = await inquirer.prompt<{ timeEntry: HarvestTimeEntry }>({
-        name: "timeEntry",
+    const timeEntry = await select<HarvestTimeEntry>({
         message: "Which timer would you like to finish?",
-        type: "list",
         choices: prompts
     });
 

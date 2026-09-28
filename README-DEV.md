@@ -4,7 +4,7 @@ This section has been added for the benefit of developers needing to do any work
 
 ## Go-to people
 
-Tom Hyde - repo administrator \
+Tom Hyde - repo administrator
 Ian French - latest developer to do any work on the utility
 
 ## Preparation
@@ -13,10 +13,10 @@ Clone the repo: `git clone https://github.com/NewOrbit/twotime.git`
 
 Change directory to the cloned repo, install dependencies and sanity-check the build, e.g. from PowerShell:
 
-```
-PS> cd twotime
-PS> npm install
-PS> npm run prepublishOnly
+```powershell
+cd twotime
+npm install
+npm run prepublishOnly
 ```
 
 ## Developing the code
@@ -33,8 +33,10 @@ between runs.
 Tests use Node's built-in test runner (`node:test`) with `node:assert/strict`,
 and run straight from the TypeScript sources with no build step:
 
-    PS> npm run test
-    PS> npm run test:watch
+```powershell
+npm run test
+npm run test:watch
+```
 
 Fixtures are plain `describe` / `it` blocks. There is no `.each` helper in
 `node:test`, so table-driven cases are an array and a `for...of` loop that
@@ -60,21 +62,27 @@ them, so `npm run typecheck` is a separate gate and both run in CI.
 
 ## How the package is built
 
-The published package is a single self-contained file, `dist/twotime.cjs`, produced by `npm run bundle`, which runs esbuild straight from `src/index.ts` with no `tsc` emit step. Type checking is a separate gate (`npm run typecheck`, i.e. `tsc --noEmit`), because Node's native type stripping erases types without checking them. Bundling means users installing the package get one file with no dependency tree, which makes both installation and cold start dramatically faster (an unbundled install was ~23,000 files, and on Windows every file paid a Defender scan on first run).
+The published package is a single self-contained file, `dist/twotime.cjs`, produced by `npm run bundle`, which runs rolldown straight from `src/index.ts` with no `tsc` emit step. Type checking is a separate gate (`npm run typecheck`, i.e. `tsc --noEmit`), because Node's native type stripping erases types without checking them. Bundling means users installing the package get one file with no dependency tree, which makes both installation and cold start dramatically faster (an unbundled install was ~23,000 files, and on Windows every file paid a Defender scan on first run).
 
-Because of this, **all runtime dependencies deliberately live in `devDependencies`**. They are compiled into the bundle at build time and must not be moved back to `dependencies`, or users would download them for nothing. If you add a new runtime package, install it as a dev dependency and check `npm run bundle` completes without dynamic-require warnings.
+Because of this, **all runtime dependencies deliberately live in `devDependencies`**. They are compiled into the bundle at build time and must not be moved back to `dependencies`, or users would download them for nothing. If you add a new runtime package, install it as a dev dependency and then *run* the bundle (`node dist/twotime.cjs --help`). A clean build is not evidence that it works: several dependencies are still CommonJS, interop problems with them surface only when the file is executed, and no bundler warns about it.
+
+The output is CommonJS because it starts faster. rolldown, esbuild and rollup were all built and timed against each other in Aug 2026. rolldown produced the smallest bundle, and its CommonJS output reached the first prompt about 5 ms sooner than its ESM output, because Node's ESM loader costs more at startup than `require` even for one self-contained file. So `.cjs` is deliberate but not load-bearing, and `--format esm` remains a supported switch if there is ever a reason. esbuild is the obvious fallback if rolldown disappoints, but note its ESM output needs a `createRequire` banner to survive this dependency graph.
 
 ## Running the code
 
 There are several new scripts added to `package.json` to enable running the utility with one of the arguments, for example starting a timer:
 
-    PS> npm run start
+```powershell
+npm run start
+```
 
 Other features can be tested by running `node` directly against the TypeScript
 sources. Node 24 strips the types natively, so there is no build step:
 
-    PS> node src/index.ts --help
-    PS> node src/index.ts pause
+```powershell
+node src/index.ts --help
+node src/index.ts pause
+```
 
 This works because the sources are kept free of non-erasable TypeScript syntax
 (no `enum`, no namespaces, no parameter properties), enforced by the
@@ -102,12 +110,14 @@ This will be done manually when necessary, rather than tying it to a DevOps pipe
 1. Ensure you have enough privileges to add a package to the NewOrbit registry.
 2. The npm package `vsts-npm-auth` should already be installed as part of a general `npm install`.  Otherwise install it manually by using `npm install vsts-npm-auth`
 3. Unless you already have this all set up, add a `.npmrc` file to the project in the same directory as package.json with the following contents:
-    ```
-    registry=https://registry.npmjs.org/
-    @neworbit:registry=https://pkgs.dev.azure.com/neworbit/_packaging/NewOrbit/npm/registry/
-    always-auth=true
-    ```
-    (This file must be ignored by git as it will contain an unencrypted authentication token.)
+
+```none
+registry=https://registry.npmjs.org/
+@neworbit:registry=https://pkgs.dev.azure.com/neworbit/_packaging/NewOrbit/npm/registry/
+always-auth=true
+```
+
+(This file must be ignored by git as it will contain an unencrypted authentication token.)
 4. Run vsts-npm-auth to get an Azure Artifacts token added:  `npx vsts-npm-auth -config .npmrc`.  Note:
     - You don't need to do this every time. npm will give a 401 unauthorized error when you need to run it again.
     - You should get an email entitled "Azure DevOps personal access token added".
@@ -117,23 +127,26 @@ This will be done manually when necessary, rather than tying it to a DevOps pipe
 
 The codebase was very old and most library dependencies were hugely behind current versions.  In January 2025, a `npm audit` reported 85 vulnerabilities (1 low, 22 moderate, 50 high, 12 critical). Most were centred on the `harvest` package which looks like it's been abandoned.  Ian F updated everything to more modern versions as part of a piece of work to tighten up the reporting of task time-remaining.  Several old libraries such as moment were factored out.
 
+In Aug 2026 the packages that had been left behind, `chalk`, `configstore` and `commander`, were taken to their current majors. The `inquirer` family was replaced rather than upgraded: `inquirer-autocomplete-prompt` deep-imports paths that inquirer stopped publishing at v10, and inquirer v10+ is itself only a legacy-API wrapper over `@inquirer/prompts`. Depending on `@inquirer/prompts` directly, and using its `search` prompt in place of the autocomplete one, removed four packages and took the bundle from 2.1 MB to under 500 KB.
+
 There are currently no vulnerabilities reported by `npm audit`, or on packaging the utility.
 
-_However_, not all of the dependent packages could be upgraded to the latest versions due to run-time problems, specifically ERR_REQUIRE_ESM errors.  There was not enough time in the project to see if this can be addressed - none of these has any security vulnerabilities.  A `npm outdated` command gave the following output as of end Jan 2025:
+Three prompt behaviours to be aware of before changing this code:
 
-```
-Package                              Current  Wanted  Latest  Location                                          Depended by
---------                             -------  ------  ------  ------------------------------------------------  -----------
-@types/inquirer                        7.3.3   7.3.3   9.0.7  node_modules/@types/inquirer                      twotime
-@types/inquirer-autocomplete-prompt    1.3.5   1.3.5   3.0.3  node_modules/@types/inquirer-autocomplete-prompt  twotime
-chalk                                  4.1.2   4.1.2   5.4.1  node_modules/chalk                                twotime
-configstore                            4.0.0   4.0.0   7.0.0  node_modules/configstore                          twotime
-inquirer                               8.2.6   8.2.6  12.3.2  node_modules/inquirer                             twotime
-inquirer-autocomplete-prompt           2.0.1   2.0.1   3.0.1  node_modules/inquirer-autocomplete-prompt         twotime
-```
+- Interrupting a prompt with Ctrl+C does not kill the process. `@inquirer/core` rejects the prompt promise with an `ExitPromptError` and leaves it to the application, so an uncaught one reaches the user as an unhandled-rejection stack trace. Every command is therefore wrapped in `runCommand` (`src/utils/run-command.ts`), which treats that one error as a cancellation and rethrows everything else. Wrap any new command the same way.
+- `@inquirer/input` defaults to `validationFailureMode: 'keep'`, which leaves a rejected value in the buffer so the next attempt appends to it. The prompts that validate set it to `'clear'` instead. Removing that will produce inputs like `notanumber999`.
+- `search` resolves its `source` asynchronously, so the highlighted item lags slightly behind the typed term.
+
+Packages held back on purpose, as of Aug 2026:
+
+| Package | Held at | Why |
+| --- | --- | --- |
+| `eslint`, `@eslint/js` | 9.x | `eslint-config-neworbit@11` declares `peerDependencies: { eslint: "9.x" }` |
+| `typescript` | 6.x | `@typescript-eslint` 8.x declares `typescript: ">=4.8.4 <6.1.0"`, so TS 7 breaks `npm run lint` |
+| `@types/node` | 24.x | Should track the `engines.node` floor, not run ahead of it |
 
 ## To Do
 
 Delete the public package!  At the moment this isn't possible as there are several owners who have left the company.
 
-If possible, enable the use of the latest package versions as explained above.
+Revisit the three held packages above when their blockers clear: `eslint` 10 needs a new `eslint-config-neworbit`, and TypeScript 7 needs `typescript-eslint` 9.
