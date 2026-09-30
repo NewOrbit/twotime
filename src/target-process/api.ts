@@ -12,10 +12,10 @@ import { TargetprocessApiError } from "./api-error.ts";
 
 const APIVersion = {
     V1: "V1",
-    V2: "V2"
+    V2: "V2",
 } as const;
 
-type APIVersion = typeof APIVersion[keyof typeof APIVersion];
+type APIVersion = (typeof APIVersion)[keyof typeof APIVersion];
 
 export class Targetprocess {
     private subdomain: string;
@@ -29,9 +29,9 @@ export class Targetprocess {
         this.accessToken = accessToken;
 
         this.headers = {
-            "Accept": "application/json",
+            Accept: "application/json",
             "Cache-Control": "no-cache",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         };
     }
 
@@ -69,8 +69,8 @@ export class Targetprocess {
             Date: date,
             Description: description,
             Assignable: {
-                Id: id
-            }
+                Id: id,
+            },
         };
 
         return this.requestJSON(APIVersion.V1, `Times/`, "POST", body);
@@ -79,7 +79,7 @@ export class Targetprocess {
     public async getCustomValueForProject<T>(projectId: number, customValueKey: string) {
         const url = `Project/${projectId}`;
         const requestParams = new URLSearchParams({
-            select: `{val:CustomValues["${customValueKey}"]}`
+            select: `{val:CustomValues["${customValueKey}"]}`,
         });
 
         const response = await this.requestJSON(APIVersion.V2, url, "GET", undefined, requestParams);
@@ -110,8 +110,15 @@ export class Targetprocess {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private async requestJSON(version: APIVersion, endpoint: string, method: string, body?: any, requestParams?: URLSearchParams): Promise<any> {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    private async requestJSON(
+        version: APIVersion,
+        endpoint: string,
+        method: string,
+        body?: any,
+        requestParams?: URLSearchParams
+    ): Promise<any> {
+        /* eslint-enable @typescript-eslint/no-explicit-any */
         const url = this.getUrlForAPIVersion(version);
         const params = this.getUrlParams();
 
@@ -126,7 +133,7 @@ export class Targetprocess {
         const res = await fetch(fullUrl, {
             method,
             headers: this.headers,
-            body: body ? JSON.stringify(body) : undefined
+            body: body ? JSON.stringify(body) : undefined,
         });
 
         if (!res.ok) {

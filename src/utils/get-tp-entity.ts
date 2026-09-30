@@ -19,7 +19,7 @@ export const getTargetprocessEntity = async (api: Targetprocess, id: number) => 
     // Tasks are most used, then bugs, so attempt to find them in that order. Try user story as a last resort.
 
     try {
-        const task = await api.getTask(id) as TpBookableEntity;
+        const task = (await api.getTask(id)) as TpBookableEntity;
         return task;
     } catch (ex) {
         const err = ex as TpException;
@@ -36,7 +36,7 @@ export const getTargetprocessEntity = async (api: Targetprocess, id: number) => 
 
     // If reached here, trying for a task must have thrown a 404 not-found. Try a bug next.
     try {
-        const bug = await api.getBug(id) as TpBookableEntity;
+        const bug = (await api.getBug(id)) as TpBookableEntity;
         return bug;
     } catch (ex) {
         const err = ex as TpException;
@@ -47,7 +47,7 @@ export const getTargetprocessEntity = async (api: Targetprocess, id: number) => 
 
     // If reached here, trying for a bug must have thrown a 404 not-found. Try a user story as a last resort.
     try {
-        const story = await api.getStory(id) as TpBookableEntity;  // not a bookable entity but we can use the type
+        const story = (await api.getStory(id)) as TpBookableEntity; // not a bookable entity but we can use the type
         return story;
     } catch (ex) {
         const err = ex as TpException;

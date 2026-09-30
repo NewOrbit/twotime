@@ -1,0 +1,19 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "plugins": ["typescript", "unicorn", "oxc", "node"],
+    "categories": {
+        "correctness": "error",
+        "suspicious": "warn"
+    },
+    "env": {
+        "es2024": true,
+        "node": true
+    },
+    "rules": {
+        // Erasable enum replacements deliberately merge a `const` and a `type` of the
+        // same name. TypeScript itself reports genuine redeclarations (TS2451).
+        "no-redeclare": "off",
+        "no-underscore-dangle": ["warn", { "allow": ["__filename", "__dirname"] }]
+    },
+    "ignorePatterns": ["dist", "node_modules"]
+}

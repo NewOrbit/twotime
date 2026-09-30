@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { program } from 'commander';
+import { program } from "commander";
 
 import packageInfo from "../package.json" with { type: "json" };
 
@@ -8,9 +8,7 @@ import { ApiProvider } from "./api-provider.ts";
 
 import { registerCommands } from "./register-commands.ts";
 
-program
-    .name("twotime")
-    .version(packageInfo.version, "-v, --version");
+program.name("twotime").version(packageInfo.version, "-v, --version");
 
 registerCommands(program, new ApiProvider(), packageInfo.version);
 
