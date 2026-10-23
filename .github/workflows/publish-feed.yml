@@ -36,9 +36,12 @@ jobs:
             FEED_HOST_PATH: pkgs.dev.azure.com/neworbit/_packaging/NewOrbit/npm/registry/
             GH_TOKEN: ${{ github.token }}
         steps:
+            # Without check-latest, the Node 24 preinstalled on the runner is
+            # used even when it predates the latest security release.
             - uses: actions/setup-node@v7
               with:
                   node-version: 24
+                  check-latest: true
 
             # The asset name is fixed by draft-release.yml, so only that file
             # is downloaded, whatever else may have been attached by hand.

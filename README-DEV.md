@@ -16,6 +16,8 @@ pnpm reads the `packageManager` field in `package.json` and switches itself to
 the version pinned there. Do not use `npm install`, which ignores
 `pnpm-lock.yaml`.
 
+You also need a Node.js inside the `engines.node` range in `package.json`, which starts at the October 2026 security release. `engineStrict` in `pnpm-workspace.yaml` makes `pnpm install` fail on any other version.
+
 Change directory to the cloned repo, install dependencies and sanity-check the build, e.g. from PowerShell:
 
 ```powershell
@@ -193,9 +195,9 @@ Three prompt behaviours to be aware of before changing this code:
 
 - Interrupting a prompt with Ctrl+C does not kill the process. `@inquirer/core` rejects the prompt promise with an `ExitPromptError` and leaves it to the application, so an uncaught one reaches the user as an unhandled-rejection stack trace. Every command is therefore wrapped in `runCommand` (`src/utils/run-command.ts`), which treats that one error as a cancellation and rethrows everything else. Wrap any new command the same way.
 - `@inquirer/input` defaults to `validationFailureMode: 'keep'`, which leaves a rejected value in the buffer so the next attempt appends to it. The prompts that validate set it to `'clear'` instead. Removing that will produce inputs like `notanumber999`.
-- `search` resolves its `source` asynchronously, so the highlighted item lags slightly behind the typed term.
+- `search` resolves its `source` asynchronously, so the highlighted item lags slightly behind the typed term. Since `@inquirer/search` 4.3.4, Enter is ignored while results are still loading, so it can no longer submit the stale item; the user presses it again once the list has caught up.
 
-Packages held back on purpose, as of Aug 2026:
+Packages held back on purpose, as of Oct 2026:
 
 | Package                | Held at | Why                                                                                              |
 | ---------------------- | ------- | ------------------------------------------------------------------------------------------------ |
