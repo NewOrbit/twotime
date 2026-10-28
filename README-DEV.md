@@ -112,21 +112,70 @@ switched off in `eslint.config.mjs` because it flags this pattern (TypeScript
 itself still reports genuine redeclarations as TS2451), and unlike an `enum` the
 type is not nominal: a bare `"Bug"` is assignable to `EntityType`.
 
+## Continuous integration
+
+CI is GitHub Actions, in `.github/workflows`. `pr.yml` runs the reusable `verify.yml` job on every pull request, whatever branch it targets: install, build, test, lint. The release workflow calls the same job, so the checks on a pull request and the checks behind a release cannot drift apart. The Azure Pipelines build is gone.
+
+The repository is public on purpose: twotime has been MIT-licensed with public source since 2020, and the GitHub release asset is now the primary way people install it. Do not make the repository private without first putting another distribution channel in its place.
+
 ## Publishing the code
 
-This will be done manually when necessary, rather than tying it to a DevOps pipeline.
+Releases are automated. Merging a pull request to master that changes the version in `package.json` makes `draft-release.yml` create a **draft** GitHub release titled `v<version>`.
 
-1. Ensure you have enough privileges to add a package to the NewOrbit registry.
-2. The npm package `vsts-npm-auth` should already be installed as part of a general `pnpm install`. Otherwise install it manually by using `pnpm add -D vsts-npm-auth`
-3. Unless you already have this all set up, add a `.npmrc` file to the project in the same directory as package.json with the following contents:
+The draft carries one asset, `neworbit-twotime-<version>.tgz`, packed from the bundle that `verify.yml` built and tested, and attested with `actions/attest-build-provenance`. The body is the matching `## <version>` section of `CHANGELOG.md`; when there is no such section, GitHub's generated notes are used instead. An `Install or upgrade` section holding the exact `pnpm add -g` command for that version is appended to the body either way.
 
-```none
-registry=https://registry.npmjs.org/
-@neworbit:registry=https://pkgs.dev.azure.com/neworbit/_packaging/NewOrbit/npm/registry/
-always-auth=true
+The draft is regenerated on every push to master until someone publishes it, so there is no point editing it by hand. Change the notes in `CHANGELOG.md` and push; the next run replaces the draft.
+
+A version with a pre-release part, such as `4.1.0-beta.1`, is drafted as a GitHub pre-release. GitHub does not work that out from the version itself, so the workflow sets the flag.
+
+Publishing the draft is a manual step. It creates the `v<version>` tag and triggers `publish-feed.yml`, which downloads the asset from the release, verifies its provenance and publishes it to the NewOrbit Azure Artifacts feed. The provenance check accepts only an asset attested by `draft-release.yml` in this repository from the commit the tag points to, so a tarball uploaded by hand, or one kept from an earlier build of the same version, is refused. Pre-releases are not published to the feed.
+
+If a job fails, re-run it. A version that is already on the feed with the same bytes is left alone and the job still succeeds, so re-running is safe and is the normal way to recover. If the feed already has that version with different content, for example from a manual publish, the job fails and says so; the feed cannot be overwritten, so bump the version and release again.
+
+To check an asset you have downloaded:
+
+```bash
+gh attestation verify neworbit-twotime-<version>.tgz --repo NewOrbit/twotime
 ```
 
-(This file must be ignored by git as it will contain an unencrypted authentication token.) 4. Run vsts-npm-auth to get an Azure Artifacts token added: `pnpm exec vsts-npm-auth -config .npmrc`. Note: - You don't need to do this every time. npm will give a 401 unauthorized error when you need to run it again. - You should get an email entitled "Azure DevOps personal access token added". 5. Publish the package with `pnpm publish`. Check it exists in [NewOrbit internal artefacts](https://dev.azure.com/neworbit/NewOrbit%20Internal/_artifacts/feed/NewOrbit). Publishing automatically rebuilds the bundle and runs the tests and linter first (see `prepublishOnly` in `package.json`); you can preview the tarball contents with `pnpm pack --dry-run`. It should contain little more than `dist/twotime.cjs`. `pnpm publish` refuses to publish from a dirty working tree unless you pass `--no-git-checks`.
+### Writing a changelog entry
+
+The heading is `## <version>`, matching the version in `package.json` exactly. That string is what the workflow looks for, and a mismatch quietly gets you GitHub's generated notes instead. Under the heading, use plain bullets.
+
+Write for the person using twotime: what they will notice, and what they have to do about it. Newest section first. No dates, and no Unreleased section. Dependency bumps and internal refactors do not belong in the changelog, because they are invisible to the user.
+
+### Feed authentication
+
+Authentication to the feed is a Microsoft Entra federated credential, so there is no secret to rotate. An admin sets this up once:
+
+1. An Entra app registration with a federated credential for the repository `NewOrbit/twotime`, entity type Environment, environment name `feed`.
+2. That app's service principal added to the NewOrbit feed as a Contributor.
+3. A GitHub environment named `feed`, holding the variables `AZURE_CLIENT_ID` and `AZURE_TENANT_ID`. Both are plain variables rather than secrets.
+
+### Manual publish (backup)
+
+Use this only when the automation is broken.
+
+1. Ensure you have enough privileges to add a package to the NewOrbit registry.
+2. The npm package `vsts-npm-auth` should already be installed as part of a general `pnpm install`. Otherwise install it manually by using `pnpm add -D vsts-npm-auth`.
+3. Unless you already have this all set up, add a `.npmrc` file to the project in the same directory as `package.json` with the following contents:
+
+    ```none
+    registry=https://registry.npmjs.org/
+    @neworbit:registry=https://pkgs.dev.azure.com/neworbit/_packaging/NewOrbit/npm/registry/
+    always-auth=true
+    ```
+
+    This file must be ignored by git, as it will contain an unencrypted authentication token.
+
+4. Run `pnpm exec vsts-npm-auth -config .npmrc` to get an Azure Artifacts token added.
+    - You don't need to do this every time. npm will give a 401 unauthorized error when you need to run it again.
+    - You should get an email entitled "Azure DevOps personal access token added".
+
+5. Publish the package with `pnpm publish`, then check it exists in [NewOrbit internal artefacts](https://dev.azure.com/neworbit/NewOrbit%20Internal/_artifacts/feed/NewOrbit).
+    - Publishing rebuilds the bundle and runs the tests and linter first, see `prepublishOnly` in `package.json`.
+    - Preview the tarball contents with `pnpm pack --dry-run`. It should contain little more than `dist/twotime.cjs`.
+    - `pnpm publish` refuses to publish from a dirty working tree unless you pass `--no-git-checks`.
 
 ## Recent history
 

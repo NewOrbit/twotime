@@ -1,6 +1,6 @@
 {
     "name": "@neworbit/twotime",
-    "version": "3.2.0",
+    "version": "4.0.0",
     "description": "Sync timesheets between Harvest and Targetprocess",
     "homepage": "https://github.com/NewOrbit/twotime#readme",
     "bugs": {
@@ -26,8 +26,8 @@
         "build": "pnpm run typecheck && pnpm run bundle",
         "test": "node --test \"test/**/*.test.ts\"",
         "test:watch": "node --test --watch \"test/**/*.test.ts\"",
-        "lint": "oxlint --deny-warnings && eslint src/**/*.ts test/**/*.ts --max-warnings=0",
-        "lint:fix": "oxlint --deny-warnings --fix && eslint src/**/*.ts test/**/*.ts --max-warnings=0 --quiet --fix",
+        "lint": "oxlint --deny-warnings && eslint src/**/*.ts test/**/*.ts scripts/**/*.ts --max-warnings=0",
+        "lint:fix": "oxlint --deny-warnings --fix && eslint src/**/*.ts test/**/*.ts scripts/**/*.ts --max-warnings=0 --quiet --fix",
         "format": "oxfmt",
         "format:check": "oxfmt --check",
         "start": "node src/index.ts start",
