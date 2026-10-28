@@ -65,7 +65,7 @@ jobs:
 
             # No dependency install: pack only reads package.json and the
             # files list, and the notes script uses node built-ins.
-            - uses: pnpm/setup@v2
+            - uses: pnpm/setup@v3
               with:
                   runtime: node@24
                   install: false

@@ -4,7 +4,7 @@ Sync timesheets between Harvest and Targetprocess
 
 ## Installation
 
-twotime requires Node.js 24 or later, and is installed with [pnpm](https://pnpm.io/installation).
+twotime requires Node.js 24.22.1 or a later 24.x, or Node.js 26.12.1 or later, and is installed with [pnpm](https://pnpm.io/installation).
 
 Note that the old, public package (v2.0.0) is deprecated and will be removed at some point. _Do not use this version_.
 
