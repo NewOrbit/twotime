@@ -4,8 +4,8 @@
  */
 
 export interface TpEntityState {
-  Id: number;
-  Name: string;
-  ResourceType: string;
-  NumericPriority: number;
+    Id: number;
+    Name: string;
+    ResourceType: string;
+    NumericPriority: number;
 }

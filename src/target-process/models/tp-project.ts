@@ -4,13 +4,13 @@
  */
 
 interface TpProjectProcess {
-  ResourceType: string;
-  Id: number
+    ResourceType: string;
+    Id: number;
 }
 
 export interface TpProject {
-  Id: number;
-  Name: string;
-  ResourceType: string;
-  Process: TpProjectProcess;
+    Id: number;
+    Name: string;
+    ResourceType: string;
+    Process: TpProjectProcess;
 }

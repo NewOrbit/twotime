@@ -7,15 +7,14 @@ import { isRunningOrUnfinished } from "../src/utils/is-running-or-unfinished.ts"
 import { NoteMetadataBuilder } from "./_builders/note-metadata.builder.ts";
 
 describe("isRunningOrUnfinished", () => {
-
     it("returns true for a running entry", () => {
         const entry: HarvestTimeEntry = {
             id: 0,
             notes: [],
             metadata: null,
-            hours: 0.00,
+            hours: 0.0,
             created: "2017-06-26T22:32:52Z",
-            running: true
+            running: true,
         };
 
         const result = isRunningOrUnfinished(entry);
@@ -28,9 +27,9 @@ describe("isRunningOrUnfinished", () => {
             id: 0,
             notes: [],
             metadata: new NoteMetadataBuilder().withFinished(false).build(),
-            hours: 0.00,
+            hours: 0.0,
             created: "2017-06-26T22:32:52Z",
-            running: false
+            running: false,
         };
 
         const result = isRunningOrUnfinished(entry);
@@ -43,9 +42,9 @@ describe("isRunningOrUnfinished", () => {
             id: 0,
             notes: [],
             metadata: new NoteMetadataBuilder().withFinished(true).build(),
-            hours: 0.00,
+            hours: 0.0,
             created: "2017-06-26T22:32:52Z",
-            running: false
+            running: false,
         };
 
         const result = isRunningOrUnfinished(entry);
@@ -58,14 +57,13 @@ describe("isRunningOrUnfinished", () => {
             id: 0,
             notes: [],
             metadata: new NoteMetadataBuilder().withFinished(true).build(),
-            hours: 0.00,
+            hours: 0.0,
             created: "2017-06-26T22:32:52Z",
-            running: true
+            running: true,
         };
 
         const result = isRunningOrUnfinished(entry);
 
         assert.strictEqual(result, true);
     });
-
 });

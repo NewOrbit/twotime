@@ -14,7 +14,9 @@ const exitPromptError = () => {
 
 const runCapturingLog = async (command: () => Promise<unknown>) => {
     const lines: string[] = [];
-    const spy = mock.method(console, "log", (message: string) => { lines.push(message); });
+    const spy = mock.method(console, "log", (message: string) => {
+        lines.push(message);
+    });
 
     try {
         await runCommand(command);
@@ -26,25 +28,31 @@ const runCapturingLog = async (command: () => Promise<unknown>) => {
 };
 
 describe("runCommand", () => {
-
     it("runs the command and logs nothing when it succeeds", async () => {
         let ran = false;
 
-        const output = await runCapturingLog(async () => { ran = true; });
+        const output = await runCapturingLog(async () => {
+            ran = true;
+        });
 
         assert.strictEqual(ran, true);
         assert.strictEqual(output, "");
     });
 
     it("swallows an interrupted prompt and reports the cancellation", async () => {
-        const output = await runCapturingLog(async () => { throw exitPromptError(); });
+        const output = await runCapturingLog(async () => {
+            throw exitPromptError();
+        });
 
         assert.match(output, /Cancelled/);
     });
 
     it("rethrows a genuine failure so it is not mistaken for a cancellation", async () => {
         await assert.rejects(
-            () => runCommand(async () => { throw new Error("Harvest is down"); }),
+            () =>
+                runCommand(async () => {
+                    throw new Error("Harvest is down");
+                }),
             /Harvest is down/
         );
     });
@@ -53,9 +61,11 @@ describe("runCommand", () => {
     // Error must not be swallowed just because its message mentions the prompt.
     it("rethrows an error that merely mentions the prompt", async () => {
         await assert.rejects(
-            () => runCommand(async () => { throw new Error("ExitPromptError"); }),
+            () =>
+                runCommand(async () => {
+                    throw new Error("ExitPromptError");
+                }),
             /ExitPromptError/
         );
     });
-
 });

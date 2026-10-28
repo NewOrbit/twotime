@@ -76,7 +76,7 @@ export const askStartDetails = async (apiProvider: ApiProvider, tpId?: number) =
         taskId,
         notes,
         hours,
-        running
+        running,
     };
 
     return timerDetails;
@@ -113,7 +113,7 @@ const getLoggableTargetprocessEntity = async (targetprocessApi: Targetprocess, i
     const entity = await getTargetprocessEntity(targetprocessApi, id);
 
     if (entity === null) {
-        log.error(`Targetprocess entity ${ id } could not be found or access is forbidden.`);
+        log.error(`Targetprocess entity ${id} could not be found or access is forbidden.`);
         return null;
     }
 
@@ -153,17 +153,17 @@ const filterChoices = <T extends { name: string }>(choices: T[], term: string | 
 
     const uppercaseTerm = term.toUpperCase();
 
-    return choices.filter(c => c.name.toUpperCase().includes(uppercaseTerm));
+    return choices.filter((c) => c.name.toUpperCase().includes(uppercaseTerm));
 };
 
 const getChoiceIndexForName = (choices: ValueNamePair[], name: string) => {
-    const totalMatch = choices.findIndex(c => c.name.toUpperCase() === name.toUpperCase());
+    const totalMatch = choices.findIndex((c) => c.name.toUpperCase() === name.toUpperCase());
 
     if (totalMatch !== -1) {
         return totalMatch;
     }
 
-    const startsWithMatch = choices.findIndex(c => c.name.toUpperCase().startsWith(name.toUpperCase()));
+    const startsWithMatch = choices.findIndex((c) => c.name.toUpperCase().startsWith(name.toUpperCase()));
 
     if (startsWithMatch !== -1) {
         return startsWithMatch;
@@ -185,26 +185,26 @@ const reorderChoices = (choices: ValueNamePair[], name: string) => {
 const askHarvestDetails = async (harvest: HarvestApi, tpEntity: TpBookableEntity | null) => {
     const projects = await harvest.getMyProjects();
 
-    const projectChoices = projects.map(p => ({ value: p, name: p.name }));
+    const projectChoices = projects.map((p) => ({ value: p, name: p.name }));
 
     const project = await search<HarvestProject>({
         message: "Which project?",
-        source: term => filterChoices(projectChoices, term)
+        source: (term) => filterChoices(projectChoices, term),
     });
 
-    const taskChoices = project.tasks.map(t => ({ value: t.id, name: t.name } as ValueNamePair));
+    const taskChoices = project.tasks.map((t) => ({ value: t.id, name: t.name }) as ValueNamePair);
 
     const targetTaskName = tpEntity === null ? "Dev Management Time" : "Development";
     const orderedChoices = reorderChoices(taskChoices, targetTaskName);
 
     const taskId = await search<number>({
         message: "What kind of task?",
-        source: term => filterChoices(orderedChoices, term)
+        source: (term) => filterChoices(orderedChoices, term),
     });
 
     const projectAndTaskId: HarvestIdPair = {
         projectId: project.id,
-        taskId
+        taskId,
     };
 
     return projectAndTaskId;
@@ -217,7 +217,7 @@ const askNotes = async () => {
 const askTimeSpent = async () => {
     let timeSpent: TimeSpent = {
         hours: 0,
-        running: true
+        running: true,
     };
 
     const hours = await askHours("How many hours have you already spent on it?", 0);
@@ -230,7 +230,7 @@ const askTimeSpent = async () => {
 
     timeSpent = {
         hours,
-        running
+        running,
     };
 
     return timeSpent;

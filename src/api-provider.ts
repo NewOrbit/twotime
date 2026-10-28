@@ -19,7 +19,7 @@ export interface TargetprocessConfig {
 const CONFIG_KEYS = {
     TWOTIME: "twotime",
     HARVEST: "harvest",
-    TARGETPROCESS: "targetprocess"
+    TARGETPROCESS: "targetprocess",
 };
 
 export class ApiProvider {

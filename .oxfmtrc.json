@@ -1,0 +1,9 @@
+{
+    "$schema": "./node_modules/oxfmt/configuration_schema.json",
+    "printWidth": 132,
+    "singleQuote": false,
+    "trailingComma": "es5",
+    "endOfLine": "lf",
+    "ignorePatterns": ["dist"],
+    "tabWidth": 4
+}

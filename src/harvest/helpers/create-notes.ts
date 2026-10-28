@@ -14,16 +14,16 @@ import { NotePrefixes } from "../models/note-prefixes.ts";
  * @returns {NoteMetadata | null} the metadata object for the notes field, or null if there's no TP entity.
  */
 export const createNoteMetadata = (tpItem: TpBookableEntity | null, version: string) => {
-  if (tpItem) {
-    const notesMetadata: NoteMetadata = {
-      tpBookableEntity: tpItem,
-      finished: false,
-      version
-    };
-    return notesMetadata;
-  }
+    if (tpItem) {
+        const notesMetadata: NoteMetadata = {
+            tpBookableEntity: tpItem,
+            finished: false,
+            version,
+        };
+        return notesMetadata;
+    }
 
-  return null;
+    return null;
 };
 
 /**
@@ -33,37 +33,37 @@ export const createNoteMetadata = (tpItem: TpBookableEntity | null, version: str
  * @returns {string} the constructed notes field as a single string, suitable for the Harvest API.
  */
 export const createNotes = (metadata: NoteMetadata | null, additionalNotes?: string[]): string => {
-  const notesLines: string[] = [];
+    const notesLines: string[] = [];
 
-  const tpItem = metadata?.tpBookableEntity;
-  if (tpItem) {
-    // There is a TP bookable entity in play i.e. it's not a NewOrbit internal item
-    if (tpItem.UserStory) {
-      const usLine = createNotesLine(NotePrefixes.userStory, tpItem.UserStory.Id, tpItem.UserStory.Name);
-      notesLines.push(usLine);
+    const tpItem = metadata?.tpBookableEntity;
+    if (tpItem) {
+        // There is a TP bookable entity in play i.e. it's not a NewOrbit internal item
+        if (tpItem.UserStory) {
+            const usLine = createNotesLine(NotePrefixes.userStory, tpItem.UserStory.Id, tpItem.UserStory.Name);
+            notesLines.push(usLine);
+        }
+
+        const prefix = tpItem.ResourceType === EntityType.TASK ? NotePrefixes.task : NotePrefixes.bug;
+        const entLine = createNotesLine(prefix, tpItem.Id, tpItem.Name);
+        notesLines.push(entLine);
     }
 
-    const prefix = tpItem.ResourceType === EntityType.TASK ? NotePrefixes.task : NotePrefixes.bug;
-    const entLine = createNotesLine(prefix, tpItem.Id, tpItem.Name);
-    notesLines.push(entLine);
-  }
+    if (metadata?.finished) {
+        notesLines.push(NotePrefixes.finished);
+    }
 
-  if (metadata?.finished) {
-    notesLines.push(NotePrefixes.finished);
-  }
+    if (metadata) {
+        notesLines.push(`${NotePrefixes.twotime}${metadata.version}`);
+    }
 
-  if (metadata) {
-    notesLines.push(`${NotePrefixes.twotime}${metadata.version}`);
-  }
+    if (additionalNotes) {
+        additionalNotes.forEach((line) => notesLines.push(line));
+    }
 
-  if (additionalNotes) {
-    additionalNotes.forEach(line => notesLines.push(line));
-  }
-
-  return notesLines.join("\n");
+    return notesLines.join("\n");
 };
 
 // Internal function to create a single line of notes, given a prefix, numerical ID and name.
 const createNotesLine = (prefix: string, id: number, name: string) => {
-  return `${prefix}${id} ${name}`;
+    return `${prefix}${id} ${name}`;
 };

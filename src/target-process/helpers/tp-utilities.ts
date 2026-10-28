@@ -14,20 +14,28 @@ import type { EntityType, TpBookableEntity } from "../models/tp-bookable-entity.
  * @param {EntityType} entityType the entity type, see EntityType enum
  * @returns {TpBookableEntity} the constructed TP bookable entity
  */
-export const constructTpEntity = (userStoryid: number, userStoryName: string, entityId: number, entityName: string, entityType: EntityType) => {
-  const userStory = userStoryid && userStoryName ?
-    {
-      Id: userStoryid,
-      Name: userStoryName,
-      ResourceType: "UserStory"
-    } : undefined;
+export const constructTpEntity = (
+    userStoryid: number,
+    userStoryName: string,
+    entityId: number,
+    entityName: string,
+    entityType: EntityType
+) => {
+    const userStory =
+        userStoryid && userStoryName
+            ? {
+                  Id: userStoryid,
+                  Name: userStoryName,
+                  ResourceType: "UserStory",
+              }
+            : undefined;
 
-  const tpEntity: TpBookableEntity = {
-    Id: entityId,
-    Name: entityName,
-    ResourceType: entityType,
-    UserStory: userStory
-  };
+    const tpEntity: TpBookableEntity = {
+        Id: entityId,
+        Name: entityName,
+        ResourceType: entityType,
+        UserStory: userStory,
+    };
 
-  return tpEntity;
+    return tpEntity;
 };

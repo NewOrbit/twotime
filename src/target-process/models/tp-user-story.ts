@@ -4,7 +4,7 @@
  */
 
 export interface TpUserStory {
-  Id: number;
-  Name: string;
-  ResourceType: string;
+    Id: number;
+    Name: string;
+    ResourceType: string;
 }

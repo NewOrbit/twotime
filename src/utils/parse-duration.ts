@@ -16,6 +16,6 @@ export const parseDuration = (input: string) => {
 
     return {
         hours: parsedHours,
-        minutes: parseInt(minutesPart, 10)
+        minutes: parseInt(minutesPart, 10),
     };
 };

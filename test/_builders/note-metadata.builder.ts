@@ -27,7 +27,7 @@ export class NoteMetadataBuilder {
         return {
             tpBookableEntity: this.entity,
             finished: this.finished,
-            version: this.version
+            version: this.version,
         };
     }
 }

@@ -33,7 +33,7 @@ export class EntityBuilder {
             Id: this.id,
             Name: this.name,
             ResourceType: this.type,
-            UserStory: this.userStory
+            UserStory: this.userStory,
         };
     }
 }

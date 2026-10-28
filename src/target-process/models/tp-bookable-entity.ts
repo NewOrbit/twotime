@@ -13,25 +13,25 @@ import type { TpEntityState } from "./tp-entity-state.ts";
  * these sources directly via native type stripping. Call sites are unchanged.
  */
 export const EntityType = {
-  BUG: "Bug",
-  TASK: "Task",
-  USERSTORY: "UserStory"
+    BUG: "Bug",
+    TASK: "Task",
+    USERSTORY: "UserStory",
 } as const;
 
-export type EntityType = typeof EntityType[keyof typeof EntityType];
+export type EntityType = (typeof EntityType)[keyof typeof EntityType];
 
 /**
  * Targetprocess bookable entity (task or bug) common model. Straight from TP, properties start with
  * capital letters. This model represents only a subset of the available properties.
  */
 export interface TpBookableEntity {
-  Id: number;
-  Name: string;  // this will be the bookable item (task or issue) name
-  ResourceType?: EntityType;
-  TimeRemain?: number;
-  TimeSpent?: number;
-  Units?: string;
-  UserStory?: TpUserStory;
-  Project?: TpProject;
-  EntityState?: TpEntityState;
+    Id: number;
+    Name: string; // this will be the bookable item (task or issue) name
+    ResourceType?: EntityType;
+    TimeRemain?: number;
+    TimeSpent?: number;
+    Units?: string;
+    UserStory?: TpUserStory;
+    Project?: TpProject;
+    EntityState?: TpEntityState;
 }

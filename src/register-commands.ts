@@ -51,22 +51,22 @@ const getTpForCommand = (command: any) => {
 
 const dateFlagConfig = {
     flags: "-d, --date <date>",
-    description: "specify a date in YYYY-MM-DD format"
+    description: "specify a date in YYYY-MM-DD format",
 };
 
 const offsetFlagConfig = {
     flags: "-o, --offset <offset>",
-    description: "specify a positive number of days in the past"
+    description: "specify a positive number of days in the past",
 };
 
 const allFlagConfig = {
     flags: "--all",
-    description: "finish all of a day's timers"
+    description: "finish all of a day's timers",
 };
 
 const tpFlagConfig = {
     flags: "--tp <id>",
-    description: "Start a timer for a given TP id"
+    description: "Start a timer for a given TP id",
 };
 
 export const registerCommands = (commander: Command, apiProvider: ApiProvider, packageVersion: string) => {
@@ -142,9 +142,8 @@ export const registerCommands = (commander: Command, apiProvider: ApiProvider, p
         .description("authenticate to harvest and targetprocess")
         .action(() => runCommand(() => auth(apiProvider)));
 
-    commander
-        .on("command:*", () => {
-            log.error(`Invalid command: ${commander.args.join(" ")}\nSee --help for a list of available commands.`);
-            process.exit(1);
-        });
+    commander.on("command:*", () => {
+        log.error(`Invalid command: ${commander.args.join(" ")}\nSee --help for a list of available commands.`);
+        process.exit(1);
+    });
 };

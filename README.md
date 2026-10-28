@@ -8,15 +8,15 @@ Note that the old, public package (v2.0.0) is deprecated and will be removed at 
 
 ### Setting up .npmrc
 
-If necessary, set up access to the NewOrbit DevOps artefacts by following the `Connect to a feed` procedure in [Get started with npm packages in Azure Artifacts](https://learn.microsoft.com/en-us/azure/devops/artifacts/get-started-npm?view=azure-devops).  A few things in addition to that page:
+If necessary, set up access to the NewOrbit DevOps artefacts by following the `Connect to a feed` procedure in [Get started with npm packages in Azure Artifacts](https://learn.microsoft.com/en-us/azure/devops/artifacts/get-started-npm?view=azure-devops). A few things in addition to that page:
 
 1. Make sure you have installed the package `vsts-npm-auth` first, by using `pnpm add -g vsts-npm-auth`.
 2. Your `.npmrc` file needs to have these entries. pnpm reads registry and authentication settings from `.npmrc`, the same as npm does:
 
-   ```ini
-   registry=https://registry.npmjs.org/
-   @neworbit:registry=https://pkgs.dev.azure.com/neworbit/_packaging/NewOrbit/npm/registry/
-   ```
+    ```ini
+    registry=https://registry.npmjs.org/
+    @neworbit:registry=https://pkgs.dev.azure.com/neworbit/_packaging/NewOrbit/npm/registry/
+    ```
 
 3. If `vsts-npm-auth -config .npmrc` doesn't work, try `pnpm dlx vsts-npm-auth -config .npmrc`.
 4. If that command fails with a "Couldn't get an authentication token" message, try adding `-F` to the end of the command to force it.
@@ -66,7 +66,7 @@ You will need:
 
 ### Windows and WSL
 
-If you're using Windows and WSL, you may wish to be able to use twotime in either environment.  To avoid having two separate authentication configurations you can symlink the configuration files.
+If you're using Windows and WSL, you may wish to be able to use twotime in either environment. To avoid having two separate authentication configurations you can symlink the configuration files.
 
 <details>
     <summary>Windows and WSL example</summary>
