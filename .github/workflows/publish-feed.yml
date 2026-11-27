@@ -45,16 +45,21 @@ jobs:
 
             # The asset name is fixed by draft-release.yml, so only that file
             # is downloaded, whatever else may have been attached by hand.
+            #
+            # The path keeps its leading ./ because npm publish reads
+            # release/<name>.tgz as a GitHub <owner>/<repo> shorthand and tries
+            # to clone it.
             - name: Download the release asset
               id: asset
               run: |
                   set -euo pipefail
                   version=${TAG#v}
                   file=neworbit-twotime-$version.tgz
+                  path=./release/$file
                   gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern "$file" --dir release
-                  test -f "release/$file"
+                  test -f "$path"
                   echo "version=$version" >> "$GITHUB_OUTPUT"
-                  echo "file=release/$file" >> "$GITHUB_OUTPUT"
+                  echo "file=$path" >> "$GITHUB_OUTPUT"
 
             # Refuses anything that was not built by draft-release.yml in this
             # repository from the commit the release tag points to: a tarball
@@ -114,7 +119,6 @@ jobs:
                       echo "@neworbit:registry=https://$FEED_HOST_PATH"
                       echo "//$FEED_HOST_PATH:_authToken=\${ADO_TOKEN}"
                       echo "//${FEED_HOST_PATH%registry/}:_authToken=\${ADO_TOKEN}"
-                      echo "always-auth=true"
                   } > "$HOME/.npmrc"
 
                   if published=$(npm view "$PACKAGE@$VERSION" dist.integrity 2> view.err); then
