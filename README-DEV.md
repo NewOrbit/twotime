@@ -132,7 +132,9 @@ A version with a pre-release part, such as `4.1.0-beta.1`, is drafted as a GitHu
 
 Publishing the draft is a manual step. It creates the `v<version>` tag and triggers `publish-feed.yml`, which downloads the asset from the release, verifies its provenance and publishes it to the NewOrbit Azure Artifacts feed. The provenance check accepts only an asset attested by `draft-release.yml` in this repository from the commit the tag points to, so a tarball uploaded by hand, or one kept from an earlier build of the same version, is refused. Pre-releases are not published to the feed.
 
-If a job fails, re-run it. A version that is already on the feed with the same bytes is left alone and the job still succeeds, so re-running is safe and is the normal way to recover. If the feed already has that version with different content, for example from a manual publish, the job fails and says so; the feed cannot be overwritten, so bump the version and release again.
+If a job fails for a reason outside the workflow files, such as a feed outage or a missing permission, re-run it. A version that is already on the feed with the same bytes is left alone and the job still succeeds, so re-running is safe and is the normal way to recover. If the feed already has that version with different content, for example from a manual publish, the job fails and says so; the feed cannot be overwritten, so bump the version and release again.
+
+A re-run does not pick up changes to the workflow files: a run started by a release uses the workflows from the commit the tag points to. When the bug is in a workflow, fix it on master and release again. Either bump the version, or, if nobody has installed the release yet and it is not on the feed, delete the release and its tag before merging the fix, so that the merge drafts the same version from the fixed commit.
 
 To check an asset you have downloaded:
 
@@ -150,9 +152,10 @@ Write for the person using twotime: what they will notice, and what they have to
 
 Authentication to the feed is a Microsoft Entra federated credential, so there is no secret to rotate. An admin sets this up once:
 
-1. An Entra app registration with a federated credential for the repository `NewOrbit/twotime`, entity type Environment, environment name `feed`.
+1. An Entra app registration with a federated credential: issuer `https://token.actions.githubusercontent.com`, audience `api://AzureADTokenExchange`, subject `repo:NewOrbit@3148329/twotime@150568663:environment:feed`. The numbers are the GitHub ids of the organisation and the repository.
 2. That app's service principal added to the NewOrbit feed as a Contributor.
 3. A GitHub environment named `feed`, holding the variables `AZURE_CLIENT_ID` and `AZURE_TENANT_ID`. Both are plain variables rather than secrets.
+4. Immutable subject claims turned on for the repository: Settings > Actions > OIDC, "Use immutable subject claim". That is what puts the ids into the subject GitHub sends. Without it the subject is `repo:NewOrbit/twotime:environment:feed`, and the Azure login fails with AADSTS700213.
 
 ### Manual publish (backup)
 
