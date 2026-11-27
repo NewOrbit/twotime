@@ -1,0 +1,38 @@
+# Reusable verification job: the PR gate and the draft-release workflow both
+# call it, so the checks cannot drift apart. It uploads the built bundle as an
+# artifact so the release workflow packs the exact bytes that were tested.
+name: verify
+
+on:
+    workflow_call:
+
+permissions:
+    contents: read
+
+jobs:
+    verify:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+
+            # Installs the pnpm pinned by packageManager in package.json, plus
+            # Node, then runs pnpm install. Actions sets CI, so pnpm refuses to
+            # change pnpm-lock.yaml and the install is effectively frozen.
+            # (require-lockfile exists from v2.1.0, but the v2 tag still points
+            # at v2.0.2 and warns about it; add it once the tag moves.)
+            - uses: pnpm/setup@v2
+              with:
+                  runtime: node@24
+                  cache: true
+
+            # Same order as prepublishOnly. build includes the type check.
+            - run: pnpm run build
+            - run: pnpm run test
+            - run: pnpm run lint
+
+            - uses: actions/upload-artifact@v7
+              with:
+                  name: dist
+                  path: dist/twotime.cjs
+                  if-no-files-found: error
+                  retention-days: 7
